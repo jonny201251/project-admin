@@ -12,6 +12,7 @@ public class Test {
         int d2= NumberUtil.round(d*100,0).intValue();
         System.out.println(d2);
 //        Integer d22=d2.intValue();
+        System.out.println();
         System.out.println(d2 + "%");
     }
 }
