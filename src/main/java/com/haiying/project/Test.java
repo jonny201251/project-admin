@@ -14,5 +14,6 @@ public class Test {
 //        Integer d22=d2.intValue();
         System.out.println();
         System.out.println(d2 + "%");
+        System.out.println();
     }
 }
