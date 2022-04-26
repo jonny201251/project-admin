@@ -15,5 +15,6 @@ public class Test {
         System.out.println();
         System.out.println(d2 + "%");
         System.out.println();
+        System.out.println();
     }
 }
