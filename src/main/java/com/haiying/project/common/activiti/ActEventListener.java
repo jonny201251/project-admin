@@ -3,6 +3,7 @@ package com.haiying.project.common.activiti;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.haiying.project.bean.UserTaskBean;
+import com.haiying.project.bean.WorkFlowBean;
 import com.haiying.project.common.utils.SpringUtil;
 import com.haiying.project.model.entity.ProcessDesignTask;
 import com.haiying.project.model.entity.ProcessInst;
@@ -46,6 +47,10 @@ public class ActEventListener implements ActivitiEventListener {
             String actProcessInstanceId = taskEntity.getProcessInstanceId();
             String taskKey = taskEntity.getTaskDefinitionKey();
 
+            //businessId
+            WorkFlowBean workFlowBean=SpringUtil.getBean(WorkFlowBean.class);
+            Integer businessId = workFlowBean.getBusinessIdByProcessInstanceId(actProcessInstanceId);
+
             ProcessInstService processInstService = SpringUtil.getBean(ProcessInstService.class);
             ProcessInstNodeService processInstNodeService = SpringUtil.getBean(ProcessInstNodeService.class);
             ProcessDesignTaskService processDesignTaskService = SpringUtil.getBean(ProcessDesignTaskService.class);
@@ -64,7 +69,7 @@ public class ActEventListener implements ActivitiEventListener {
                 taskEntity.addCandidateUser(processInstNode.getLoginName());
             } else {
                 ProcessDesignTask processDesignTask = processDesignTaskService.getOne(new LambdaQueryWrapper<ProcessDesignTask>().eq(ProcessDesignTask::getProcessDesignId, processDesignId).eq(ProcessDesignTask::getTaskKey, taskKey));
-                Set<String> loginNameSet = userTaskBean.getLoginNameList(processDesignTask);
+                Set<String> loginNameSet = userTaskBean.getLoginNameList(processDesignTask,businessId);
                 if (ObjectUtil.isNotEmpty(loginNameSet)) {
                     taskEntity.addCandidateUsers(loginNameSet);
                 } else {

@@ -52,8 +52,8 @@ public class BigBudgetCompanyController {
             }
             bigBudgetCompany.setBudgetId(bigBudgetCompanyVO.getBudgetId());
             bigBudgetCompany.setProjectId(bigBudgetCompanyVO.getProjectId());
-            bigBudgetCompany.setProjectName(bigBudgetCompanyVO.getProjectName());
-            bigBudgetCompany.setProjectTaskCode(bigBudgetCompanyVO.getProjectTaskCode());
+            bigBudgetCompany.setName(bigBudgetCompanyVO.getName());
+            bigBudgetCompany.setTaskCode(bigBudgetCompanyVO.getTaskCode());
             bigBudgetCompany.setCostType(bigBudgetCompanyVO.getCostType());
             bigBudgetCompany.setCostRate(bigBudgetCompanyVO.getCostRate());
             bigBudgetCompany.setRemark(bigBudgetCompanyVO.getRemark());

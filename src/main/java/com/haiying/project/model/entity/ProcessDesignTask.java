@@ -22,7 +22,6 @@ import java.util.List;
 @Setter
 @TableName("process_design_task")
 public class ProcessDesignTask implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
@@ -37,6 +36,8 @@ public class ProcessDesignTask implements Serializable {
     private String type;
 
     private String typeIds;
+
+    private String javaVarName;
 
     @TableField(exist = false)
     private List<Integer> typeIdList;

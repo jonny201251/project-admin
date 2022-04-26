@@ -34,14 +34,14 @@ public class BudgetIn implements Serializable {
     /**
      * 项目名称
      */
-    private String projectName;
+    private String name;
 
     /**
      * 项目任务号
      */
-    private String projectTaskCode;
+    private String taskCode;
 
-    private String projectType;
+    private String type;
 
     /**
      * 收入类型

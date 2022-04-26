@@ -48,8 +48,8 @@ public class SmallBudgetOutController {
             smallBudgetOut.setSort(smallBudgetOutVO.getSort());
             smallBudgetOut.setBudgetId(smallBudgetOutVO.getBudgetId());
             smallBudgetOut.setProjectId(smallBudgetOutVO.getProjectId());
-            smallBudgetOut.setProjectName(smallBudgetOutVO.getProjectName());
-            smallBudgetOut.setProjectTaskCode(smallBudgetOutVO.getProjectTaskCode());
+            smallBudgetOut.setName(smallBudgetOutVO.getName());
+            smallBudgetOut.setTaskCode(smallBudgetOutVO.getTaskCode());
             smallBudgetOut.setRemark(smallBudgetOutVO.getRemark());
             smallBudgetOut.setCostType(smallBudgetOutVO.getCostType());
             smallBudgetOut.setCostRate(smallBudgetOutVO.getCostRate());

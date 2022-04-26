@@ -53,9 +53,9 @@ public class SmallBudgetInController {
             }
             budgetIn.setBudgetId(budgetInVO.getBudgetId());
             budgetIn.setProjectId(budgetInVO.getProjectId());
-            budgetIn.setProjectName(budgetInVO.getProjectName());
-            budgetIn.setProjectTaskCode(budgetInVO.getProjectTaskCode());
-            budgetIn.setProjectType("一般项目");
+            budgetIn.setName(budgetInVO.getName());
+            budgetIn.setTaskCode(budgetInVO.getTaskCode());
+            budgetIn.setType("一般项目");
             budgetIn.setInType(budgetInVO.getInType());
             budgetIn.setRemark(budgetInVO.getRemark());
 

@@ -31,8 +31,8 @@ public class SmallBudgetOutServiceImpl extends ServiceImpl<SmallBudgetOutMapper,
             smallBudgetOut.setSort(smallBudgetOutVO.getSort());
             smallBudgetOut.setBudgetId(smallBudgetOutVO.getBudgetId());
             smallBudgetOut.setProjectId(smallBudgetOutVO.getProjectId());
-            smallBudgetOut.setProjectName(smallBudgetOutVO.getProjectName());
-            smallBudgetOut.setProjectTaskCode(smallBudgetOutVO.getProjectTaskCode());
+            smallBudgetOut.setName(smallBudgetOutVO.getName());
+            smallBudgetOut.setTaskCode(smallBudgetOutVO.getTaskCode());
             smallBudgetOut.setSort(smallBudgetOutVO.getSort());
             smallBudgetOut.setRemark(smallBudgetOutVO.getRemark());
             smallBudgetOut.setCostType(smallBudgetOutVO.getCostType());

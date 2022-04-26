@@ -31,8 +31,8 @@ public class BigBudgetOutServiceImpl extends ServiceImpl<BigBudgetOutMapper, Big
             bigBudgetOut.setSort(count++);
             bigBudgetOut.setBudgetId(bigBudgetOutVO.getBudgetId());
             bigBudgetOut.setProjectId(bigBudgetOutVO.getProjectId());
-            bigBudgetOut.setProjectName(bigBudgetOutVO.getProjectName());
-            bigBudgetOut.setProjectTaskCode(bigBudgetOutVO.getProjectTaskCode());
+            bigBudgetOut.setName(bigBudgetOutVO.getName());
+            bigBudgetOut.setTaskCode(bigBudgetOutVO.getTaskCode());
             bigBudgetOut.setCostType(bigBudgetOutVO.getCostType());
             bigBudgetOut.setCostRate(bigBudgetOutVO.getCostRate());
             bigBudgetOut.setSort(bigBudgetOutVO.getSort());

@@ -5,7 +5,6 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.model.entity.ProjectIn1;
 import com.haiying.project.model.entity.ProjectIn2;
 import com.haiying.project.service.ProjectIn1Service;
@@ -13,6 +12,8 @@ import com.haiying.project.service.ProjectIn2Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,6 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/projectIn1")
-@Wrapper
 public class ProjectIn1Controller {
     @Autowired
     ProjectIn1Service projectIn1Service;
@@ -45,6 +45,17 @@ public class ProjectIn1Controller {
         }
         return projectIn1Service.page(new Page<>(current, pageSize), wrapper);
     }
+
+    @GetMapping("list2")
+    public Map<String, List<ProjectIn1>> list2() {
+        Map<String, List<ProjectIn1>> map = new HashMap<>();
+        ProjectIn1 projectIn1 = projectIn1Service.getById(4);
+        List<ProjectIn1> list=new ArrayList<>();
+        list.add(projectIn1);
+        map.put("data", list);
+        return map;
+    }
+
 
     @PostMapping("add")
     public boolean add(@RequestBody ProjectIn1 projectIn1) {

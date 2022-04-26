@@ -34,13 +34,13 @@ public class BigBudgetOut implements Serializable {
     /**
      * 项目名称
      */
-    private String projectName;
+    private String name;
 
     /**
      * 项目任务号
      */
-    private String projectTaskCode;
-
+    private String taskCode;
+    private String type;
     private String costType;
 
     private String costRate;

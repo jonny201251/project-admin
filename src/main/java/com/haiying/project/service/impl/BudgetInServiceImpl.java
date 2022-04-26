@@ -32,8 +32,8 @@ public class BudgetInServiceImpl extends ServiceImpl<BudgetInMapper, BudgetIn> i
             budgetIn.setSort(count++);
             budgetIn.setBudgetId(budgetInVO.getBudgetId());
             budgetIn.setProjectId(budgetInVO.getProjectId());
-            budgetIn.setProjectName(budgetInVO.getProjectName());
-            budgetIn.setProjectTaskCode(budgetInVO.getProjectTaskCode());
+            budgetIn.setName(budgetInVO.getName());
+            budgetIn.setTaskCode(budgetInVO.getTaskCode());
             budgetIn.setInType(budgetInVO.getInType());
             budgetIn.setSort(budgetInVO.getSort());
             budgetIn.setRemark(budgetInVO.getRemark());

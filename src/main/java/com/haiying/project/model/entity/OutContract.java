@@ -29,6 +29,14 @@ public class OutContract implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    private Integer baseId;
+
+    private Integer beforeId;
+
+    private String haveDisplay;
+
+    private Integer version;
+
     private String displayName;
 
     private String loginName;
@@ -58,12 +66,14 @@ public class OutContract implements Serializable {
 
     private String property;
 
+    private String accountType;
+
     private Integer providerId;
 
     private String providerName;
 
     /**
-     * 合同编号
+     * 合同号
      */
     private String contractCode;
 
@@ -71,6 +81,9 @@ public class OutContract implements Serializable {
      * 合同金额
      */
     private Double contractMoney;
+
+    //结算金额
+    private Double endMoney;
 
     /**
      * 合同名称

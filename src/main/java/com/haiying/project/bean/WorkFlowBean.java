@@ -182,7 +182,7 @@ public class WorkFlowBean {
                     loginList.add(processInstNode.getLoginName());
                 } else {
                     //获取处理人
-                    Set<String> loginNameSet = userTaskBean.getLoginNameList(processDesignId, task.getTaskDefinitionKey());
+                    Set<String> loginNameSet = userTaskBean.getLoginNameList(processDesignId, task.getTaskDefinitionKey(), actProcessInstanceId);
                     displayList.add(task.getName() + "[" + String.join(",", loginNameSet) + "]");
                     loginList.add(String.join(",", loginNameSet));
                 }

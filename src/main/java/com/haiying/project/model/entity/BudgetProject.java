@@ -148,6 +148,8 @@ public class BudgetProject implements Serializable {
 
     private String projectLoginName;
 
+    private String wbs;
+
     @TableField(exist = false)
     private List<BudgetProtect> list;
 }
