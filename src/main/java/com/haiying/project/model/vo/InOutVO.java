@@ -1,6 +1,9 @@
 package com.haiying.project.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 public class InOutVO {
@@ -12,6 +15,7 @@ public class InOutVO {
     //合同类型：收款合同、付款合同
     private String contractType;
     private String contractName;
+    private String contractCode;
     private Double contractMoney;
     private Double endMoney;
     //客户名称、供方名称
@@ -22,4 +26,6 @@ public class InOutVO {
 
     private String displayName;
     private String deptName;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createDatetime;
 }

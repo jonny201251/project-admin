@@ -5,10 +5,12 @@ import cn.hutool.core.util.ReflectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haiying.project.bean.WorkFlowBean;
+import com.haiying.project.common.utils.SpringUtil;
 import com.haiying.project.mapper.InContractMapper;
 import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.model.vo.InContractVO;
+import com.haiying.project.model.vo.InOutVO;
 import com.haiying.project.service.*;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.task.Task;
@@ -46,6 +48,8 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
     ProcessDesignTaskService processDesignTaskService;
     @Autowired
     FormFileService formFileService;
+    @Autowired
+    BudgetProjectService budgetProjectService;
 
     private void add(InContract formValue) {
         formValue.setHaveDisplay("是");
@@ -442,6 +446,32 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
                 workFlowBean.deleteProcessInstance(processInst.getActProcessInstanceId());
             }
         }
+        return true;
+    }
+
+    @Override
+    public boolean updateCode(InOutVO inOutVO) {
+        InContract incontract = this.getById(inOutVO.getId());
+        incontract.setContractCode(inOutVO.getContractCode());
+        if (ObjectUtil.isEmpty(incontract.getWbs())) {
+            incontract.setWbs(inOutVO.getWbs());
+
+            List<BudgetProject> list = budgetProjectService.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getProjectId, inOutVO.getProjectId()));
+            if(ObjectUtil.isNotEmpty(list)){
+                list.forEach(item->{
+                    item.setWbs(inOutVO.getWbs());
+                    item.setContractCode(inOutVO.getContractCode());
+                });
+                budgetProjectService.updateBatchById(list);
+            }
+            OutContractService outContractService = SpringUtil.getBean(OutContractService.class);
+            List<OutContract> list2 = outContractService.list(new LambdaQueryWrapper<OutContract>().eq(OutContract::getProjectId, inOutVO.getProjectId()));
+            if(ObjectUtil.isNotEmpty(list2)){
+                list2.forEach(item->item.setWbs(inOutVO.getWbs()));
+                outContractService.updateBatchById(list2);
+            }
+        }
+        this.updateById(incontract);
         return true;
     }
 }

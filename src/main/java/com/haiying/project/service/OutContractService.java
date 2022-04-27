@@ -2,6 +2,7 @@ package com.haiying.project.service;
 
 import com.haiying.project.model.entity.OutContract;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.haiying.project.model.vo.InOutVO;
 import com.haiying.project.model.vo.OutContractVO;
 
 /**
@@ -15,4 +16,6 @@ import com.haiying.project.model.vo.OutContractVO;
 public interface OutContractService extends IService<OutContract> {
 
     boolean btnHandle(OutContractVO outContractVO);
+
+    boolean updateCode(InOutVO inOutVO);
 }

@@ -3,6 +3,7 @@ package com.haiying.project.service;
 import com.haiying.project.model.entity.InContract;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.haiying.project.model.vo.InContractVO;
+import com.haiying.project.model.vo.InOutVO;
 
 /**
  * <p>
@@ -15,4 +16,6 @@ import com.haiying.project.model.vo.InContractVO;
 public interface InContractService extends IService<InContract> {
 
     boolean btnHandle(InContractVO inContractVO);
+
+    boolean updateCode(InOutVO inOutVO);
 }

@@ -43,8 +43,8 @@ public class InOutContractController {
         Integer pageSize = (Integer) paramMap.get("pageSize");
 
         SysUser user = (SysUser) httpSession.getAttribute("user");
-        List<InContract> list1 = inContractService.list(new LambdaQueryWrapper<InContract>().eq(InContract::getHaveDisplay, "是").eq(InContract::getDeptId, user.getDeptId()));
-        List<OutContract> list2 = outContractService.list(new LambdaQueryWrapper<OutContract>().eq(OutContract::getHaveDisplay, "是").eq(OutContract::getDeptId, user.getDeptId()));
+        List<InContract> list1 = inContractService.list(new LambdaQueryWrapper<InContract>().eq(InContract::getHaveDisplay, "是").eq(InContract::getDeptId, user.getDeptId()).isNull(InContract::getContractCode));
+        List<OutContract> list2 = outContractService.list(new LambdaQueryWrapper<OutContract>().eq(OutContract::getHaveDisplay, "是").eq(OutContract::getDeptId, user.getDeptId()).isNull(OutContract::getContractCode));
 
         if (ObjectUtil.isNotEmpty(list1)) {
             for (InContract item : list1) {
@@ -56,12 +56,14 @@ public class InOutContractController {
                 vo.setWbs(item.getWbs());
                 vo.setContractType("收款合同");
                 vo.setContractName(item.getContractName());
+                vo.setContractCode(item.getContractCode());
                 vo.setContractMoney(item.getContractMoney());
                 vo.setEndMoney(item.getEndMoney());
                 vo.setName2(item.getCustomerName());
 
                 vo.setDisplayName(item.getDisplayName());
                 vo.setDeptName(item.getDeptName());
+                vo.setCreateDatetime(item.getCreateDatetime());
 
                 dataList.add(vo);
             }
@@ -76,6 +78,7 @@ public class InOutContractController {
                 vo.setWbs(item.getWbs());
                 vo.setContractType("付款合同");
                 vo.setContractName(item.getContractName());
+                vo.setContractCode(item.getContractCode());
                 vo.setContractMoney(item.getContractMoney());
                 vo.setEndMoney(item.getEndMoney());
                 vo.setName2(item.getProviderName());
@@ -85,6 +88,7 @@ public class InOutContractController {
 
                 vo.setDisplayName(item.getDisplayName());
                 vo.setDeptName(item.getDeptName());
+                vo.setCreateDatetime(item.getCreateDatetime());
 
                 dataList.add(vo);
             }
@@ -100,5 +104,13 @@ public class InOutContractController {
         return responseResult;
     }
 
+    @PostMapping("add")
+    public boolean add(@RequestBody InOutVO inOutVO) {
+        if(inOutVO.getContractType().equals("收款合同")){
+            return inContractService.updateCode(inOutVO);
+        }else{
+            return outContractService.updateCode(inOutVO);
+        }
+    }
 
 }
