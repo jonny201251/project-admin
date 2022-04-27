@@ -50,8 +50,6 @@ public class OtherPowerServiceImpl extends ServiceImpl<OtherPowerMapper, OtherPo
                 formFile.setUrl(fileVO.getUrl());
                 list.add(formFile);
             }
-        }
-        if (ObjectUtil.isNotEmpty(list)) {
             formFileService.saveBatch(list);
         }
     }

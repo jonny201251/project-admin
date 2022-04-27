@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haiying.project.bean.WorkFlowBean;
 import com.haiying.project.mapper.OutContractMapper;
 import com.haiying.project.model.entity.*;
+import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.model.vo.OutContractVO;
 import com.haiying.project.service.*;
 import org.activiti.engine.history.HistoricTaskInstance;
@@ -17,10 +18,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <p>
@@ -46,16 +44,47 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
     ProcessInstNodeService processInstNodeService;
     @Autowired
     ProcessDesignTaskService processDesignTaskService;
+    @Autowired
+    FormFileService formFileService;
 
     private void add(OutContract formValue) {
         formValue.setHaveDisplay("是");
         formValue.setVersion(1);
         formValue.setEndMoney(formValue.getContractMoney());
         this.save(formValue);
+        //文件
+        List<FormFile> list = new ArrayList<>();
+        List<FileVO> fileList = formValue.getFileList();
+        if (ObjectUtil.isNotEmpty(fileList)) {
+            for (FileVO fileVO : fileList) {
+                FormFile formFile = new FormFile();
+                formFile.setType("OutContract");
+                formFile.setBusinessId(formValue.getId());
+                formFile.setName(fileVO.getName());
+                formFile.setUrl(fileVO.getUrl());
+                list.add(formFile);
+            }
+            formFileService.saveBatch(list);
+        }
     }
 
     private void edit(OutContract formValue) {
         this.updateById(formValue);
+        formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "OutContract").eq(FormFile::getBusinessId, formValue.getId()));
+        //文件
+        List<FileVO> fileList = formValue.getFileList();
+        if (ObjectUtil.isNotEmpty(fileList)) {
+            List<FormFile> list = new ArrayList<>();
+            for (FileVO fileVO : fileList) {
+                FormFile formFile = new FormFile();
+                formFile.setType("OutContract");
+                formFile.setBusinessId(formValue.getId());
+                formFile.setName(fileVO.getName());
+                formFile.setUrl(fileVO.getUrl());
+                list.add(formFile);
+            }
+            formFileService.saveBatch(list);
+        }
     }
 
     private void change(OutContract formValue) {
@@ -76,6 +105,22 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
             formValue.setBaseId(outContract.getBaseId());
         }
         this.save(formValue);
+
+        formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "OutContract").eq(FormFile::getBusinessId, formValue.getId()));
+        //文件
+        List<FileVO> fileList = formValue.getFileList();
+        if (ObjectUtil.isNotEmpty(fileList)) {
+            List<FormFile> list = new ArrayList<>();
+            for (FileVO fileVO : fileList) {
+                FormFile formFile = new FormFile();
+                formFile.setType("OutContract");
+                formFile.setBusinessId(formValue.getId());
+                formFile.setName(fileVO.getName());
+                formFile.setUrl(fileVO.getUrl());
+                list.add(formFile);
+            }
+            formFileService.saveBatch(list);
+        }
     }
 
     @Override
@@ -111,7 +156,7 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
                 ProcessInst processInst = new ProcessInst();
                 processInst.setProcessDesignId(processDesign.getId());
                 processInst.setProcessName(processDesign.getName());
-                processInst.setBusinessName("付款合同-" + formValue.getContractName());
+                processInst.setBusinessName(formValue.getContractName());
                 processInst.setBusinessId(formValue.getId());
                 processInst.setBusinessHaveDisplay("是");
                 processInst.setBusinessVersion(1);
@@ -173,7 +218,7 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
                 ProcessInst processInst = new ProcessInst();
                 processInst.setProcessDesignId(processDesign.getId());
                 processInst.setProcessName(processDesign.getName());
-                processInst.setBusinessName("付款合同-" + formValue.getContractName());
+                processInst.setBusinessName(formValue.getContractName());
                 processInst.setBusinessId(formValue.getId());
                 processInst.setBusinessHaveDisplay("是");
                 processInst.setBusinessVersion(1);
@@ -302,7 +347,7 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
             ProcessInst processInst = new ProcessInst();
             processInst.setProcessDesignId(processDesign.getId());
             processInst.setProcessName(processDesign.getName());
-            processInst.setBusinessName("付款合同-" + formValue.getContractName());
+            processInst.setBusinessName(formValue.getContractName());
             processInst.setBusinessId(formValue.getId());
             //
             processInst.setBusinessBeforeId(tmp.getBusinessId());

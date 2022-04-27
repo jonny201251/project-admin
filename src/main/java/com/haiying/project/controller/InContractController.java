@@ -6,16 +6,20 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.result.Wrapper;
+import com.haiying.project.model.entity.FormFile;
 import com.haiying.project.model.entity.InContract;
 import com.haiying.project.model.entity.ProcessInst;
 import com.haiying.project.model.entity.SysUser;
+import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.model.vo.InContractVO;
+import com.haiying.project.service.FormFileService;
 import com.haiying.project.service.InContractService;
 import com.haiying.project.service.ProcessInstService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,6 +42,8 @@ public class InContractController {
     HttpSession httpSession;
     @Autowired
     ProcessInstService processInstService;
+    @Autowired
+    FormFileService formFileService;
 
     @PostMapping("list")
     public IPage<InContract> list(@RequestBody Map<String, Object> paramMap) {
@@ -80,7 +86,19 @@ public class InContractController {
 
     @GetMapping("get")
     public InContract get(Integer id) {
-        return inContractService.getById(id);
+        InContract inContract= inContractService.getById(id);
+        List<FileVO> fileList = new ArrayList<>();
+        List<FormFile> formFileList = formFileService.list(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "InContract").eq(FormFile::getBusinessId, id));
+        for (FormFile formFile : formFileList) {
+            FileVO fileVO = new FileVO();
+            fileVO.setName(formFile.getName());
+            fileVO.setUrl(formFile.getUrl());
+            fileVO.setStatus("done");
+            fileList.add(fileVO);
+        }
+        inContract.setFileList(fileList);
+
+        return inContract;
     }
 
     @PostMapping("btnHandle")

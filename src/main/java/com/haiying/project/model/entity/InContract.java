@@ -5,11 +5,13 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.haiying.project.model.vo.FileVO;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -51,7 +53,8 @@ public class InContract implements Serializable {
      * 一般项目，重大项目
      */
     private String type;
-
+    private String wbs;
+    private Integer budgetId;
     /**
      * 一般和重大项目的id
      */
@@ -65,8 +68,6 @@ public class InContract implements Serializable {
     private String taskCode;
 
     private String property;
-
-    private String accountType;
 
     private Integer customerId;
 
@@ -95,4 +96,7 @@ public class InContract implements Serializable {
 
     @TableField(exist = false)
     private ProcessInst processInst;
+
+    @TableField(exist = false)
+    private List<FileVO> fileList;
 }
