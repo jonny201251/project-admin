@@ -1,9 +1,27 @@
 package com.haiying.project.controller;
 
 
+import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.result.Wrapper;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.haiying.project.model.entity.ProjectIn;
+import com.haiying.project.model.entity.ProjectIo;
+import com.haiying.project.model.entity.ProjectOut;
+import com.haiying.project.model.vo.ProjectInOut2VO;
+import com.haiying.project.model.vo.ProjectInOutVO;
+import com.haiying.project.service.ProjectInService;
+import com.haiying.project.service.ProjectIoService;
+import com.haiying.project.service.ProjectOutService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * <p>
@@ -15,83 +33,296 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/projectInOut")
-@Wrapper
 public class ProjectInOutController {
-/*
     @Autowired
-    ProjectIn1Service projectIn1Service;
+    ProjectInService projectInService;
     @Autowired
-    ProjectIn2Service projectIn2Service;
+    ProjectOutService projectOutService;
     @Autowired
-    ProjectOut1Service projectOut1Service;
-    @Autowired
-    ProjectOut2Service projectOut2Service;
-    *//*
-        第一步：遍历，放入ProjectInOut2VO，生成list
-        第二步：遍历list,生成累计
-     *//*
+    ProjectIoService projectIoService;
+
+    //收支明细表、项目收支表
+    @PostMapping("list")
+    @Wrapper
+    public IPage<ProjectIn> list(@RequestBody Map<String, Object> paramMap) {
+        QueryWrapper<ProjectIn> wrapper = new QueryWrapper<ProjectIn>()
+                .select("distinct budget_id,project_id,task_code,name,property,wbs,customer_name,contract_code,contract_money,end_money");
+        Integer current = (Integer) paramMap.get("current");
+        Integer pageSize = (Integer) paramMap.get("pageSize");
+        Object name = paramMap.get("name");
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like("name", name);
+        }
+        return projectInService.page(new Page<>(current, pageSize), wrapper);
+    }
+
+
     @GetMapping("get")
-    public ProjectInOutVO get(Integer projectId) {
+    public synchronized Map<String, List<ProjectInOutVO>> get(Integer projectId) {
         ProjectInOutVO projectInOutVO = new ProjectInOutVO();
-        List<ProjectIn1> in1List = projectIn1Service.list(new LambdaQueryWrapper<ProjectIn1>().eq(ProjectIn1::getProjectId, projectId));
-        ProjectIn1 projectIn1 = in1List.get(0);
+        List<ProjectIn> inList = projectInService.list(new LambdaQueryWrapper<ProjectIn>().eq(ProjectIn::getProjectId, projectId));
+        ProjectIn projectIn = inList.get(0);
         //
-        projectInOutVO.setName(projectIn1.getName());
-        projectInOutVO.setTaskCode(projectIn1.getTaskCode());
-        projectInOutVO.setProperty(projectIn1.getProperty());
-        projectInOutVO.setWbs(projectIn1.getWbs());
-        projectInOutVO.setRemark(projectIn1.getRemark());
+        projectInOutVO.setName(projectIn.getName());
+        projectInOutVO.setTaskCode(projectIn.getTaskCode());
+        projectInOutVO.setProperty(projectIn.getProperty());
+        projectInOutVO.setWbs(projectIn.getWbs());
         //
-        List<Integer> in1IdList = in1List.stream().map(ProjectIn1::getId).collect(Collectors.toList());
-        List<ProjectIn2> in2List = projectIn2Service.list(new LambdaQueryWrapper<ProjectIn2>().in(ProjectIn2::getProjectIn1Id, in1IdList).orderByAsc(ProjectIn2::getInDate));
-        projectInOutVO.setIn2List(in2List);
-        Double inTotal = 0.0;
-        for (ProjectIn2 projectIn2 : in2List) {
-            inTotal += projectIn2.getMoney2();
+        List<ProjectOut> outList = projectOutService.list(new LambdaQueryWrapper<ProjectOut>().eq(ProjectOut::getProjectId, projectId));
+        List<ProjectIo> ioList = projectIoService.list(new LambdaQueryWrapper<ProjectIo>().eq(ProjectIo::getProjectId, projectId));
+        /*
+            第一步：遍历，放入ProjectInOut2VO，生成list
+            第二步：遍历list,生成累计
+        */
+        List<ProjectInOut2VO> list = new ArrayList<>();
+        if (ObjectUtil.isNotEmpty(outList)) {
+            for (ProjectOut out : outList) {
+                ProjectInOut2VO tmp = new ProjectInOut2VO();
+                tmp.setInOutDate(out.getOutDate().toString());
+                tmp.setRemark(out.getRemark());
+                //成本类型，付款金额
+                tmp.setCostType(out.getCostType());
+                tmp.setOutMoney2(out.getMoney2());
+                tmp.setSort(out.getSort());
+                list.add(tmp);
+            }
         }
-        projectInOutVO.setInTotal(inTotal);
-        //
-        List<ProjectOut1> out1List = projectOut1Service.list(new LambdaQueryWrapper<ProjectOut1>().eq(ProjectOut1::getProjectId, projectId));
-        List<Integer> out1IdList = out1List.stream().map(ProjectOut1::getId).collect(Collectors.toList());
-        List<ProjectOut2> out2List = projectOut2Service.list(new LambdaQueryWrapper<ProjectOut2>().in(ProjectOut2::getProjectOut1Id, out1IdList).orderByAsc(ProjectOut2::getOutDate));
-        projectInOutVO.setOut2List(out2List);
-        Double outTotal = 0.0;
-        for (ProjectOut2 projectOut2 : out2List) {
-            outTotal += projectOut2.getMoney2();
+        for (ProjectIn in : inList) {
+            ProjectInOut2VO tmp = new ProjectInOut2VO();
+            tmp.setInOutDate(in.getInDate().toString());
+            tmp.setRemark(in.getRemark());
+            //开票金额或者收款金额
+            tmp.setInMoney1(in.getMoney1());
+            tmp.setInMoney2(in.getMoney2());
+            tmp.setSort(in.getSort());
+            list.add(tmp);
         }
-        projectInOutVO.setOutTotal(outTotal);
-        //
-        projectInOutVO.setMoreTotal(inTotal - outTotal);
-        //
+        if (ObjectUtil.isNotEmpty(ioList)) {
+            for (ProjectIo io : ioList) {
+                ProjectInOut2VO tmp = new ProjectInOut2VO();
+                tmp.setInOutDate(io.getIoDate().toString());
+                tmp.setRemark(io.getRemark());
+                //不影响收支的金额、影响收支的金额
+                if (io.getHaveInOut().equals("否")) {
+                    tmp.setIoMoney1(io.getMoney());
+                } else {
+                    tmp.setIoMoney2(io.getMoney());
+                }
+                tmp.setSort(io.getSort());
+                list.add(tmp);
+            }
+        }
+        //按照sort升序
+        list = list.stream().sorted(Comparator.comparingDouble(ProjectInOut2VO::getSort)).collect(Collectors.toList());
+
+        //累计往来款
+        Double ioMoney2Total = 0.0;
+        //收款-累计开票、累计收款
+        Double inMoney1Total = 0.0;
+        Double inMoney2Total = 0.0;
+
+        Double outMoney2Total = 0.0;//付款-累计付款
         Double deviceTotal = 0.0;//材料及设备费
         Double labourTotal = 0.0;//劳务费
         Double techTotal = 0.0;//技术服务费
         Double engTotal = 0.0;//工程款
         Double taxTotal = 0.0;//税费
         Double otherTotal = 0.0;//其他费用
-        for (ProjectOut2 projectOut2 : out2List) {
-            String costType = projectOut2.getCostType();
-            if (costType.equals("材料及设备费")) {
-                deviceTotal += projectOut2.getMoney2();
-            } else if (costType.equals("劳务费")) {
-                labourTotal += projectOut2.getMoney2();
-            } else if (costType.equals("技术服务费")) {
-                techTotal += projectOut2.getMoney2();
-            } else if (costType.equals("工程款")) {
-                engTotal += projectOut2.getMoney2();
-            } else if (costType.equals("税费")) {
-                taxTotal += projectOut2.getMoney2();
-            } else {
-                otherTotal += projectOut2.getMoney2();
+        Double moreTotal = 0.0;//项目结余
+        for (ProjectInOut2VO vo : list) {
+            ioMoney2Total += ofNullable(vo.getIoMoney2()).orElse(0.0);
+            inMoney1Total += ofNullable(vo.getInMoney1()).orElse(0.0);
+            inMoney2Total += ofNullable(vo.getInMoney2()).orElse(0.0);
+
+            String costType = vo.getCostType();
+            if (ObjectUtil.isNotEmpty(costType)) {
+                if (costType.equals("材料及设备费")) {
+                    deviceTotal += ofNullable(vo.getOutMoney2()).orElse(0.0);
+                } else if (costType.equals("劳务费")) {
+                    labourTotal += ofNullable(vo.getOutMoney2()).orElse(0.0);
+                } else if (costType.equals("技术服务费")) {
+                    techTotal += ofNullable(vo.getOutMoney2()).orElse(0.0);
+                } else if (costType.equals("工程款")) {
+                    engTotal += ofNullable(vo.getOutMoney2()).orElse(0.0);
+                } else if (costType.equals("税费")) {
+                    taxTotal += ofNullable(vo.getOutMoney2()).orElse(0.0);
+                } else {
+                    otherTotal += ofNullable(vo.getOutMoney2()).orElse(0.0);
+                }
+            }
+
+            outMoney2Total = ofNullable(deviceTotal).orElse(0.0)
+                    + ofNullable(labourTotal).orElse(0.0)
+                    + ofNullable(techTotal).orElse(0.0)
+                    + ofNullable(engTotal).orElse(0.0)
+                    + ofNullable(taxTotal).orElse(0.0)
+                    + ofNullable(otherTotal).orElse(0.0);
+
+            moreTotal = ofNullable(ioMoney2Total).orElse(0.0)
+                    + ofNullable(inMoney2Total).orElse(0.0)
+                    - ofNullable(outMoney2Total).orElse(0.0);
+
+            vo.setIoMoney2Total(ioMoney2Total == 0.0 ? null : ioMoney2Total);
+            vo.setInMoney1Total(inMoney1Total == 0.0 ? null : inMoney1Total);
+            vo.setInMoney2Total(inMoney2Total == 0.0 ? null : inMoney2Total);
+            vo.setOutMoney2Total(outMoney2Total == 0.0 ? null : outMoney2Total);
+            vo.setDeviceTotal(deviceTotal == 0.0 ? null : deviceTotal);
+            vo.setLabourTotal(labourTotal == 0.0 ? null : labourTotal);
+            vo.setTechTotal(techTotal == 0.0 ? null : techTotal);
+            vo.setEngTotal(engTotal == 0.0 ? null : engTotal);
+            vo.setTaxTotal(taxTotal == 0.0 ? null : taxTotal);
+            vo.setOtherTotal(otherTotal == 0.0 ? null : otherTotal);
+            vo.setMoreTotal(moreTotal == 0.0 ? null : moreTotal);
+        }
+
+        Map<String, List<ProjectInOutVO>> map = new HashMap<>();
+        List<ProjectInOutVO> listt = new ArrayList<>();
+        listt.add(projectInOutVO);
+        map.put("data", listt);
+        return map;
+    }
+
+    @GetMapping("getInOut1")
+    public synchronized Map<String, List<ProjectInOutVO>> getInOut1(Integer projectId) {
+        ProjectInOutVO projectInOutVO = new ProjectInOutVO();
+        List<ProjectIn> inList = projectInService.list(new LambdaQueryWrapper<ProjectIn>().eq(ProjectIn::getProjectId, projectId));
+
+        ProjectIn projectIn = inList.get(0);
+        //
+        projectInOutVO.setName(projectIn.getName());
+        projectInOutVO.setTaskCode(projectIn.getTaskCode());
+        projectInOutVO.setProperty(projectIn.getProperty());
+        projectInOutVO.setWbs(projectIn.getWbs());
+        projectInOutVO.setContractCode(projectIn.getContractCode());
+
+        Double inMoneyTotal = 0.0;
+        for (ProjectIn in : inList) {
+            inMoneyTotal += ofNullable(in.getMoney2()).orElse(0.0);
+        }
+
+        projectInOutVO.setInMoneyTotal(inMoneyTotal == 0.0 ? 0 : inMoneyTotal);
+
+        Map<String, List<ProjectInOutVO>> map = new HashMap<>();
+        List<ProjectInOutVO> listt = new ArrayList<>();
+        listt.add(projectInOutVO);
+        map.put("data", listt);
+        return map;
+    }
+
+    @GetMapping("getInOut2")
+    public synchronized Map<String, List<ProjectInOut2VO>> getInOut2(Integer projectId) {
+        List<ProjectIn> inList = projectInService.list(new LambdaQueryWrapper<ProjectIn>().eq(ProjectIn::getProjectId, projectId));
+        //
+        List<ProjectOut> outList = projectOutService.list(new LambdaQueryWrapper<ProjectOut>().eq(ProjectOut::getProjectId, projectId));
+        List<ProjectIo> ioList = projectIoService.list(new LambdaQueryWrapper<ProjectIo>().eq(ProjectIo::getProjectId, projectId));
+        /*
+            第一步：遍历，放入ProjectInOut2VO，生成list
+            第二步：遍历list,生成累计
+        */
+        List<ProjectInOut2VO> list = new ArrayList<>();
+        if (ObjectUtil.isNotEmpty(outList)) {
+            for (ProjectOut out : outList) {
+                ProjectInOut2VO tmp = new ProjectInOut2VO();
+                tmp.setInOutDate(out.getOutDate().toString());
+                tmp.setRemark(out.getRemark());
+                //成本类型，付款金额
+                tmp.setCostType(out.getCostType());
+                tmp.setOutMoney2(out.getMoney2());
+                tmp.setSort(out.getSort());
+                list.add(tmp);
             }
         }
-        projectInOutVO.setDeviceTotal(deviceTotal);
-        projectInOutVO.setLabourTotal(labourTotal);
-        projectInOutVO.setTechTotal(techTotal);
-        projectInOutVO.setEngTotal(engTotal);
-        projectInOutVO.setTaxTotal(taxTotal);
-        projectInOutVO.setOtherTotal(otherTotal);
-        return projectInOutVO;
-    }*/
+        for (ProjectIn in : inList) {
+            ProjectInOut2VO tmp = new ProjectInOut2VO();
+            tmp.setInOutDate(in.getInDate().toString());
+            tmp.setRemark(in.getRemark());
+            //开票金额或者收款金额
+            tmp.setInMoney1(in.getMoney1());
+            tmp.setInMoney2(in.getMoney2());
+            tmp.setSort(in.getSort());
+            list.add(tmp);
+        }
+        if (ObjectUtil.isNotEmpty(ioList)) {
+            for (ProjectIo io : ioList) {
+                ProjectInOut2VO tmp = new ProjectInOut2VO();
+                tmp.setInOutDate(io.getIoDate().toString());
+                tmp.setRemark(io.getRemark());
+                //不影响收支的金额、影响收支的金额
+                if (io.getHaveInOut().equals("否")) {
+                    tmp.setIoMoney1(io.getMoney());
+                } else {
+                    tmp.setIoMoney2(io.getMoney());
+                }
+                tmp.setSort(io.getSort());
+                list.add(tmp);
+            }
+        }
+        //按照sort升序
+        list = list.stream().sorted(Comparator.comparingDouble(ProjectInOut2VO::getSort)).collect(Collectors.toList());
 
+        //累计往来款
+        Double ioMoney2Total = 0.0;
+        //收款-累计开票、累计收款
+        Double inMoney1Total = 0.0;
+        Double inMoney2Total = 0.0;
+
+        Double outMoney2Total = 0.0;//付款-累计付款
+        Double deviceTotal = 0.0;//材料及设备费
+        Double labourTotal = 0.0;//劳务费
+        Double techTotal = 0.0;//技术服务费
+        Double engTotal = 0.0;//工程款
+        Double taxTotal = 0.0;//税费
+        Double otherTotal = 0.0;//其他费用
+        Double moreTotal = 0.0;//项目结余
+        for (ProjectInOut2VO vo : list) {
+            ioMoney2Total += ofNullable(vo.getIoMoney2()).orElse(0.0);
+            inMoney1Total += ofNullable(vo.getInMoney1()).orElse(0.0);
+            inMoney2Total += ofNullable(vo.getInMoney2()).orElse(0.0);
+
+            String costType = vo.getCostType();
+            if (ObjectUtil.isNotEmpty(costType)) {
+                if (costType.equals("材料及设备费")) {
+                    deviceTotal += ofNullable(vo.getOutMoney2()).orElse(0.0);
+                } else if (costType.equals("劳务费")) {
+                    labourTotal += ofNullable(vo.getOutMoney2()).orElse(0.0);
+                } else if (costType.equals("技术服务费")) {
+                    techTotal += ofNullable(vo.getOutMoney2()).orElse(0.0);
+                } else if (costType.equals("工程款")) {
+                    engTotal += ofNullable(vo.getOutMoney2()).orElse(0.0);
+                } else if (costType.equals("税费")) {
+                    taxTotal += ofNullable(vo.getOutMoney2()).orElse(0.0);
+                } else {
+                    otherTotal += ofNullable(vo.getOutMoney2()).orElse(0.0);
+                }
+            }
+
+            outMoney2Total = ofNullable(deviceTotal).orElse(0.0)
+                    + ofNullable(labourTotal).orElse(0.0)
+                    + ofNullable(techTotal).orElse(0.0)
+                    + ofNullable(engTotal).orElse(0.0)
+                    + ofNullable(taxTotal).orElse(0.0)
+                    + ofNullable(otherTotal).orElse(0.0);
+
+            moreTotal = ofNullable(ioMoney2Total).orElse(0.0)
+                    + ofNullable(inMoney2Total).orElse(0.0)
+                    - ofNullable(outMoney2Total).orElse(0.0);
+
+            vo.setIoMoney2Total(ioMoney2Total == 0.0 ? null : ioMoney2Total);
+            vo.setInMoney1Total(inMoney1Total == 0.0 ? null : inMoney1Total);
+            vo.setInMoney2Total(inMoney2Total == 0.0 ? null : inMoney2Total);
+            vo.setOutMoney2Total(outMoney2Total == 0.0 ? null : outMoney2Total);
+            vo.setDeviceTotal(deviceTotal == 0.0 ? null : deviceTotal);
+            vo.setLabourTotal(labourTotal == 0.0 ? null : labourTotal);
+            vo.setTechTotal(techTotal == 0.0 ? null : techTotal);
+            vo.setEngTotal(engTotal == 0.0 ? null : engTotal);
+            vo.setTaxTotal(taxTotal == 0.0 ? null : taxTotal);
+            vo.setOtherTotal(otherTotal == 0.0 ? null : otherTotal);
+            vo.setMoreTotal(moreTotal == 0.0 ? 0 : moreTotal);
+        }
+
+
+        Map<String, List<ProjectInOut2VO>> map = new HashMap<>();
+        map.put("data", list);
+        return map;
+    }
 }

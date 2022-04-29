@@ -78,7 +78,7 @@ public class ProjectIo implements Serializable {
      */
     private String type2;
 
-    private Integer sort;
+    private Double sort;
 
     private String displayName;
 

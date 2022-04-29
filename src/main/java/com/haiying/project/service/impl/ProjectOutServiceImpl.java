@@ -38,7 +38,7 @@ public class ProjectOutServiceImpl extends ServiceImpl<ProjectOutMapper, Project
         projectOut.setCreateDatetime(LocalDateTime.now());
 
         ProjectInOutCount count = projectInOutCountService.getById(1);
-        projectOut.setSort(count.getCount());
+        projectOut.setSort(Double.valueOf(count.getCount()));
         count.setCount(count.getCount() + 1);
 
         this.save(projectOut);

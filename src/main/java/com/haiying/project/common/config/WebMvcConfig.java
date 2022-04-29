@@ -26,7 +26,9 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         excludeList.add("/*.css");
         excludeList.add("/static/*.svg");
         excludeList.add("/favicon.ico");
-        excludeList.add("/projectIn1/list2");
+        //项目收支表
+        excludeList.add("/projectInOut/getInOut1");
+        excludeList.add("/projectInOut/getInOut2");
 
         registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/**").excludePathPatterns(excludeList);
         super.addInterceptors(registry);

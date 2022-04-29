@@ -91,7 +91,7 @@ public class ProjectIn implements Serializable {
      */
     private String arriveDate;
 
-    private Integer sort;
+    private Double sort;
 
     private String displayName;
 

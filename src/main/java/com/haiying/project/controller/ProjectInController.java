@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.model.entity.ProjectIn;
 import com.haiying.project.service.ProjectInService;
@@ -45,7 +46,13 @@ public class ProjectInController {
     }
 
     @PostMapping("add")
-    public boolean add(@RequestBody ProjectIn projectIn){
+    public boolean add(@RequestBody ProjectIn projectIn) {
+        if (ObjectUtil.isAllEmpty(projectIn.getMoney1(), projectIn.getMoney2())) {
+            throw new PageTipException("必须有一个开票金额或者付款金额");
+        }
+        if (ObjectUtil.isAllNotEmpty(projectIn.getMoney1(), projectIn.getMoney2())) {
+            throw new PageTipException("只能有一个开票金额或者付款金额");
+        }
         return projectInService.add(projectIn);
     }
 
@@ -56,6 +63,12 @@ public class ProjectInController {
 
     @PostMapping("edit")
     public boolean edit(@RequestBody ProjectIn projectIn) {
+        if (ObjectUtil.isAllEmpty(projectIn.getMoney1(), projectIn.getMoney2())) {
+            throw new PageTipException("必须有一个开票金额或者付款金额");
+        }
+        if (ObjectUtil.isAllNotEmpty(projectIn.getMoney1(), projectIn.getMoney2())) {
+            throw new PageTipException("只能有一个开票金额或者付款金额");
+        }
         return projectInService.updateById(projectIn);
     }
 

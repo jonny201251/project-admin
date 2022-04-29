@@ -8,13 +8,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping
 @Wrapper
 public class Test {
     public static void main(String[] args) {
         String simpleYear = DateUtil.format(DateUtil.date(), "yy");
-        System.out.println(simpleYear);
+        System.out.println(LocalDate.now().toString());
+        Double outMoney2Total = 0.0;
+        if(outMoney2Total==0.0){
+            outMoney2Total=null;
+        }
+        System.out.println(outMoney2Total);
     }
     @PostMapping("test")
     public boolean a(@RequestBody UploadVO uploadVO){

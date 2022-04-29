@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.model.entity.ProjectOut;
 import com.haiying.project.service.ProjectOutService;
@@ -46,6 +47,12 @@ public class ProjectOutController {
 
     @PostMapping("add")
     public boolean add(@RequestBody ProjectOut projectOut) {
+        if (ObjectUtil.isAllEmpty(projectOut.getMoney1(), projectOut.getMoney2())) {
+            throw new PageTipException("必须有一个开票金额或者付款金额");
+        }
+        if (ObjectUtil.isAllNotEmpty(projectOut.getMoney1(), projectOut.getMoney2())) {
+            throw new PageTipException("只能有一个开票金额或者付款金额");
+        }
         if (projectOut.getHaveContract().equals("无")) {
             projectOut.setProviderId(null);
             projectOut.setProviderName(null);
@@ -67,6 +74,12 @@ public class ProjectOutController {
 
     @PostMapping("edit")
     public boolean edit(@RequestBody ProjectOut projectOut) {
+        if (ObjectUtil.isAllEmpty(projectOut.getMoney1(), projectOut.getMoney2())) {
+            throw new PageTipException("必须有一个开票金额或者付款金额");
+        }
+        if (ObjectUtil.isAllNotEmpty(projectOut.getMoney1(), projectOut.getMoney2())) {
+            throw new PageTipException("只能有一个开票金额或者付款金额");
+        }
         if (projectOut.getHaveContract().equals("无")) {
             projectOut.setProviderId(null);
             projectOut.setProviderName(null);
