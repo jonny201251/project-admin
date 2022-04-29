@@ -29,6 +29,11 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         //项目收支表
         excludeList.add("/projectInOut/getInOut1");
         excludeList.add("/projectInOut/getInOut2");
+        //收支明细表
+        excludeList.add("/projectInOut/getInDetail");
+        excludeList.add("/projectInOut/getOutDetail");
+        excludeList.add("/projectInOut/getIoDetail");
+
 
         registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/**").excludePathPatterns(excludeList);
         super.addInterceptors(registry);

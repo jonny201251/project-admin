@@ -2,6 +2,7 @@ package com.haiying.project.model.vo;
 
 import lombok.Data;
 
+//项目收支表
 @Data
 public class ProjectInOut2VO {
     //日期、摘要
