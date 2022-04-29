@@ -25,7 +25,7 @@ public class Test {
     }
     @PostMapping("test")
     public boolean a(@RequestBody UploadVO uploadVO){
-        System.out.println("2");
+        System.out.println("3");
        return true;
     }
 }
