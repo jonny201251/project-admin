@@ -1,24 +1,9 @@
 package com.haiying.project.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.haiying.project.common.result.Wrapper;
-import com.haiying.project.model.entity.ProjectIn1;
-import com.haiying.project.model.entity.ProjectIn2;
-import com.haiying.project.model.entity.ProjectOut1;
-import com.haiying.project.model.entity.ProjectOut2;
-import com.haiying.project.model.vo.ProjectInOutVO;
-import com.haiying.project.service.ProjectIn1Service;
-import com.haiying.project.service.ProjectIn2Service;
-import com.haiying.project.service.ProjectOut1Service;
-import com.haiying.project.service.ProjectOut2Service;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -32,6 +17,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/projectInOut")
 @Wrapper
 public class ProjectInOutController {
+/*
     @Autowired
     ProjectIn1Service projectIn1Service;
     @Autowired
@@ -40,7 +26,10 @@ public class ProjectInOutController {
     ProjectOut1Service projectOut1Service;
     @Autowired
     ProjectOut2Service projectOut2Service;
-
+    *//*
+        第一步：遍历，放入ProjectInOut2VO，生成list
+        第二步：遍历list,生成累计
+     *//*
     @GetMapping("get")
     public ProjectInOutVO get(Integer projectId) {
         ProjectInOutVO projectInOutVO = new ProjectInOutVO();
@@ -103,5 +92,6 @@ public class ProjectInOutController {
         projectInOutVO.setTaxTotal(taxTotal);
         projectInOutVO.setOtherTotal(otherTotal);
         return projectInOutVO;
-    }
+    }*/
+
 }

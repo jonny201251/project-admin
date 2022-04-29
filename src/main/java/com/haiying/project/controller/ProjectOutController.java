@@ -45,7 +45,18 @@ public class ProjectOutController {
     }
 
     @PostMapping("add")
-    public boolean add(@RequestBody ProjectOut projectOut){
+    public boolean add(@RequestBody ProjectOut projectOut) {
+        if (projectOut.getHaveContract().equals("无")) {
+            projectOut.setProviderId(null);
+            projectOut.setProviderName(null);
+            projectOut.setContractCode(null);
+            projectOut.setContractMoney(null);
+            projectOut.setContractName(null);
+            projectOut.setEndMoney(null);
+            projectOut.setCostRate(null);
+            projectOut.setOutStyle(null);
+            projectOut.setArriveDate(null);
+        }
         return projectOutService.add(projectOut);
     }
 
@@ -56,6 +67,17 @@ public class ProjectOutController {
 
     @PostMapping("edit")
     public boolean edit(@RequestBody ProjectOut projectOut) {
+        if (projectOut.getHaveContract().equals("无")) {
+            projectOut.setProviderId(null);
+            projectOut.setProviderName(null);
+            projectOut.setContractCode(null);
+            projectOut.setContractMoney(null);
+            projectOut.setContractName(null);
+            projectOut.setEndMoney(null);
+            projectOut.setCostRate(null);
+            projectOut.setOutStyle(null);
+            projectOut.setArriveDate(null);
+        }
         return projectOutService.updateById(projectOut);
     }
 
