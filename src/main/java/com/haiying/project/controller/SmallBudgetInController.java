@@ -36,7 +36,7 @@ public class SmallBudgetInController {
     public IPage<BudgetIn> list(@RequestBody Map<String, Object> paramMap) {
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
-        QueryWrapper<BudgetIn> wrapper = new QueryWrapper<BudgetIn>().eq("project_type", "一般项目").select("distinct budget_id,project_id,project_name,project_task_code,project_type,in_type");
+        QueryWrapper<BudgetIn> wrapper = new QueryWrapper<BudgetIn>().eq("type", "一般项目").select("distinct budget_id,project_id,name,task_code,type,in_type").orderByDesc("name,in_type");
         return budgetInService.page(new Page<>(current, pageSize), wrapper);
     }
 
@@ -64,9 +64,9 @@ public class SmallBudgetInController {
     }
 
     @GetMapping("get")
-    public BudgetInVO get(Integer budgetId) {
+    public BudgetInVO get(Integer budgetId, String inType) {
         BudgetInVO budgetInVO = new BudgetInVO();
-        List<BudgetIn> list = budgetInService.list(new LambdaQueryWrapper<BudgetIn>().eq(BudgetIn::getBudgetId, budgetId));
+        List<BudgetIn> list = budgetInService.list(new LambdaQueryWrapper<BudgetIn>().eq(BudgetIn::getBudgetId, budgetId).eq(BudgetIn::getInType, inType));
         BeanUtils.copyProperties(list.get(0), budgetInVO);
         budgetInVO.setList(list);
         return budgetInVO;

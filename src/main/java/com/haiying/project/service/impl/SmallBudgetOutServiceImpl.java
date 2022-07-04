@@ -23,7 +23,7 @@ public class SmallBudgetOutServiceImpl extends ServiceImpl<SmallBudgetOutMapper,
 
     @Override
     public boolean edit(SmallBudgetOutVO smallBudgetOutVO) {
-        this.remove(new LambdaQueryWrapper<SmallBudgetOut>().eq(SmallBudgetOut::getBudgetId, smallBudgetOutVO.getBudgetId()));
+        this.remove(new LambdaQueryWrapper<SmallBudgetOut>().eq(SmallBudgetOut::getBudgetId, smallBudgetOutVO.getBudgetId()).eq(SmallBudgetOut::getCostType, smallBudgetOutVO.getCostType()));
         List<SmallBudgetOut> list = smallBudgetOutVO.getList();
         smallBudgetOutVO.setId(null);
         for (SmallBudgetOut smallBudgetOut : list) {

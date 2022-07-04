@@ -23,7 +23,7 @@ public class BudgetInServiceImpl extends ServiceImpl<BudgetInMapper, BudgetIn> i
 
     @Override
     public boolean edit(BudgetInVO budgetInVO) {
-        this.remove(new LambdaQueryWrapper<BudgetIn>().eq(BudgetIn::getBudgetId, budgetInVO.getBudgetId()));
+        this.remove(new LambdaQueryWrapper<BudgetIn>().eq(BudgetIn::getBudgetId, budgetInVO.getBudgetId()).eq(BudgetIn::getInType, budgetInVO.getInType()));
         double count = 1;
         List<BudgetIn> list = budgetInVO.getList();
         budgetInVO.setId(null);

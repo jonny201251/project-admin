@@ -22,7 +22,7 @@
         <!-- 滚动策略 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 开发路径 -->
-            <fileNamePattern>D:/projectFile/logs/app.info.%d.log</fileNamePattern>
+            <fileNamePattern>D:/appFile/projectFile/logs/app.info.%d.log</fileNamePattern>
         </rollingPolicy>
     </appender>
     <appender name="fileErrorApp" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -38,7 +38,7 @@
         <!-- 设置滚动策略 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 开发路径 -->
-            <fileNamePattern>D:/projectFile/logs/app.err.%d.log</fileNamePattern>
+            <fileNamePattern>D:/appFile/projectFile/logs/app.err.%d.log</fileNamePattern>
             <!-- 控制保留的归档文件的最大数量，超出数量就删除旧文件，假设设置每个月滚动，
             且<maxHistory> 是1，则只保存最近1个月的文件，删除之前的旧文件 -->
             <MaxHistory>1</MaxHistory>

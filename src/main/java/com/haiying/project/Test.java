@@ -17,5 +17,9 @@ public class Test {
         System.out.println();
         System.out.println();
         System.out.println();
+        System.out.println(50000+228000+200000+120000+84000+19560+39120+84760);
+
+        System.out.println(228000+6840+13680+29640);
+        System.out.println(200000+6600+13200+28600);
     }
 }
