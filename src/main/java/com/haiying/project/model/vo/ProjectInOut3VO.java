@@ -35,5 +35,4 @@ public class ProjectInOut3VO {
     private String arriveDate;
     //累计收支额
     private Double inOutmoney2Total;
-
 }
