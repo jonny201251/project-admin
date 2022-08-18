@@ -111,6 +111,7 @@ public class SmallBudgetMoneyController {
         SmallBudgetMoney2VO first = new SmallBudgetMoney2VO();
         first.setA0("预计收入");
         first.setA1("合计");
+
         //中间几个
         List<SmallBudgetMoney2VO> middleList = new ArrayList<>();
         //最后一个
