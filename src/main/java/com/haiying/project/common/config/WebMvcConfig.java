@@ -33,7 +33,11 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         excludeList.add("/projectInOut/getInDetail");
         excludeList.add("/projectInOut/getOutDetail");
         excludeList.add("/projectInOut/getIoDetail");
-
+        //一般项目预算
+        excludeList.add("/smallBudgetMoney/get");
+        excludeList.add("/smallBudgetMoney/in");
+        excludeList.add("/smallBudgetMoney/out");
+        //重大项目预算
 
         registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/**").excludePathPatterns(excludeList);
         super.addInterceptors(registry);

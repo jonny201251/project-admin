@@ -34,6 +34,8 @@ public class BudgetProtect implements Serializable {
 
     private Integer budgetId;
 
+    private Integer projectId;
+
     /**
      * 担保名称
      */

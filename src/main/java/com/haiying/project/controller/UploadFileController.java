@@ -21,6 +21,7 @@ public class UploadFileController {
     @Autowired
     HttpSession httpSession;
 
+
     @PostMapping("uploadFile")
     public FileVO uploadFile(MultipartFile file) throws IOException {
         SysUser user = (SysUser) httpSession.getAttribute("user");

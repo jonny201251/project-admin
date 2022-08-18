@@ -27,27 +27,33 @@ public class BudgetProjectServiceImpl extends ServiceImpl<BudgetProjectMapper, B
     BudgetProtectService budgetProtectService;
 
     @Override
-    public boolean add(BudgetProject budgetProject,String type) {
-        budgetProject.setHaveDisplay("是");
-        budgetProject.setVersion(1);
-        budgetProject.setType(type);
-        this.save(budgetProject);
-        List<BudgetProtect> list = budgetProject.getList();
+    public boolean add(BudgetProject project,String type) {
+        project.setHaveDisplay("是");
+        project.setVersion(1);
+        project.setType(type);
+        this.save(project);
+        List<BudgetProtect> list = project.getList();
         if (ObjectUtil.isNotEmpty(list)) {
-            list.forEach(item -> item.setBudgetId(budgetProject.getId()));
+            for (BudgetProtect protect : list) {
+                protect.setBudgetId(project.getId());
+                protect.setProjectId(project.getProjectId());
+            }
             budgetProtectService.saveBatch(list);
         }
         return true;
     }
 
     @Override
-    public boolean edit(BudgetProject budgetProject) {
-        this.updateById(budgetProject);
+    public boolean edit(BudgetProject project) {
+        this.updateById(project);
         //
-        budgetProtectService.remove(new LambdaQueryWrapper<BudgetProtect>().eq(BudgetProtect::getBudgetId, budgetProject.getId()));
-        List<BudgetProtect> list = budgetProject.getList();
+        budgetProtectService.remove(new LambdaQueryWrapper<BudgetProtect>().eq(BudgetProtect::getBudgetId, project.getId()));
+        List<BudgetProtect> list = project.getList();
         if (ObjectUtil.isNotEmpty(list)) {
-            list.forEach(item -> item.setBudgetId(budgetProject.getId()));
+            for (BudgetProtect protect : list) {
+                protect.setBudgetId(project.getId());
+                protect.setProjectId(project.getProjectId());
+            }
             budgetProtectService.saveBatch(list);
         }
         return true;
