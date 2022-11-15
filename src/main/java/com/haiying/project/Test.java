@@ -5,6 +5,9 @@ import cn.hutool.core.util.NumberUtil;
 
 public class Test {
     public static void main(String[] args) {
+        System.out.println(200000/1.06 * 0.06);
+        System.out.println(200000-11320.75);
+
         String db = "七室光学红外材料实验室";
         String page = "七室光学红外材料实验室-我是一只小小鸟";
         double d = TextSimilarity.similar(db, page);
