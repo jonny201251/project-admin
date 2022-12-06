@@ -1,6 +1,7 @@
 package com.haiying.project.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -56,6 +57,10 @@ public class BudgetIn implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private String inDate;
 
+    //年月，生成预算表时排序
+    @TableField(exist = false)
+    private Integer inDateInt;
+
     /**
      * 金额
      */
@@ -63,5 +68,7 @@ public class BudgetIn implements Serializable {
 
     private String remark;
 
+    private String haveDisplay;
 
+    private Integer version;
 }

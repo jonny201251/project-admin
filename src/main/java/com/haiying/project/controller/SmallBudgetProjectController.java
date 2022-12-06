@@ -35,7 +35,7 @@ public class SmallBudgetProjectController {
 
     @PostMapping("list")
     public IPage<BudgetProject> list(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<BudgetProject> wrapper = new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getType,"一般项目");
+        LambdaQueryWrapper<BudgetProject> wrapper = new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getHaveDisplay,"是");
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object type = paramMap.get("type");
@@ -62,5 +62,10 @@ public class SmallBudgetProjectController {
     @PostMapping("edit")
     public boolean edit(@RequestBody BudgetProject budgetProject) {
         return budgetProjectService.edit(budgetProject);
+    }
+
+    @GetMapping("modify")
+    public boolean modify(Integer id) {
+        return budgetProjectService.modify(id);
     }
 }

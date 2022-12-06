@@ -35,7 +35,7 @@ public class SmallBudgetOutController {
     public IPage<SmallBudgetOut> list(@RequestBody Map<String, Object> paramMap) {
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
-        QueryWrapper<SmallBudgetOut> wrapper = new QueryWrapper<SmallBudgetOut>().select("distinct budget_id,project_id,name,task_code,cost_type,cost_rate").orderByAsc("budget_id,sort");
+        QueryWrapper<SmallBudgetOut> wrapper = new QueryWrapper<SmallBudgetOut>().eq("have_display", "是").select("distinct budget_id,project_id,name,task_code,cost_type,cost_rate,have_display,version").orderByAsc("budget_id,sort");
         return smallBudgetOutService.page(new Page<>(current, pageSize), wrapper);
     }
 
@@ -53,12 +53,14 @@ public class SmallBudgetOutController {
             smallBudgetOut.setRemark(smallBudgetOutVO.getRemark());
             smallBudgetOut.setCostType(smallBudgetOutVO.getCostType());
             smallBudgetOut.setCostRate(smallBudgetOutVO.getCostRate());
+            smallBudgetOut.setHaveDisplay(smallBudgetOutVO.getHaveDisplay());
+            smallBudgetOut.setVersion(smallBudgetOutVO.getVersion());
         }
         return smallBudgetOutService.saveBatch(list);
     }
 
     @GetMapping("get")
-    public SmallBudgetOutVO get(Integer budgetId,String costType) {
+    public SmallBudgetOutVO get(Integer budgetId, String costType) {
         SmallBudgetOutVO smallBudgetOutVO = new SmallBudgetOutVO();
         List<SmallBudgetOut> list = smallBudgetOutService.list(new LambdaQueryWrapper<SmallBudgetOut>().eq(SmallBudgetOut::getBudgetId, budgetId).eq(SmallBudgetOut::getCostType, costType));
         BeanUtils.copyProperties(list.get(0), smallBudgetOutVO);

@@ -62,6 +62,4 @@ public class BudgetProtect implements Serializable {
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
     private String inDate;
-
-
 }

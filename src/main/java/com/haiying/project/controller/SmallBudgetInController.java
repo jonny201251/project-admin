@@ -36,7 +36,7 @@ public class SmallBudgetInController {
     public IPage<BudgetIn> list(@RequestBody Map<String, Object> paramMap) {
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
-        QueryWrapper<BudgetIn> wrapper = new QueryWrapper<BudgetIn>().eq("type", "一般项目").select("distinct budget_id,project_id,name,task_code,type,in_type").orderByDesc("name,in_type");
+        QueryWrapper<BudgetIn> wrapper = new QueryWrapper<BudgetIn>().eq("have_display", "是").select("distinct budget_id,project_id,name,task_code,in_type,version").orderByDesc("name,in_type");
         return budgetInService.page(new Page<>(current, pageSize), wrapper);
     }
 
@@ -58,7 +58,8 @@ public class SmallBudgetInController {
             budgetIn.setType("一般项目");
             budgetIn.setInType(budgetInVO.getInType());
             budgetIn.setRemark(budgetInVO.getRemark());
-
+            budgetIn.setHaveDisplay(budgetInVO.getHaveDisplay());
+            budgetIn.setVersion(budgetInVO.getVersion());
         }
         return budgetInService.saveBatch(list);
     }

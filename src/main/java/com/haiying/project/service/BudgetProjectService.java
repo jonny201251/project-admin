@@ -16,4 +16,6 @@ public interface BudgetProjectService extends IService<BudgetProject> {
     boolean add(BudgetProject budgetProject,String type);
 
     boolean edit(BudgetProject budgetProject);
+
+    boolean modify(Integer id);
 }

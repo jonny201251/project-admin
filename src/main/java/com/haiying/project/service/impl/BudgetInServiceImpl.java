@@ -37,6 +37,8 @@ public class BudgetInServiceImpl extends ServiceImpl<BudgetInMapper, BudgetIn> i
             budgetIn.setInType(budgetInVO.getInType());
             budgetIn.setSort(budgetInVO.getSort());
             budgetIn.setRemark(budgetInVO.getRemark());
+            budgetIn.setHaveDisplay(budgetInVO.getHaveDisplay());
+            budgetIn.setVersion(budgetInVO.getVersion());
         }
         return this.saveBatch(list);
     }

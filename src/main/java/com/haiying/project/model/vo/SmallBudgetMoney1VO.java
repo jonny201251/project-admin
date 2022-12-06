@@ -1,15 +1,16 @@
 package com.haiying.project.model.vo;
 
 import lombok.Data;
-//一般项目预算表
+//一般项目预算表-基本信息
 @Data
 public class SmallBudgetMoney1VO {
-    //部门名称、项目名称、项目负责人、项目类型、项目任务号
+    //部门名称、项目名称、项目负责人、项目类型、项目任务号、type
     private String deptName;
     private String name;
     private String projectDisplayName;
     private String property;
     private String taskCode;
+    private String type;
     //合同金额、成本总预算、开工时间、预计完工时间、质保金比例、预计毛利率
     private Double contractMoney;
     private Double totalCost;

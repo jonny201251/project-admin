@@ -37,6 +37,8 @@ public class SmallBudgetOutServiceImpl extends ServiceImpl<SmallBudgetOutMapper,
             smallBudgetOut.setRemark(smallBudgetOutVO.getRemark());
             smallBudgetOut.setCostType(smallBudgetOutVO.getCostType());
             smallBudgetOut.setCostRate(smallBudgetOutVO.getCostRate());
+            smallBudgetOut.setHaveDisplay(smallBudgetOutVO.getHaveDisplay());
+            smallBudgetOut.setVersion(smallBudgetOutVO.getVersion());
         }
         return this.saveBatch(list);
     }

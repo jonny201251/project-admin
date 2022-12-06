@@ -2,7 +2,7 @@ package com.haiying.project.model.vo;
 
 import lombok.Data;
 
-//一般项目预算表，收入明细+支出明细
+//一般项目预算表-横向一行数据，收入明细+支出明细
 @Data
 public class SmallBudgetMoney2VO {
     //预计收入、合计

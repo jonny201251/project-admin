@@ -1,6 +1,7 @@
 package com.haiying.project.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
@@ -48,8 +49,16 @@ public class SmallBudgetOut implements Serializable {
 
     private String outDate;
 
+    //年月，生成预算表时排序
+    @TableField(exist = false)
+    private Integer outDateInt;
+
     private Double money;
 
     private String remark;
+
+    private String haveDisplay;
+
+    private Integer version;
 
 }
