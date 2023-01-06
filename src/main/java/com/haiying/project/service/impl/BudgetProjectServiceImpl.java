@@ -37,7 +37,7 @@ public class BudgetProjectServiceImpl extends ServiceImpl<BudgetProjectMapper, B
     @Override
     public boolean add(BudgetProject project, String type) {
         project.setHaveDisplay("是");
-        project.setVersion(1);
+        project.setVersion(0);
         project.setType(type);
         this.save(project);
         List<BudgetProtect> list = project.getList();
@@ -69,56 +69,61 @@ public class BudgetProjectServiceImpl extends ServiceImpl<BudgetProjectMapper, B
 
     @Override
     public boolean modify(Integer id) {
+        Integer oldId, newId;
         BudgetProject project = this.getById(id);
+        oldId = project.getId();
         List<BudgetProtect> protectList = budgetProtectService.list(new LambdaQueryWrapper<BudgetProtect>().eq(BudgetProtect::getBudgetId, id));
         List<BudgetIn> inList = inService.list(new LambdaQueryWrapper<BudgetIn>().eq(BudgetIn::getBudgetId, id));
         List<SmallBudgetOut> outList = outService.list(new LambdaQueryWrapper<SmallBudgetOut>().eq(SmallBudgetOut::getBudgetId, id));
+
+        project.setHaveDisplay("否");
+        this.updateById(project);
+        if (ObjectUtil.isNotEmpty(inList)) {
+            inList.forEach(item -> item.setHaveDisplay("否"));
+            inService.updateBatchById(inList);
+        }
+        if (ObjectUtil.isNotEmpty(outList)) {
+            outList.forEach(item -> item.setHaveDisplay("否"));
+            outService.updateBatchById(outList);
+        }
+        //复制一份新的
+        project.setId(null);
+        project.setHaveDisplay("是");
+        project.setVersion(project.getVersion() + 1);
+
+        project.setBeforeId(oldId);
         if (project.getBaseId() == null) {
             //第一次修改
-            project.setHaveDisplay("否");
-            this.updateById(project);
-            if (ObjectUtil.isNotEmpty(inList)) {
-                inList.forEach(item -> item.setHaveDisplay("否"));
-                inService.updateBatchById(inList);
+            project.setBaseId(oldId);
+        }
+
+        this.save(project);
+        newId = project.getId();
+        //
+        if (ObjectUtil.isNotEmpty(protectList)) {
+            for (BudgetProtect tmp : protectList) {
+                tmp.setId(null);
+                tmp.setBudgetId(newId);
             }
-            if (ObjectUtil.isNotEmpty(outList)) {
-                outList.forEach(item -> item.setHaveDisplay("否"));
-                outService.updateBatchById(outList);
+            budgetProtectService.saveBatch(protectList);
+        }
+        //
+        if (ObjectUtil.isNotEmpty(inList)) {
+            for (BudgetIn tmp : inList) {
+                tmp.setId(null);
+                tmp.setBudgetId(newId);
+                tmp.setHaveDisplay("是");
             }
-            //复制一份新的
-            project.setId(null);
-            project.setHaveDisplay("是");
-            project.setVersion(project.getVersion() + 1);
-            this.save(project);
-            Integer newId = project.getId();
-            //
-            if (ObjectUtil.isNotEmpty(protectList)) {
-                for (BudgetProtect tmp : protectList) {
-                    tmp.setId(null);
-                    tmp.setBudgetId(newId);
-                }
-                budgetProtectService.saveBatch(protectList);
+            inService.saveBatch(inList);
+        }
+        //
+        if (ObjectUtil.isNotEmpty(outList)) {
+            for (SmallBudgetOut tmp : outList) {
+                tmp.setId(null);
+                tmp.setBudgetId(newId);
+                tmp.setHaveDisplay("是");
             }
-            //
-            if (ObjectUtil.isNotEmpty(inList)) {
-                for (BudgetIn tmp : inList) {
-                    tmp.setId(null);
-                    tmp.setBudgetId(newId);
-                    tmp.setHaveDisplay("是");
-                }
-                inService.saveBatch(inList);
-            }
-            //
-            if (ObjectUtil.isNotEmpty(outList)) {
-                for (SmallBudgetOut tmp : outList) {
-                    tmp.setId(null);
-                    tmp.setBudgetId(newId);
-                    tmp.setHaveDisplay("是");
-                }
-                outService.saveBatch(outList);
-            }
-        } else {
-            //第二、三、N次修改
+            outService.saveBatch(outList);
         }
         return true;
     }
