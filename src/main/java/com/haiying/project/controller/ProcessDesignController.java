@@ -165,7 +165,7 @@ public class ProcessDesignController {
             if (ObjectUtil.isEmpty(buttonList)) {
                 buttonList.add("草稿");
                 buttonList.add("edge_提交");
-            }
+            }  
         } else if (type.equals("change")) {
             ProcessDesign processDesign;
             processDesign = processDesignService.getOne(new LambdaQueryWrapper<ProcessDesign>().eq(ProcessDesign::getHaveDisplay, "是").eq(ProcessDesign::getPath, path).eq(ProcessDesign::getProcessType, "变更流程"));

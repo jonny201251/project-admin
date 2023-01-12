@@ -99,7 +99,7 @@ public class ProviderQueryServiceImpl extends ServiceImpl<ProviderQueryMapper, P
                 edit(formValue);
             } else {
                 edit(formValue);
-                Integer processInstId = buttonHandleBean.addEdit(path, formValue, buttonName, formValue.getId(), "授权");
+                Integer processInstId = buttonHandleBean.addEdit(path, formValue, buttonName, formValue.getId(), "供方尽职调查");
                 //
                 formValue.setProcessInstId(processInstId);
                 this.updateById(formValue);

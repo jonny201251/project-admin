@@ -34,6 +34,8 @@ public class ProviderQuery implements Serializable {
 
     private String usee;
 
+    private Integer providerId;
+
     private String name;
 
     private String property;

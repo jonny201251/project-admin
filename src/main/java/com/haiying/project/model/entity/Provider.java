@@ -58,5 +58,9 @@ public class Provider implements Serializable {
 
     private String loginName;
 
+    private Integer deptId;
+
+    private String deptName;
+
     private String result;
 }

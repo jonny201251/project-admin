@@ -63,6 +63,23 @@ public class ProviderQueryController {
         return page;
     }
 
+    @PostMapping("list2")
+    public IPage<ProviderQuery> list2(@RequestBody Map<String, Object> paramMap) {
+        Integer current = (Integer) paramMap.get("current");
+        Integer pageSize = (Integer) paramMap.get("pageSize");
+        IPage<ProviderQuery> page;
+        LambdaQueryWrapper<ProviderQuery> wrapper = new LambdaQueryWrapper<>();
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+//        wrapper.like(ProviderQuery::getLoginName, user.getLoginName()).orderByDesc(ProviderQuery::getId);
+        page = providerQueryService.page(new Page<>(current, pageSize), wrapper);
+        List<ProviderQuery> recordList = page.getRecords();
+        if (ObjectUtil.isNotEmpty(recordList)) {
+            List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().in(ProcessInst::getId, recordList.stream().map(ProviderQuery::getProcessInstId).collect(Collectors.toList())));
+            Map<Integer, ProcessInst> processInstMap = processInstList.stream().collect(Collectors.toMap(ProcessInst::getId, v -> v));
+            recordList.forEach(record -> record.setProcessInst(processInstMap.get(record.getProcessInstId())));
+        }
+        return page;
+    }
 
     @GetMapping("get")
     public ProviderQuery get(Integer id) {

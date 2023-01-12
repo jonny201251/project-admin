@@ -51,6 +51,22 @@ public class ProviderSimpleController {
         return providerSimpleService.page(new Page<>(current, pageSize), wrapper);
     }
 
+    @PostMapping("list2")
+    public IPage<ProviderSimple> list2(@RequestBody Map<String, Object> paramMap) {
+        LambdaQueryWrapper<ProviderSimple> wrapper = new LambdaQueryWrapper<ProviderSimple>().eq(ProviderSimple::getUsee, "重大项目立项时(三类)");
+        Integer current = (Integer) paramMap.get("current");
+        Integer pageSize = (Integer) paramMap.get("pageSize");
+        Object name = paramMap.get("name");
+        Object code = paramMap.get("code");
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like(ProviderSimple::getName, name);
+        }
+        if (ObjectUtil.isNotEmpty(code)) {
+            wrapper.like(ProviderSimple::getCode, code);
+        }
+        return providerSimpleService.page(new Page<>(current, pageSize), wrapper);
+    }
+
     @PostMapping("add")
     public boolean add(@RequestBody ProviderSimple providerSimple) {
         return providerSimpleService.add(providerSimple);

@@ -7,7 +7,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.result.Wrapper;
+import com.haiying.project.common.utils.TreeUtil;
+import com.haiying.project.model.entity.SysPermission;
 import com.haiying.project.model.entity.SysUser;
+import com.haiying.project.model.vo.UserVO;
+import com.haiying.project.service.SysPermissionService;
 import com.haiying.project.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -34,11 +38,13 @@ public class SysUserController {
     SysUserService sysUserService;
     @Autowired
     HttpSession httpSession;
+    @Autowired
+    SysPermissionService sysPermissionService;
 
     @PostMapping("list")
-    public IPage<SysUser> list(@RequestBody Map<String,Object> paramMap) {
-        Integer current= (Integer) paramMap.get("current");
-        Integer pageSize= (Integer) paramMap.get("pageSize");
+    public IPage<SysUser> list(@RequestBody Map<String, Object> paramMap) {
+        Integer current = (Integer) paramMap.get("current");
+        Integer pageSize = (Integer) paramMap.get("pageSize");
         LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
         return sysUserService.page(new Page<>(current, pageSize), wrapper);
     }
@@ -66,7 +72,7 @@ public class SysUserController {
     }
 
     @PostMapping("login")
-    public SysUser login(@RequestBody SysUser pageUser) {
+    public UserVO login(@RequestBody SysUser pageUser) {
         SysUser dbUser = sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getLoginName, pageUser.getLoginName()));
         if (dbUser == null) {
             throw new PageTipException("用户名不存在");
@@ -81,7 +87,18 @@ public class SysUserController {
         httpSession.removeAttribute("user");
         httpSession.setAttribute("user", dbUser);
 
-        return dbUser;
+        UserVO userVO = new UserVO();
+        userVO.setUser(dbUser);
+
+        List<SysPermission> menuList;
+        if (dbUser.getDisplayName().equals("张强")) {
+            menuList = sysPermissionService.list();
+        } else {
+            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().gt(SysPermission::getId, 34));
+        }
+        userVO.setMenuList(TreeUtil.getTree(menuList));
+
+        return userVO;
     }
 
     @GetMapping("all")
@@ -107,6 +124,7 @@ public class SysUserController {
         user.setPassword(SecureUtil.md5("1"));
         return sysUserService.updateById(user);
     }
+
     @GetMapping("logout")
     public boolean logout() {
         httpSession.removeAttribute("user");

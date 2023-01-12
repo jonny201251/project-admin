@@ -292,6 +292,8 @@ public class ProviderScore1ServiceImpl extends ServiceImpl<ProviderScore1Mapper,
             formValue.setProcessInstId(processInst.getId());
             this.updateById(formValue);
         } else if (type.equals("check") || type.equals("reject")) {
+            this.updateById(formValue);
+
             String haveEditForm = providerScore1VO.getHaveEditForm();
             if (haveEditForm.equals("是")) {
                 edit(formValue);
