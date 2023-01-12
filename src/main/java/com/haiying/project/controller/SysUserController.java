@@ -120,6 +120,7 @@ public class SysUserController {
     //管理人员初始化密码
     @GetMapping("initPassword")
     public boolean adminChangePassword(Integer id) {
+
         SysUser user = sysUserService.getById(id);
         user.setPassword(SecureUtil.md5("1"));
         return sysUserService.updateById(user);
