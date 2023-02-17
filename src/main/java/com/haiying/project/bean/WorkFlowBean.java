@@ -176,7 +176,8 @@ public class WorkFlowBean {
             List<Task> runTaskList = getRunTaskList(actProcessInstanceId);
             for (Task task : runTaskList) {
                 ProcessInstNode processInstNode = nodeMap.get(task.getTaskDefinitionKey());
-                if (processInstNode != null) {
+                //
+                if (!task.getName().equals("尽职调查部门") && processInstNode != null) {
                     //存在历史节点，使用历史处理人
                     displayList.add(processInstNode.getTaskName() + "[" + processInstNode.getDisplayName() + "]");
                     loginList.add(processInstNode.getLoginName());
@@ -210,6 +211,16 @@ public class WorkFlowBean {
         List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery()
                 .processInstanceId(actProcessInstanceId)
                 .taskDefinitionKey(taskKey)
+                .orderByHistoricTaskInstanceEndTime()
+                .desc()
+                .list();
+        return list.get(0);
+    }
+
+    //取出上一个节点
+    public HistoricTaskInstance getBeforeTaskInstance(String actProcessInstanceId) {
+        List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery()
+                .processInstanceId(actProcessInstanceId)
                 .orderByHistoricTaskInstanceEndTime()
                 .desc()
                 .list();

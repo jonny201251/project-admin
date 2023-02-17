@@ -38,7 +38,7 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
 
     private void add(SmallProject formValue) {
         formValue.setHaveDisplay("是");
-        formValue.setVersion(1);
+        formValue.setVersion(0);
         //
         formValue.setIdType(String.join(",", formValue.getIdTypeList()));
         this.save(formValue);
@@ -89,7 +89,7 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
         this.removeById(formValue.getId());
         smallProtectService.remove(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getSmallProjectId, formValue.getId()));
         Integer version = formValue.getVersion();
-        if (ObjectUtil.isNotEmpty(version) && version > 1) {
+        if (ObjectUtil.isNotEmpty(version) && version > 0) {
             //回退到上一个版本
             Integer beforeId = formValue.getBeforeId();
             SmallProject before = this.getById(beforeId);
@@ -104,6 +104,7 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
         String type = after.getType();
         String buttonName = after.getButtonName();
         String path = after.getPath();
+        String comment = after.getComment();
         if (type.equals("add")) {
             if (buttonName.equals("草稿")) {
                 add(formValue);
@@ -130,7 +131,7 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
             old.setBusinessHaveDisplay("否");
             processInstService.updateById(old);
             change(formValue);
-            Integer newProcessInstId = buttonHandleBean.change(old, path, formValue, buttonName, formValue.getId(), formValue.getCustomerName());
+            Integer newProcessInstId = buttonHandleBean.change(old, path, formValue, buttonName, formValue.getId(), formValue.getCustomerName(),comment);
             formValue.setProcessInstId(newProcessInstId);
             this.updateById(formValue);
         } else if (type.equals("check") || type.equals("reject")) {

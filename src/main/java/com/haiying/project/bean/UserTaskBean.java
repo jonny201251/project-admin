@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -34,6 +31,8 @@ public class UserTaskBean {
     ProcessInstService processInstService;
     @Autowired
     ProviderScore1Service providerScore1Service;
+    @Autowired
+    ProviderQueryService providerQueryService;
     @Autowired
     OutContractService outContractService;
     @Autowired
@@ -90,11 +89,17 @@ public class UserTaskBean {
                 ProviderScore1 providerScore1 = providerScore1Service.getById(businessId);
                 String typee = providerScore1.getType();
                 if (typee.equals("民用产业项目")) {
-                    loginNameSet.add("宋思奇");
+                    loginNameSet.add("张强");
                 } else {
                     //技改或自筹项目
                     loginNameSet.add("张强");
                 }
+            } else if (path.equals("providerQueryPath")) {
+                //供方尽职调查
+                ProviderQuery providerQuery = providerQueryService.getById(businessId);
+                String str = providerQuery.getUserNamee();
+                String[] tmp = str.split(",");
+                loginNameSet.addAll(Arrays.asList(tmp));
             } else if (path.equals("outContractPath")) {
                 //付款合同
                 OutContract outContract = outContractService.getById(businessId);
@@ -110,10 +115,10 @@ public class UserTaskBean {
         return loginNameSet;
     }
 
-    public Set<String> getLoginNameList(Integer processDesignId, String taskKey,String actProcessInstanceId) {
+    public Set<String> getLoginNameList(Integer processDesignId, String taskKey, String actProcessInstanceId) {
         ProcessDesignTask processDesignTask = processDesignTaskService.getOne(new LambdaQueryWrapper<ProcessDesignTask>().eq(ProcessDesignTask::getProcessDesignId, processDesignId).eq(ProcessDesignTask::getTaskKey, taskKey));
         //businessId
-        WorkFlowBean workFlowBean= SpringUtil.getBean(WorkFlowBean.class);
+        WorkFlowBean workFlowBean = SpringUtil.getBean(WorkFlowBean.class);
         Integer businessId = workFlowBean.getBusinessIdByProcessInstanceId(actProcessInstanceId);
 
         return getLoginNameList(processDesignTask, businessId);

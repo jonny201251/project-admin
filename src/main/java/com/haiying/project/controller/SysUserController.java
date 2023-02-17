@@ -1,6 +1,7 @@
 package com.haiying.project.controller;
 
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -46,8 +47,18 @@ public class SysUserController {
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
+        Object deptName = paramMap.get("deptName");
+        Object loginName = paramMap.get("loginName");
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper.like(SysUser::getDeptName, deptName);
+        }
+        if (ObjectUtil.isNotEmpty(loginName)) {
+            wrapper.like(SysUser::getLoginName, loginName);
+        }
         return sysUserService.page(new Page<>(current, pageSize), wrapper);
     }
+
+
 
     @PostMapping("add")
     public boolean add(@RequestBody SysUser sysUser) {
@@ -120,7 +131,6 @@ public class SysUserController {
     //管理人员初始化密码
     @GetMapping("initPassword")
     public boolean adminChangePassword(Integer id) {
-
         SysUser user = sysUserService.getById(id);
         user.setPassword(SecureUtil.md5("1"));
         return sysUserService.updateById(user);

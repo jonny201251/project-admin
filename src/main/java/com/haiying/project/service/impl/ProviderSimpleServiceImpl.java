@@ -59,6 +59,21 @@ public class ProviderSimpleServiceImpl extends ServiceImpl<ProviderSimpleMapper,
     public boolean edit(ProviderSimple providerSimple) {
         this.updateById(providerSimple);
         formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "ProviderSimple").eq(FormFile::getBusinessId, providerSimple.getId()));
+        //文件
+        List<FileVO> fileList = providerSimple.getFileList();
+        if (ObjectUtil.isNotEmpty(fileList)) {
+            List<FormFile> list = new ArrayList<>();
+            for (FileVO fileVO : fileList) {
+                FormFile formFile = new FormFile();
+                formFile.setType("ProviderSimple");
+                formFile.setBusinessId(providerSimple.getId());
+                formFile.setName(fileVO.getName());
+                formFile.setUrl(fileVO.getUrl());
+                list.add(formFile);
+            }
+            formFileService.saveBatch(list);
+        }
+
         providerSimple2Service.remove(new LambdaQueryWrapper<ProviderSimple2>().eq(ProviderSimple2::getProviderSimpleId, providerSimple.getId()));
         List<ProviderSimple2> simple2List = providerSimple.getList();
         for (ProviderSimple2 providerSimple2 : simple2List) {
@@ -66,6 +81,7 @@ public class ProviderSimpleServiceImpl extends ServiceImpl<ProviderSimpleMapper,
             providerSimple2.setProviderSimpleId(providerSimple.getId());
         }
         providerSimple2Service.saveBatch(simple2List);
+
         return true;
     }
 }

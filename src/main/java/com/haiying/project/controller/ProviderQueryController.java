@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.result.Wrapper;
-import com.haiying.project.model.entity.FormFile;
-import com.haiying.project.model.entity.ProcessInst;
-import com.haiying.project.model.entity.ProviderQuery;
-import com.haiying.project.model.entity.SysUser;
+import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.model.vo.ProviderQueryAfter;
 import com.haiying.project.service.FormFileService;
@@ -20,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -47,12 +45,12 @@ public class ProviderQueryController {
 
     @PostMapping("list")
     public IPage<ProviderQuery> list(@RequestBody Map<String, Object> paramMap) {
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         IPage<ProviderQuery> page;
-        LambdaQueryWrapper<ProviderQuery> wrapper = new LambdaQueryWrapper<>();
-        SysUser user = (SysUser) httpSession.getAttribute("user");
-//        wrapper.like(ProviderQuery::getLoginName, user.getLoginName()).orderByDesc(ProviderQuery::getId);
+        LambdaQueryWrapper<ProviderQuery> wrapper = new LambdaQueryWrapper<ProviderQuery>().eq(ProviderQuery::getDisplayName,user.getDisplayName()).eq(ProviderQuery::getHaveDisplay, "是").orderByDesc(ProviderQuery::getId);
         page = providerQueryService.page(new Page<>(current, pageSize), wrapper);
         List<ProviderQuery> recordList = page.getRecords();
         if (ObjectUtil.isNotEmpty(recordList)) {
@@ -70,7 +68,6 @@ public class ProviderQueryController {
         IPage<ProviderQuery> page;
         LambdaQueryWrapper<ProviderQuery> wrapper = new LambdaQueryWrapper<>();
         SysUser user = (SysUser) httpSession.getAttribute("user");
-//        wrapper.like(ProviderQuery::getLoginName, user.getLoginName()).orderByDesc(ProviderQuery::getId);
         page = providerQueryService.page(new Page<>(current, pageSize), wrapper);
         List<ProviderQuery> recordList = page.getRecords();
         if (ObjectUtil.isNotEmpty(recordList)) {
@@ -81,9 +78,31 @@ public class ProviderQueryController {
         return page;
     }
 
+    @PostMapping("viewHistory")
+    public IPage<ProviderQuery> historyList(@RequestBody Map<String, Object> paramMap) {
+        String path = (String) paramMap.get("path");
+        Integer businessBaseId = (Integer) paramMap.get("businessBaseId");
+        List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getPath, path).eq(ProcessInst::getBusinessBaseId, businessBaseId));
+        List<Integer> beforeIdList = processInstList.stream().map(ProcessInst::getBusinessBeforeId).collect(Collectors.toList());
+
+        List<ProcessInst> processInstList2 = processInstService.list(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getPath, path).in(ProcessInst::getBusinessId, beforeIdList));
+        Map<Integer, ProcessInst> processInst2Map = processInstList2.stream().collect(Collectors.toMap(ProcessInst::getId, v -> v));
+
+        IPage<ProviderQuery> page;
+        LambdaQueryWrapper<ProviderQuery> wrapper = new LambdaQueryWrapper<>();
+        wrapper.in(ProviderQuery::getId, beforeIdList).orderByDesc(ProviderQuery::getId);
+        page = providerQueryService.page(new Page<>(1, 100), wrapper);
+        List<ProviderQuery> recordList = page.getRecords();
+        if (ObjectUtil.isNotEmpty(recordList)) {
+            recordList.forEach(record -> record.setProcessInst(processInst2Map.get(record.getProcessInstId())));
+        }
+        return page;
+    }
+    
     @GetMapping("get")
     public ProviderQuery get(Integer id) {
         ProviderQuery providerQuery = providerQueryService.getById(id);
+        providerQuery.setUserNameeList(Collections.singletonList(providerQuery.getUserNamee()));
         List<FileVO> fileList = new ArrayList<>();
         List<FormFile> formFileList = formFileService.list(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "ProviderQuery").eq(FormFile::getBusinessId, id));
         for (FormFile formFile : formFileList) {

@@ -29,7 +29,7 @@ public class CustomerCheck12ServiceImpl extends ServiceImpl<CustomerCheck12Mappe
 
     private void add(CustomerCheck12 formValue) {
         formValue.setHaveDisplay("是");
-        formValue.setVersion(1);
+        formValue.setVersion(0);
         formValue.setDesc2(String.join(",", formValue.getDesc2Tmp()));
         this.save(formValue);
     }
@@ -64,7 +64,7 @@ public class CustomerCheck12ServiceImpl extends ServiceImpl<CustomerCheck12Mappe
     private void delete(CustomerCheck12 formValue) {
         this.removeById(formValue.getId());
         Integer version = formValue.getVersion();
-        if (ObjectUtil.isNotEmpty(version) && version > 1) {
+        if (ObjectUtil.isNotEmpty(version) && version > 0) {
             //回退到上一个版本
             Integer beforeId = formValue.getBeforeId();
             CustomerCheck12 before = this.getById(beforeId);
@@ -79,6 +79,7 @@ public class CustomerCheck12ServiceImpl extends ServiceImpl<CustomerCheck12Mappe
         String type = after.getType();
         String buttonName = after.getButtonName();
         String path = after.getPath();
+        String comment = after.getComment();
         if (type.equals("add")) {
             if (buttonName.equals("草稿")) {
                 add(formValue);
@@ -105,7 +106,7 @@ public class CustomerCheck12ServiceImpl extends ServiceImpl<CustomerCheck12Mappe
             old.setBusinessHaveDisplay("否");
             processInstService.updateById(old);
             change(formValue);
-            Integer newProcessInstId = buttonHandleBean.change(old, path, formValue, buttonName, formValue.getId(), formValue.getCustomerName());
+            Integer newProcessInstId = buttonHandleBean.change(old, path, formValue, buttonName, formValue.getId(), formValue.getCustomerName(),comment);
             formValue.setProcessInstId(newProcessInstId);
             this.updateById(formValue);
         } else if (type.equals("check") || type.equals("reject")) {

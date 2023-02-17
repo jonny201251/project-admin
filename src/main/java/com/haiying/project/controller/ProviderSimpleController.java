@@ -5,10 +5,9 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.result.Wrapper;
-import com.haiying.project.model.entity.FormFile;
-import com.haiying.project.model.entity.ProviderSimple;
-import com.haiying.project.model.entity.ProviderSimple2;
+import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.service.FormFileService;
 import com.haiying.project.service.ProviderSimple2Service;
@@ -16,6 +15,7 @@ import com.haiying.project.service.ProviderSimpleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +37,8 @@ public class ProviderSimpleController {
     @Autowired
     ProviderSimple2Service providerSimple2Service;
     @Autowired
+    HttpSession httpSession;
+    @Autowired
     FormFileService formFileService;
 
     @PostMapping("list")
@@ -48,16 +50,27 @@ public class ProviderSimpleController {
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(ProviderSimple::getName, name);
         }
+        //数据权限
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+        if (!user.getDisplayName().equals("孙欢")) {
+            wrapper.eq(ProviderSimple::getLoginName, user.getLoginName());
+        }
         return providerSimpleService.page(new Page<>(current, pageSize), wrapper);
     }
 
     @PostMapping("list2")
     public IPage<ProviderSimple> list2(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<ProviderSimple> wrapper = new LambdaQueryWrapper<ProviderSimple>().eq(ProviderSimple::getUsee, "重大项目立项时(三类)");
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+
+        LambdaQueryWrapper<ProviderSimple> wrapper = new LambdaQueryWrapper<ProviderSimple>().eq(ProviderSimple::getDeptId, user.getDeptId()).eq(ProviderSimple::getUsee, "重大项目立项时(三类)");
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
+        Object usee = paramMap.get("usee");
         Object name = paramMap.get("name");
         Object code = paramMap.get("code");
+        if (ObjectUtil.isNotEmpty(usee)) {
+            wrapper.like(ProviderSimple::getUsee, usee);
+        }
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(ProviderSimple::getName, name);
         }
@@ -69,6 +82,12 @@ public class ProviderSimpleController {
 
     @PostMapping("add")
     public boolean add(@RequestBody ProviderSimple providerSimple) {
+        //判断是否重复添加
+        List<ProviderSimple> list = providerSimpleService.list(new LambdaQueryWrapper<ProviderSimple>().eq(ProviderSimple::getProviderId, providerSimple.getProviderId()));
+        if (ObjectUtil.isNotEmpty(list)) {
+            throw new PageTipException("供方用途和供方名称   已存在");
+        }
+
         return providerSimpleService.add(providerSimple);
     }
 

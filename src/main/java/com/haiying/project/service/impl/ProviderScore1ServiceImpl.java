@@ -119,7 +119,7 @@ public class ProviderScore1ServiceImpl extends ServiceImpl<ProviderScore1Mapper,
                 processInst.setBusinessName(formValue.getProviderName());
                 processInst.setBusinessId(formValue.getId());
                 processInst.setBusinessHaveDisplay("是");
-                processInst.setBusinessVersion(1);
+                processInst.setBusinessVersion(0);
                 processInst.setActProcessInstanceId(actProcessInstanceId);
                 processInst.setProcessStatus("审批中");
                 Map<String, String> stepMap = workFlowBean.getPrcocessStep(processDesign.getId(), null, actProcessInstanceId);
@@ -181,7 +181,7 @@ public class ProviderScore1ServiceImpl extends ServiceImpl<ProviderScore1Mapper,
                 processInst.setBusinessName(formValue.getProviderName());
                 processInst.setBusinessId(formValue.getId());
                 processInst.setBusinessHaveDisplay("是");
-                processInst.setBusinessVersion(1);
+                processInst.setBusinessVersion(0);
                 processInst.setActProcessInstanceId(actProcessInstanceId);
                 processInst.setProcessStatus("审批中");
                 Map<String, String> stepMap = workFlowBean.getPrcocessStep(processDesign.getId(), null, actProcessInstanceId);
@@ -391,7 +391,7 @@ public class ProviderScore1ServiceImpl extends ServiceImpl<ProviderScore1Mapper,
             } else {
                 //退回、退回申请人、申请人撤回
                 Integer version = processInst.getBusinessVersion();
-                if (version > 1) {
+                if (version > 0) {
                     //回退到上一个版本
                     ProcessInst before = processInstService.getOne(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getPath, processInst.getPath()).eq(ProcessInst::getBusinessBaseId, processInst.getBusinessBaseId()).eq(ProcessInst::getBusinessId, processInst.getBusinessBeforeId()));
                     before.setBusinessHaveDisplay("是");

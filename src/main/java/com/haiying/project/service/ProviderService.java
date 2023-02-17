@@ -13,4 +13,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ProviderService extends IService<Provider> {
 
+    boolean add(Provider provider);
+
+    boolean edit(Provider provider);
 }

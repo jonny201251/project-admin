@@ -22,6 +22,12 @@ public class Test {
             outMoney2Total=null;
         }
         System.out.println(outMoney2Total);
+
+
+        String s="尽职调查部门[郑雷]";
+        String name="郑雷";
+        String[] tmp = s.split("\\[");
+        System.out.println();
     }
     @PostMapping("test")
     public boolean a(@RequestBody UploadVO uploadVO){

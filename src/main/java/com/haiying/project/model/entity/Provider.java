@@ -1,11 +1,16 @@
 package com.haiying.project.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.haiying.project.model.vo.FileVO;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -23,6 +28,15 @@ public class Provider implements Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
+    private Integer baseId;
+
+    private Integer beforeId;
+
+    private String haveDisplay;
+
+    private Integer version;
+
     //供方用途
     private String usee;
     /**
@@ -62,5 +76,11 @@ public class Provider implements Serializable {
 
     private String deptName;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createDatetime;
+
     private String result;
+
+    @TableField(exist = false)
+    private List<FileVO> fileList;
 }

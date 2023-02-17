@@ -32,6 +32,14 @@ public class ProviderQuery implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    private Integer baseId;
+
+    private Integer beforeId;
+
+    private String haveDisplay;
+
+    private Integer version;
+
     private String usee;
 
     private Integer providerId;
@@ -97,5 +105,8 @@ public class ProviderQuery implements Serializable {
     @TableField(exist = false)
     private List<FileVO> fileList;
 
-
+    //尽职调查部门
+    @TableField(exist = false)
+    private List<String> userNameeList;
+    private String userNamee;
 }

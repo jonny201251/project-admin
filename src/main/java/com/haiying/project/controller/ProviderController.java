@@ -5,22 +5,19 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.result.Wrapper;
-import com.haiying.project.controller.base.BaseController;
-import com.haiying.project.model.entity.Provider;
-import com.haiying.project.model.entity.ProviderQuery;
-import com.haiying.project.model.entity.ProviderSimple;
-import com.haiying.project.model.entity.SysUser;
+import com.haiying.project.model.entity.*;
+import com.haiying.project.model.vo.FileVO;
+import com.haiying.project.service.FormFileService;
 import com.haiying.project.service.ProviderQueryService;
 import com.haiying.project.service.ProviderService;
 import com.haiying.project.service.ProviderSimpleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +34,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/provider")
 @Wrapper
-public class ProviderController extends BaseController<Provider> {
+public class ProviderController {
     @Autowired
     ProviderService providerService;
     @Autowired
@@ -46,6 +43,8 @@ public class ProviderController extends BaseController<Provider> {
     ProviderQueryService providerQueryService;
     @Autowired
     HttpSession httpSession;
+    @Autowired
+    FormFileService formFileService;
 
     @PostMapping("list")
     public IPage<Provider> list(@RequestBody Map<String, Object> paramMap) {
@@ -57,12 +56,19 @@ public class ProviderController extends BaseController<Provider> {
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(Provider::getName, name);
         }
+
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+        if (!user.getDisplayName().equals("孙欢")) {
+            wrapper.eq(Provider::getLoginName, user.getLoginName());
+        }
         return providerService.page(new Page<>(current, pageSize), wrapper);
     }
 
     @PostMapping("list2")
     public IPage<Provider> list2(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().in(Provider::getUsee, Arrays.asList("一般项目立项时(三类)", "重大项目立项时(三类)"));
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+
+        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().eq(Provider::getDeptId, user.getDeptId()).in(Provider::getUsee, Arrays.asList("一般项目立项时(三类)", "重大项目立项时(三类)")).in(Provider::getResult, Arrays.asList("", "不合格"));
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");
@@ -138,11 +144,43 @@ public class ProviderController extends BaseController<Provider> {
 
     @PostMapping("add")
     public boolean add(@RequestBody Provider provider) {
+        //判断是否重复添加
+        List<Provider> list = providerService.list(new LambdaQueryWrapper<Provider>().eq(Provider::getUsee, provider.getUsee().trim()).eq(Provider::getName, provider.getName().trim()));
+        if (ObjectUtil.isNotEmpty(list)) {
+            throw new PageTipException("供方用途和供方名称   已存在");
+        }
+
         SysUser user = (SysUser) httpSession.getAttribute("user");
         provider.setDisplayName(user.getDisplayName());
         provider.setLoginName(user.getLoginName());
         provider.setDeptId(user.getDeptId());
         provider.setDeptName(user.getDeptName());
-        return providerService.save(provider);
+        provider.setCreateDatetime(LocalDateTime.now());
+
+        return providerService.add(provider);
+    }
+
+    @GetMapping("get")
+    public Provider get(Integer id) {
+        Provider provider = providerService.getById(id);
+        //
+        List<FormFile> formFileList = formFileService.list(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "Provider").eq(FormFile::getBusinessId, id));
+        if (ObjectUtil.isNotEmpty(formFileList)) {
+            List<FileVO> fileList = new ArrayList<>();
+            for (FormFile formFile : formFileList) {
+                FileVO fileVO = new FileVO();
+                fileVO.setName(formFile.getName());
+                fileVO.setUrl(formFile.getUrl());
+                fileVO.setStatus("done");
+                fileList.add(fileVO);
+            }
+            provider.setFileList(fileList);
+        }
+        return provider;
+    }
+
+    @PostMapping("edit")
+    public boolean edit(@RequestBody Provider provider) {
+        return providerService.edit(provider);
     }
 }

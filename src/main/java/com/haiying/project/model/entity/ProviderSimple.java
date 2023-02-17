@@ -31,6 +31,14 @@ public class ProviderSimple implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    private Integer baseId;
+
+    private Integer beforeId;
+
+    private String haveDisplay;
+
+    private Integer version;
+
     /**
      * 供方用途
      */

@@ -54,7 +54,7 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
 
     private void add(OutContract formValue) {
         formValue.setHaveDisplay("是");
-        formValue.setVersion(1);
+        formValue.setVersion(0);
         formValue.setEndMoney(formValue.getContractMoney());
         this.save(formValue);
         //文件
@@ -164,7 +164,7 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
                 processInst.setBusinessName(formValue.getContractName());
                 processInst.setBusinessId(formValue.getId());
                 processInst.setBusinessHaveDisplay("是");
-                processInst.setBusinessVersion(1);
+                processInst.setBusinessVersion(0);
                 processInst.setActProcessInstanceId(actProcessInstanceId);
                 processInst.setProcessStatus("审批中");
                 Map<String, String> stepMap = workFlowBean.getPrcocessStep(processDesign.getId(), null, actProcessInstanceId);
@@ -226,7 +226,7 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
                 processInst.setBusinessName(formValue.getContractName());
                 processInst.setBusinessId(formValue.getId());
                 processInst.setBusinessHaveDisplay("是");
-                processInst.setBusinessVersion(1);
+                processInst.setBusinessVersion(0);
                 processInst.setActProcessInstanceId(actProcessInstanceId);
                 processInst.setProcessStatus("审批中");
                 Map<String, String> stepMap = workFlowBean.getPrcocessStep(processDesign.getId(), null, actProcessInstanceId);
@@ -434,7 +434,7 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
             } else {
                 //退回、退回申请人、申请人撤回
                 Integer version = processInst.getBusinessVersion();
-                if (version > 1) {
+                if (version > 0) {
                     //回退到上一个版本
                     ProcessInst before = processInstService.getOne(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getPath, processInst.getPath()).eq(ProcessInst::getBusinessBaseId, processInst.getBusinessBaseId()).eq(ProcessInst::getBusinessId, processInst.getBusinessBeforeId()));
                     before.setBusinessHaveDisplay("是");
