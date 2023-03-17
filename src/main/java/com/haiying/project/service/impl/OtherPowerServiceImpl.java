@@ -1,5 +1,6 @@
 package com.haiying.project.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -35,8 +36,34 @@ public class OtherPowerServiceImpl extends ServiceImpl<OtherPowerMapper, OtherPo
     @Autowired
     FormFileService formFileService;
 
+    public String getCode(OtherPower formValue) {
+        String str = "001";
+        List<OtherPower> list = this.list(new LambdaQueryWrapper<OtherPower>().eq(OtherPower::getYear, formValue.getYear()).orderByDesc(OtherPower::getId));
+        if (ObjectUtil.isNotEmpty(list)) {
+            OtherPower tmp = list.get(0);
+            String code = tmp.getCode();
+            if (code != null) {
+                String newCode = String.valueOf(Integer.parseInt(code) + 1);
+                if (newCode.length() == 3) {
+                    str = newCode;
+                } else if (newCode.length() == 2) {
+                    str = "0" + newCode;
+                } else {
+                    str = "00" + newCode;
+                }
+            }
+        }
+        return str;
+    }
+
     private void add(OtherPower formValue) {
+        formValue.setHaveDisplay("是");
+        formValue.setVersion(0);
+        formValue.setDisplayNamee(String.join(",", formValue.getDisplayNameeTmp()));
         formValue.setTimeLimit(String.join("至", formValue.getTimeLimitTmp()));
+
+        formValue.setYear(Integer.parseInt(DateUtil.format(DateUtil.date(), "yyyy")));
+
         this.save(formValue);
         //文件
         List<FormFile> list = new ArrayList<>();
@@ -55,6 +82,7 @@ public class OtherPowerServiceImpl extends ServiceImpl<OtherPowerMapper, OtherPo
     }
 
     private void edit(OtherPower formValue) {
+        formValue.setDisplayNamee(String.join(",", formValue.getDisplayNameeTmp()));
         formValue.setTimeLimit(String.join("至", formValue.getTimeLimitTmp()));
         this.updateById(formValue);
         formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "OtherPower").eq(FormFile::getBusinessId, formValue.getId()));
@@ -76,6 +104,13 @@ public class OtherPowerServiceImpl extends ServiceImpl<OtherPowerMapper, OtherPo
 
     private void delete(OtherPower formValue) {
         this.removeById(formValue.getId());
+        formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "OtherPower").eq(FormFile::getBusinessId, formValue.getId()));
+        Integer beforeId = formValue.getBeforeId();
+        if (beforeId != null) {
+            OtherPower before = this.getById(beforeId);
+            before.setHaveDisplay("是");
+            this.updateById(before);
+        }
     }
 
     @Override
@@ -84,6 +119,20 @@ public class OtherPowerServiceImpl extends ServiceImpl<OtherPowerMapper, OtherPo
         String type = after.getType();
         String buttonName = after.getButtonName();
         String path = after.getPath();
+
+        //
+        if (buttonName.contains("退回申请人")) {
+            formValue.setCode("");
+            formValue.setStatus("");
+            this.updateById(formValue);
+        }
+        if (buttonName.equals("申请人撤回")) {
+            formValue.setCode("");
+            formValue.setStatus("");
+            this.updateById(formValue);
+        }
+
+
         if (type.equals("add")) {
             if (buttonName.equals("草稿")) {
                 add(formValue);
@@ -99,7 +148,7 @@ public class OtherPowerServiceImpl extends ServiceImpl<OtherPowerMapper, OtherPo
                 edit(formValue);
             } else {
                 edit(formValue);
-                Integer processInstId = buttonHandleBean.addEdit(path, formValue, buttonName, formValue.getId(), "授权");
+                Integer processInstId = buttonHandleBean.addEdit(path, formValue, buttonName, formValue.getId(), "一事一授权");
                 //
                 formValue.setProcessInstId(processInstId);
                 this.updateById(formValue);

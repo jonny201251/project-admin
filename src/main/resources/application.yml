@@ -29,6 +29,10 @@ spring:
     check-process-definitions: false
     database-schema-update: true
     async-executor-activate: false
+  servlet:
+    multipart:
+      max-request-size: -1
+      max-file-size: -1
 mybatis-plus:
   type-aliases-package: com.haiying.project.model.entity
   global-config:

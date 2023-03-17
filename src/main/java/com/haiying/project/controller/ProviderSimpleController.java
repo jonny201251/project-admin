@@ -58,6 +58,7 @@ public class ProviderSimpleController {
         return providerSimpleService.page(new Page<>(current, pageSize), wrapper);
     }
 
+    //供方尽职调查 弹窗
     @PostMapping("list2")
     public IPage<ProviderSimple> list2(@RequestBody Map<String, Object> paramMap) {
         SysUser user = (SysUser) httpSession.getAttribute("user");

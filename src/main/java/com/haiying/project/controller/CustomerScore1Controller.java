@@ -6,18 +6,19 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.result.Wrapper;
-import com.haiying.project.model.entity.ProcessInst;
 import com.haiying.project.model.entity.CustomerScore1;
 import com.haiying.project.model.entity.CustomerScore2;
+import com.haiying.project.model.entity.ProcessInst;
 import com.haiying.project.model.entity.SysUser;
 import com.haiying.project.model.vo.CustomerScore1After;
-import com.haiying.project.service.ProcessInstService;
 import com.haiying.project.service.CustomerScore1Service;
 import com.haiying.project.service.CustomerScore2Service;
+import com.haiying.project.service.ProcessInstService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,12 +46,12 @@ public class CustomerScore1Controller {
 
     @PostMapping("list")
     public IPage<CustomerScore1> list(@RequestBody Map<String, Object> paramMap) {
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         IPage<CustomerScore1> page;
-        LambdaQueryWrapper<CustomerScore1> wrapper = new LambdaQueryWrapper<CustomerScore1>().eq(CustomerScore1::getHaveDisplay, "是");
-        SysUser user = (SysUser) httpSession.getAttribute("user");
-//        wrapper.like(CustomerScore1::getLoginName, user.getLoginName()).orderByDesc(CustomerScore1::getId);
+        LambdaQueryWrapper<CustomerScore1> wrapper = new LambdaQueryWrapper<CustomerScore1>().eq(CustomerScore1::getDisplayName, user.getDisplayName()).eq(CustomerScore1::getHaveDisplay, "是").orderByDesc(CustomerScore1::getId);
         page = customerScore1Service.page(new Page<>(current, pageSize), wrapper);
         List<CustomerScore1> recordList = page.getRecords();
         if (ObjectUtil.isNotEmpty(recordList)) {
@@ -85,6 +86,7 @@ public class CustomerScore1Controller {
     @GetMapping("get")
     public CustomerScore1 get(Integer id) {
         CustomerScore1 customerScore1 = customerScore1Service.getById(id);
+        customerScore1.setDesc2Tmp(Arrays.asList(customerScore1.getDesc2().split(",")));
         List<CustomerScore2> list = customerScore2Service.list(new LambdaQueryWrapper<CustomerScore2>().eq(CustomerScore2::getCustomerScore1Id, id));
         customerScore1.setList(list);
         return customerScore1;

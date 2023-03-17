@@ -132,6 +132,8 @@ public class ProviderSimple implements Serializable {
 
     private String remark;
 
+    private String result;
+
     @TableField(exist = false)
     private List<FileVO> fileList;
 

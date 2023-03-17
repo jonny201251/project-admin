@@ -3,6 +3,7 @@ package com.haiying.project.bean;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.utils.SpringUtil;
 import com.haiying.project.model.entity.*;
 import com.haiying.project.service.*;
@@ -34,12 +35,16 @@ public class UserTaskBean {
     @Autowired
     ProviderQueryService providerQueryService;
     @Autowired
+    ProviderControlService providerControlService;
+    @Autowired
     OutContractService outContractService;
     @Autowired
     ProcessDesignService processDesignService;
+    @Autowired
+    OtherPowerService otherPowerService;
 
-    public Set<String> getLoginNameList(ProcessDesignTask processDesignTask, Integer businessId) {
-        Set<String> loginNameSet = new HashSet<>();
+    public Set<String> getLoginNameList(ProcessDesignTask processDesignTask, Integer businessId, String actProcessInstanceId) {
+        Set<String> loginNameSet = new TreeSet<>();
 
         String type = processDesignTask.getType();
         if (type.equals("角色") || type.equals("用户")) {
@@ -68,8 +73,13 @@ public class UserTaskBean {
                             leaderList.forEach(user -> loginNameSet.add(user.getLoginName()));
                         }
                     } else if (sysRole.getName().equals("公司主管领导")) {
+                        //申请部门的deptId
+                        ProcessInst processInst = processInstService.getOne(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getProcessDesignId, processDesignTask.getProcessDesignId()).eq(ProcessInst::getActProcessInstanceId, actProcessInstanceId));
+                        if (processInst == null) {
+                            throw new PageTipException("需要处理人");
+                        }
                         List<String> leader2List = chargeDeptLeaderService
-                                .list(new LambdaQueryWrapper<ChargeDeptLeader>().in(ChargeDeptLeader::getDeptId, currentUser.getDeptId()))
+                                .list(new LambdaQueryWrapper<ChargeDeptLeader>().in(ChargeDeptLeader::getDeptId, processInst.getDeptId()))
                                 .stream().map(ChargeDeptLeader::getLoginName).collect(Collectors.toList());
                         if (ObjectUtil.isNotEmpty(leader2List)) {
                             loginNameSet.addAll(leader2List);
@@ -81,7 +91,7 @@ public class UserTaskBean {
                 userList.forEach(user -> loginNameSet.add(user.getLoginName()));
             }
         } else {
-            //表单
+            //表单---删除
             ProcessDesign processDesign = processDesignService.getById(processDesignTask.getProcessDesignId());
             String path = processDesign.getPath();
             if (path.equals("providerScore1Path")) {
@@ -100,6 +110,12 @@ public class UserTaskBean {
                 String str = providerQuery.getUserNamee();
                 String[] tmp = str.split(",");
                 loginNameSet.addAll(Arrays.asList(tmp));
+            } else if (path.equals("providerControlPath")) {
+                //供方动态监控
+                ProviderControl providerControl = providerControlService.getById(businessId);
+                String str = providerControl.getUserNamee();
+                String[] tmp = str.split(",");
+                loginNameSet.addAll(Arrays.asList(tmp));
             } else if (path.equals("outContractPath")) {
                 //付款合同
                 OutContract outContract = outContractService.getById(businessId);
@@ -110,6 +126,23 @@ public class UserTaskBean {
                 } else {
                     loginNameSet.add("乔丹月");
                 }
+            } else if (path.equals("otherPowerPath")) {
+                //一事一授权
+                OtherPower otherPower = otherPowerService.getById(businessId);
+                String endType = otherPower.getEndType();
+                if (endType.equals("董事长")) {
+                    loginNameSet.add("高志国");
+                } else {
+                    //公司主管领导
+                    List<String> leader2List = chargeDeptLeaderService
+                            .list(new LambdaQueryWrapper<ChargeDeptLeader>().in(ChargeDeptLeader::getDeptId, otherPower.getDeptId()))
+                            .stream().map(ChargeDeptLeader::getLoginName).collect(Collectors.toList());
+                    if (ObjectUtil.isNotEmpty(leader2List)) {
+                        loginNameSet.addAll(leader2List);
+                    }
+                }
+            } else {
+                throw new PageTipException("需要处理人");
             }
         }
         return loginNameSet;
@@ -121,7 +154,7 @@ public class UserTaskBean {
         WorkFlowBean workFlowBean = SpringUtil.getBean(WorkFlowBean.class);
         Integer businessId = workFlowBean.getBusinessIdByProcessInstanceId(actProcessInstanceId);
 
-        return getLoginNameList(processDesignTask, businessId);
+        return getLoginNameList(processDesignTask, businessId, actProcessInstanceId);
     }
 }
 

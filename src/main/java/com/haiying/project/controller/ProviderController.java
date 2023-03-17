@@ -9,10 +9,7 @@ import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.FileVO;
-import com.haiying.project.service.FormFileService;
-import com.haiying.project.service.ProviderQueryService;
-import com.haiying.project.service.ProviderService;
-import com.haiying.project.service.ProviderSimpleService;
+import com.haiying.project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -45,6 +43,8 @@ public class ProviderController {
     HttpSession httpSession;
     @Autowired
     FormFileService formFileService;
+    @Autowired
+    ProcessInstService processInstService;
 
     @PostMapping("list")
     public IPage<Provider> list(@RequestBody Map<String, Object> paramMap) {
@@ -52,7 +52,6 @@ public class ProviderController {
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");
-        Object num = paramMap.get("num");
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(Provider::getName, name);
         }
@@ -64,6 +63,7 @@ public class ProviderController {
         return providerService.page(new Page<>(current, pageSize), wrapper);
     }
 
+    //供方情况简表 弹窗
     @PostMapping("list2")
     public IPage<Provider> list2(@RequestBody Map<String, Object> paramMap) {
         SysUser user = (SysUser) httpSession.getAttribute("user");
@@ -86,18 +86,27 @@ public class ProviderController {
         return providerService.page(new Page<>(current, pageSize), wrapper);
     }
 
+    //供方评分 弹窗
     @PostMapping("list3")
     public List<Provider> list3(@RequestBody Map<String, Object> paramMap) {
         /*
-        一般项目-三类-渠道方：供方简表+供方评分
-        一般项目-三类-其他方：供方评分
-        重大项目-三类-渠道方：供方简表+尽职调查+供方评分
-        重大项目-三类-其他方：供方评分
+        一般项目-三类：供方简表+供方评分
+        一般项目-其他方：供方评分
+        重大项目-三类：供方简表+尽职调查+供方评分
+        重大项目-其他方：供方评分
          */
         List<Provider> list = new ArrayList<>();
-        LambdaQueryWrapper<Provider> wrapper1 = new LambdaQueryWrapper<Provider>().in(Provider::getUsee, Arrays.asList("一般项目立项后(其他方)", "重大项目立项后(其他方)"));
-        LambdaQueryWrapper<ProviderSimple> wrapper2 = new LambdaQueryWrapper<ProviderSimple>().eq(ProviderSimple::getUsee, "一般项目立项时(三类)");
-        LambdaQueryWrapper<ProviderQuery> wrapper3 = new LambdaQueryWrapper<ProviderQuery>();
+        LambdaQueryWrapper<Provider> wrapper1 = new LambdaQueryWrapper<Provider>().in(Provider::getUsee, Arrays.asList("一般项目立项后(其他方)", "重大项目立项后(其他方)")).in(Provider::getResult, Arrays.asList("", "不合格"));
+        LambdaQueryWrapper<ProviderSimple> wrapper2 = new LambdaQueryWrapper<ProviderSimple>().eq(ProviderSimple::getUsee, "一般项目立项时(三类)").in(ProviderSimple::getResult, Arrays.asList("", "不合格"));
+        LambdaQueryWrapper<ProviderQuery> wrapper3 = new LambdaQueryWrapper<ProviderQuery>().in(ProviderQuery::getResult, Arrays.asList("", "不合格"));
+        //
+        List<ProcessInst> ll = processInstService.list(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getPath, "providerQueryPath").eq(ProcessInst::getProcessStatus, "完成").eq(ProcessInst::getBusinessHaveDisplay, "是"));
+        if (ObjectUtil.isNotEmpty(ll)) {
+            List<Integer> lll = ll.stream().map(ProcessInst::getBusinessId).collect(Collectors.toList());
+            wrapper3.in(ProviderQuery::getId, lll);
+        } else {
+            wrapper3.eq(ProviderQuery::getId, 0);
+        }
 
         Object usee = paramMap.get("usee");
         Object name = paramMap.get("name");
@@ -139,6 +148,25 @@ public class ProviderController {
             }
         }
 
+        return list;
+    }
+
+    //供方动态监控
+    @PostMapping("list4")
+    public List<Provider> list4(@RequestBody Map<String, Object> paramMap) {
+        List<Provider> list = new ArrayList<>();
+        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().in(Provider::getHaveDisplay, "", "是").eq(Provider::getResult, "合格");
+
+        Object usee = paramMap.get("usee");
+        Object name = paramMap.get("name");
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like(Provider::getName, name);
+        }
+        if (ObjectUtil.isNotEmpty(usee)) {
+            wrapper.like(Provider::getUsee, usee);
+        }
+
+        list = providerService.list(wrapper);
         return list;
     }
 

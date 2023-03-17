@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * <p>
- *  其他授权
+ * 其他授权
  * </p>
  *
  * @author 作者
@@ -47,6 +47,8 @@ public class OtherPower implements Serializable {
 
     private String deptName;
 
+    @TableField(exist = false)
+    private List<String> displayNameeTmp;
     /**
      * 被授权人
      */
@@ -98,6 +100,10 @@ public class OtherPower implements Serializable {
     private LocalDateTime createDatetime;
 
     private Integer processInstId;
+
+    private Integer year;
+
+    private String status;
 
     @TableField(exist = false)
     private ProcessInst processInst;

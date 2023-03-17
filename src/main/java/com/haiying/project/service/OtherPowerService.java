@@ -13,6 +13,6 @@ import com.haiying.project.model.vo.OtherPowerAfter;
  * @since 2022-04-08
  */
 public interface OtherPowerService extends IService<OtherPower> {
-
+    public String getCode(OtherPower formValue);
     boolean btnHandle(OtherPowerAfter after);
 }

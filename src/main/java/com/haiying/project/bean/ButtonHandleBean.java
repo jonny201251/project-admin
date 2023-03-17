@@ -220,7 +220,7 @@ public class ButtonHandleBean {
         processInstNode.setEndDatetime(LocalDateTime.now());
         processInstNodeService.save(processInstNode);
     }
-
+    //一个节点一个人处理
     public void checkReject(Integer processInstId, Object formValue, String buttonName, String comment) {
         SysUser user = (SysUser) httpSession.getAttribute("user");
         ProcessInst processInst = processInstService.getById(processInstId);

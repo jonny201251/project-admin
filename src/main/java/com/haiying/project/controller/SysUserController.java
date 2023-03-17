@@ -59,7 +59,6 @@ public class SysUserController {
     }
 
 
-
     @PostMapping("add")
     public boolean add(@RequestBody SysUser sysUser) {
         sysUser.setPassword(SecureUtil.md5("1"));
@@ -103,9 +102,9 @@ public class SysUserController {
 
         List<SysPermission> menuList;
         if (dbUser.getDisplayName().equals("张强")) {
-            menuList = sysPermissionService.list();
+            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().ne(SysPermission::getId,45).orderByAsc(SysPermission::getSort));
         } else {
-            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().gt(SysPermission::getId, 34));
+            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().ne(SysPermission::getId,45).gt(SysPermission::getId, 34).orderByAsc(SysPermission::getSort));
         }
         userVO.setMenuList(TreeUtil.getTree(menuList));
 

@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.result.Wrapper;
-import com.haiying.project.model.entity.FormFile;
-import com.haiying.project.model.entity.OtherPower;
-import com.haiying.project.model.entity.ProcessInst;
-import com.haiying.project.model.entity.SysUser;
+import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.model.vo.OtherPowerAfter;
 import com.haiying.project.service.FormFileService;
@@ -48,12 +45,12 @@ public class OtherPowerController {
 
     @PostMapping("list")
     public IPage<OtherPower> list(@RequestBody Map<String, Object> paramMap) {
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         IPage<OtherPower> page;
-        LambdaQueryWrapper<OtherPower> wrapper = new LambdaQueryWrapper<>();
-        SysUser user = (SysUser) httpSession.getAttribute("user");
-//        wrapper.like(OtherPower::getLoginName, user.getLoginName()).orderByDesc(OtherPower::getId);
+        LambdaQueryWrapper<OtherPower> wrapper = new LambdaQueryWrapper<OtherPower>().eq(OtherPower::getDisplayName, user.getDisplayName()).eq(OtherPower::getHaveDisplay, "是").orderByDesc(OtherPower::getId);
         page = otherPowerService.page(new Page<>(current, pageSize), wrapper);
         List<OtherPower> recordList = page.getRecords();
         if (ObjectUtil.isNotEmpty(recordList)) {
@@ -68,6 +65,7 @@ public class OtherPowerController {
     @GetMapping("get")
     public OtherPower get(Integer id) {
         OtherPower otherPower = otherPowerService.getById(id);
+        otherPower.setDisplayNameeTmp(Arrays.asList(otherPower.getDisplayNamee().split(",")));
         otherPower.setTimeLimitTmp(Arrays.asList(otherPower.getTimeLimit().split("至")));
         List<FileVO> fileList = new ArrayList<>();
         List<FormFile> formFileList = formFileService.list(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "OtherPower").eq(FormFile::getBusinessId, id));
@@ -79,6 +77,13 @@ public class OtherPowerController {
             fileList.add(fileVO);
         }
         otherPower.setFileList(fileList);
+        //
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+        if (user.getDisplayName().equals("祁瑛") && otherPower.getCode() == null) {
+            otherPower.setStatus("未使用");
+            String code = otherPowerService.getCode(otherPower);
+            otherPower.setCode(code);
+        }
         return otherPower;
     }
 

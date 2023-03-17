@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -52,8 +52,9 @@ public class CustomerScore1 implements Serializable {
 
     private String deptName;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate createDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createDatetime;
 
     /**
      * 得分
@@ -69,7 +70,17 @@ public class CustomerScore1 implements Serializable {
 
     private String endResult;
 
+    private String result;
+
     private Integer processInstId;
+
+    private String desc1;
+    @TableField(exist = false)
+    private List<String> desc2Tmp;
+    private String desc2;
+    private String desc3;
+    private String desc4;
+
 
     @TableField(exist = false)
     private List<CustomerScore2> list;

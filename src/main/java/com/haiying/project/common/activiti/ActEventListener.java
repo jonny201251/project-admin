@@ -48,7 +48,7 @@ public class ActEventListener implements ActivitiEventListener {
             String taskKey = taskEntity.getTaskDefinitionKey();
 
             //businessId
-            WorkFlowBean workFlowBean=SpringUtil.getBean(WorkFlowBean.class);
+            WorkFlowBean workFlowBean = SpringUtil.getBean(WorkFlowBean.class);
             Integer businessId = workFlowBean.getBusinessIdByProcessInstanceId(actProcessInstanceId);
 
             ProcessInstService processInstService = SpringUtil.getBean(ProcessInstService.class);
@@ -69,7 +69,7 @@ public class ActEventListener implements ActivitiEventListener {
                 taskEntity.addCandidateUser(processInstNode.getLoginName());
             } else {
                 ProcessDesignTask processDesignTask = processDesignTaskService.getOne(new LambdaQueryWrapper<ProcessDesignTask>().eq(ProcessDesignTask::getProcessDesignId, processDesignId).eq(ProcessDesignTask::getTaskKey, taskKey));
-                Set<String> loginNameSet = userTaskBean.getLoginNameList(processDesignTask,businessId);
+                Set<String> loginNameSet = userTaskBean.getLoginNameList(processDesignTask, businessId, actProcessInstanceId);
                 if (ObjectUtil.isNotEmpty(loginNameSet)) {
                     taskEntity.addCandidateUsers(loginNameSet);
                 } else {

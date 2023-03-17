@@ -39,7 +39,7 @@ public class ProviderQueryServiceImpl extends ServiceImpl<ProviderQueryMapper, P
 
     private void add(ProviderQuery formValue) {
         //判断是否重复添加
-        List<ProviderQuery> ll = this.list(new LambdaQueryWrapper<ProviderQuery>().eq(ProviderQuery::getName, formValue.getName().trim()).eq(ProviderQuery::getUsee, formValue.getUsee().trim()));
+        List<ProviderQuery> ll = this.list(new LambdaQueryWrapper<ProviderQuery>().eq(ProviderQuery::getName, formValue.getName()).eq(ProviderQuery::getUsee, formValue.getUsee()));
         if (ObjectUtil.isNotEmpty(ll)) {
             throw new PageTipException("供方用途和供方名称   已存在");
         }
@@ -60,8 +60,6 @@ public class ProviderQueryServiceImpl extends ServiceImpl<ProviderQueryMapper, P
                 formFile.setUrl(fileVO.getUrl());
                 list.add(formFile);
             }
-        }
-        if (ObjectUtil.isNotEmpty(list)) {
             formFileService.saveBatch(list);
         }
     }

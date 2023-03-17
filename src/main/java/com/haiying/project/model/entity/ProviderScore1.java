@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -38,6 +38,8 @@ public class ProviderScore1 implements Serializable {
 
     private Integer version;
 
+    private String usee;
+
     private Integer providerId;
 
     private String providerName;
@@ -55,8 +57,8 @@ public class ProviderScore1 implements Serializable {
 
     private String deptName;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate createDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createDatetime;
 
     /**
      *  初评得分

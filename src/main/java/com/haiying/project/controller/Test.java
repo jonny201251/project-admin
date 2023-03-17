@@ -28,6 +28,8 @@ public class Test {
         String name="郑雷";
         String[] tmp = s.split("\\[");
         System.out.println();
+
+        System.out.println(Integer.parseInt("020"));
     }
     @PostMapping("test")
     public boolean a(@RequestBody UploadVO uploadVO){

@@ -10,7 +10,7 @@ import com.haiying.project.model.entity.ProcessInst;
 import com.haiying.project.model.entity.ProviderScore1;
 import com.haiying.project.model.entity.ProviderScore2;
 import com.haiying.project.model.entity.SysUser;
-import com.haiying.project.model.vo.ProviderScore1VO;
+import com.haiying.project.model.vo.ProviderScore1After;
 import com.haiying.project.service.ProcessInstService;
 import com.haiying.project.service.ProviderScore1Service;
 import com.haiying.project.service.ProviderScore2Service;
@@ -45,12 +45,12 @@ public class ProviderScore1Controller {
 
     @PostMapping("list")
     public IPage<ProviderScore1> list(@RequestBody Map<String, Object> paramMap) {
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         IPage<ProviderScore1> page;
-        LambdaQueryWrapper<ProviderScore1> wrapper = new LambdaQueryWrapper<ProviderScore1>().eq(ProviderScore1::getHaveDisplay, "是");
-        SysUser user = (SysUser) httpSession.getAttribute("user");
-//        wrapper.like(ProviderScore1::getLoginName, user.getLoginName()).orderByDesc(ProviderScore1::getId);
+        LambdaQueryWrapper<ProviderScore1> wrapper = new LambdaQueryWrapper<ProviderScore1>().eq(ProviderScore1::getDisplayName, user.getDisplayName()).eq(ProviderScore1::getHaveDisplay, "是").orderByDesc(ProviderScore1::getId);
         page = providerScore1Service.page(new Page<>(current, pageSize), wrapper);
         List<ProviderScore1> recordList = page.getRecords();
         if (ObjectUtil.isNotEmpty(recordList)) {
@@ -65,10 +65,10 @@ public class ProviderScore1Controller {
     public IPage<ProviderScore1> historyList(@RequestBody Map<String, Object> paramMap) {
         String path = (String) paramMap.get("path");
         Integer businessBaseId = (Integer) paramMap.get("businessBaseId");
-        List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getPath, path).eq(ProcessInst::getBusinessBaseId, businessBaseId));
+        List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().likeLeft(ProcessInst::getPath, path).eq(ProcessInst::getBusinessBaseId, businessBaseId));
         List<Integer> beforeIdList = processInstList.stream().map(ProcessInst::getBusinessBeforeId).collect(Collectors.toList());
 
-        List<ProcessInst> processInstList2 = processInstService.list(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getPath, path).in(ProcessInst::getBusinessId, beforeIdList));
+        List<ProcessInst> processInstList2 = processInstService.list(new LambdaQueryWrapper<ProcessInst>().likeLeft(ProcessInst::getPath, path).in(ProcessInst::getBusinessId, beforeIdList));
         Map<Integer, ProcessInst> processInst2Map = processInstList2.stream().collect(Collectors.toMap(ProcessInst::getId, v -> v));
 
         IPage<ProviderScore1> page;
@@ -91,7 +91,7 @@ public class ProviderScore1Controller {
     }
 
     @PostMapping("btnHandle")
-    public boolean btnHandle(@RequestBody ProviderScore1VO providerScore1VO) {
-        return providerScore1Service.btnHandle(providerScore1VO);
+    public boolean btnHandle(@RequestBody ProviderScore1After providerScore1After) {
+        return providerScore1Service.btnHandle(providerScore1After);
     }
 }

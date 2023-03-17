@@ -97,6 +97,8 @@ public class ProviderQuery implements Serializable {
 
     private String remark;
 
+    private String result;
+
     private Integer processInstId;
 
     @TableField(exist = false)
