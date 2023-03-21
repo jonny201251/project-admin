@@ -42,6 +42,8 @@ public class UserTaskBean {
     ProcessDesignService processDesignService;
     @Autowired
     OtherPowerService otherPowerService;
+    @Autowired
+    SmallProjectService smallProjectService;
 
     public Set<String> getLoginNameList(ProcessDesignTask processDesignTask, Integer businessId, String actProcessInstanceId) {
         Set<String> loginNameSet = new TreeSet<>();
@@ -141,6 +143,11 @@ public class UserTaskBean {
                         loginNameSet.addAll(leader2List);
                     }
                 }
+            } else if (path.equals("smallProjectPath")) {
+                //一般项目立项
+                SmallProject smallProject = smallProjectService.getById(businessId);
+                String userNamee = smallProject.getUserNamee();
+                loginNameSet.add(userNamee);
             } else {
                 throw new PageTipException("需要处理人");
             }

@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.result.Wrapper;
-import com.haiying.project.model.entity.CustomerScore1;
-import com.haiying.project.model.entity.CustomerScore2;
-import com.haiying.project.model.entity.ProcessInst;
-import com.haiying.project.model.entity.SysUser;
+import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.CustomerScore1After;
 import com.haiying.project.service.CustomerScore1Service;
 import com.haiying.project.service.CustomerScore2Service;
@@ -51,7 +48,10 @@ public class CustomerScore1Controller {
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         IPage<CustomerScore1> page;
-        LambdaQueryWrapper<CustomerScore1> wrapper = new LambdaQueryWrapper<CustomerScore1>().eq(CustomerScore1::getDisplayName, user.getDisplayName()).eq(CustomerScore1::getHaveDisplay, "是").orderByDesc(CustomerScore1::getId);
+        LambdaQueryWrapper<CustomerScore1> wrapper = new LambdaQueryWrapper<CustomerScore1>().eq(CustomerScore1::getHaveDisplay, "是").orderByDesc(CustomerScore1::getId);
+        if (!user.getDisplayName().equals("宋思奇")) {
+            wrapper.eq(CustomerScore1::getDisplayName, user.getDisplayName());
+        }
         page = customerScore1Service.page(new Page<>(current, pageSize), wrapper);
         List<CustomerScore1> recordList = page.getRecords();
         if (ObjectUtil.isNotEmpty(recordList)) {

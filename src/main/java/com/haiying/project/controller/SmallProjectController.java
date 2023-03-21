@@ -6,20 +6,18 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.result.Wrapper;
-import com.haiying.project.model.entity.SmallProject;
-import com.haiying.project.model.entity.SmallProtect;
-import com.haiying.project.model.entity.ProcessInst;
-import com.haiying.project.model.entity.SysUser;
+import com.haiying.project.model.entity.*;
+import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.model.vo.SmallProjectAfter;
+import com.haiying.project.service.FormFileService;
+import com.haiying.project.service.ProcessInstService;
 import com.haiying.project.service.SmallProjectService;
 import com.haiying.project.service.SmallProtectService;
-import com.haiying.project.service.ProcessInstService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,15 +40,20 @@ public class SmallProjectController {
     HttpSession httpSession;
     @Autowired
     ProcessInstService processInstService;
+    @Autowired
+    FormFileService formFileService;
 
     @PostMapping("list")
     public IPage<SmallProject> list(@RequestBody Map<String, Object> paramMap) {
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         IPage<SmallProject> page;
-        LambdaQueryWrapper<SmallProject> wrapper = new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getHaveDisplay, "是");
-        SysUser user = (SysUser) httpSession.getAttribute("user");
-//        wrapper.like(SmallProject::getLoginName, user.getLoginName()).orderByDesc(SmallProject::getId);
+        LambdaQueryWrapper<SmallProject> wrapper = new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getHaveDisplay, "是").orderByDesc(SmallProject::getId);
+        if (!user.getDeptName().equals("综合计划部")) {
+            wrapper.eq(SmallProject::getDisplayName, user.getDisplayName());
+        }
         page = smallProjectService.page(new Page<>(current, pageSize), wrapper);
         List<SmallProject> recordList = page.getRecords();
         if (ObjectUtil.isNotEmpty(recordList)) {
@@ -87,6 +90,18 @@ public class SmallProjectController {
         SmallProject smallProject = smallProjectService.getById(id);
         List<SmallProtect> list = smallProtectService.list(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getSmallProjectId, id));
         smallProject.setList(list);
+        smallProject.setIdTypeListTmp(Arrays.asList(smallProject.getIdType().split(",")));
+
+        List<FileVO> fileList = new ArrayList<>();
+        List<FormFile> formFileList = formFileService.list(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "SmallProject").eq(FormFile::getBusinessId, id));
+        for (FormFile formFile : formFileList) {
+            FileVO fileVO = new FileVO();
+            fileVO.setName(formFile.getName());
+            fileVO.setUrl(formFile.getUrl());
+            fileVO.setStatus("done");
+            fileList.add(fileVO);
+        }
+        smallProject.setFileList(fileList);
         return smallProject;
     }
 

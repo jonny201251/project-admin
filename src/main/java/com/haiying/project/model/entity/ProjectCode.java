@@ -74,7 +74,7 @@ public class ProjectCode implements Serializable {
 
     private String providerName;
     @TableField(exist = false)
-    private List<String> businessTypeList;
+    private List<String> businessTypeTmp;
     /**
      * 业务类别
      */
@@ -86,5 +86,10 @@ public class ProjectCode implements Serializable {
     private String taskCode;
 
     private String status;
+
+    private Integer year;
+
+    @TableField(exist = false)
+    private String likeValue;
 
 }

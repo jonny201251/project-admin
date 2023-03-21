@@ -3,6 +3,7 @@ package com.haiying.project.model.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.haiying.project.model.vo.FileVO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -48,6 +49,8 @@ public class SmallProject implements Serializable {
      */
     private String name;
 
+    private String wbs;
+
     /**
      * 任务号
      */
@@ -67,39 +70,15 @@ public class SmallProject implements Serializable {
 
     private String customerName;
 
-    private String customerProperty;
+    private Integer providerId;
 
-    private Integer startScore;
-
-    private String startResult;
-
-    @TableField(exist = false)
-    private String startDisplay;
-
-    private Integer endScore;
-
-    private String endResult;
-
-    @TableField(exist = false)
-    private String endDisplay;
-
-    private Integer strategyId;
-
-    /**
-     * 战略伙伴名称
-     */
-    private String strategyName;
-
-    /**
-     * 战略伙伴单位性质
-     */
-    private String strategyProperty;
+    private String providerName;
 
     /**
      * 法人身份证类型
      */
     @TableField(exist = false)
-    private List<String> idTypeList;
+    private List<String> idTypeListTmp;
     private String idType;
 
     /**
@@ -210,5 +189,10 @@ public class SmallProject implements Serializable {
     @TableField(exist = false)
     private ProcessInst processInst;
 
+    @TableField(exist = false)
+    private List<FileVO> fileList;
+
     private String remark;
+    //流程-财务部
+    private String userNamee;
 }

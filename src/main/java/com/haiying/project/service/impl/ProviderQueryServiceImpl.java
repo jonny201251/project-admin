@@ -95,6 +95,42 @@ public class ProviderQueryServiceImpl extends ServiceImpl<ProviderQueryMapper, P
         }
     }
 
+
+    private void change(ProviderQuery current) {
+        ProviderQuery before = this.getById(current.getId());
+        before.setHaveDisplay("否");
+        this.updateById(before);
+        //
+        current.setId(null);
+        current.setProcessInstId(null);
+        current.setBeforeId(before.getId());
+        current.setHaveDisplay("是");
+        current.setVersion(current.getVersion() + 1);
+        if (current.getBaseId() == null) {
+            //第一次修改
+            current.setBaseId(before.getId());
+        } else {
+            //第二、三、N次修改
+            current.setBaseId(before.getBaseId());
+        }
+        this.save(current);
+
+        //文件
+        List<FileVO> fileList = current.getFileList();
+        if (ObjectUtil.isNotEmpty(fileList)) {
+            List<FormFile> list = new ArrayList<>();
+            for (FileVO fileVO : fileList) {
+                FormFile formFile = new FormFile();
+                formFile.setType("ProviderQuery");
+                formFile.setBusinessId(current.getId());
+                formFile.setName(fileVO.getName());
+                formFile.setUrl(fileVO.getUrl());
+                list.add(formFile);
+            }
+            formFileService.saveBatch(list);
+        }
+    }
+
     @Override
     public boolean btnHandle(ProviderQueryAfter after) {
         ProviderQuery formValue = after.getFormValue();
@@ -152,39 +188,4 @@ public class ProviderQueryServiceImpl extends ServiceImpl<ProviderQueryMapper, P
         return true;
     }
 
-    private void change(ProviderQuery current) {
-        ProviderQuery before = this.getById(current.getId());
-        before.setHaveDisplay("否");
-        this.updateById(before);
-        //
-        current.setId(null);
-        current.setProcessInstId(null);
-        current.setBeforeId(before.getId());
-        current.setHaveDisplay("是");
-        current.setVersion(current.getVersion() + 1);
-        if (current.getBaseId() == null) {
-            //第一次修改
-            current.setBaseId(before.getId());
-        } else {
-            //第二、三、N次修改
-            current.setBaseId(before.getBaseId());
-        }
-        this.save(current);
-
-        formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "ProviderQuery").eq(FormFile::getBusinessId, current.getId()));
-        //文件
-        List<FileVO> fileList = current.getFileList();
-        if (ObjectUtil.isNotEmpty(fileList)) {
-            List<FormFile> list = new ArrayList<>();
-            for (FileVO fileVO : fileList) {
-                FormFile formFile = new FormFile();
-                formFile.setType("ProviderQuery");
-                formFile.setBusinessId(current.getId());
-                formFile.setName(fileVO.getName());
-                formFile.setUrl(fileVO.getUrl());
-                list.add(formFile);
-            }
-            formFileService.saveBatch(list);
-        }
-    }
 }

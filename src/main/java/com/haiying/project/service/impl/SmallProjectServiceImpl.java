@@ -4,17 +4,19 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haiying.project.bean.ButtonHandleBean;
+import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.mapper.SmallProjectMapper;
-import com.haiying.project.model.entity.ProcessInst;
-import com.haiying.project.model.entity.SmallProject;
-import com.haiying.project.model.entity.SmallProtect;
+import com.haiying.project.model.entity.*;
+import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.model.vo.SmallProjectAfter;
+import com.haiying.project.service.FormFileService;
 import com.haiying.project.service.ProcessInstService;
 import com.haiying.project.service.SmallProjectService;
 import com.haiying.project.service.SmallProtectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,20 +36,43 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
     ProcessInstService processInstService;
     @Autowired
     SmallProtectService smallProtectService;
+    @Autowired
+    FormFileService formFileService;
 
 
     private void add(SmallProject formValue) {
+        //判断是否重复添加
+        List<SmallProject> ll = this.list(new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getTaskCode, formValue.getTaskCode()));
+        if (ObjectUtil.isNotEmpty(ll)) {
+            throw new PageTipException("任务号   已存在");
+        }
+
         formValue.setHaveDisplay("是");
         formValue.setVersion(0);
         //
-        formValue.setIdType(String.join(",", formValue.getIdTypeList()));
+        formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
         this.save(formValue);
         List<SmallProtect> list = formValue.getList();
         list.forEach(item -> item.setSmallProjectId(formValue.getId()));
         smallProtectService.saveBatch(list);
+        //文件
+        List<FormFile> listt = new ArrayList<>();
+        List<FileVO> fileList = formValue.getFileList();
+        if (ObjectUtil.isNotEmpty(fileList)) {
+            for (FileVO fileVO : fileList) {
+                FormFile formFile = new FormFile();
+                formFile.setType("SmallProject");
+                formFile.setBusinessId(formValue.getId());
+                formFile.setName(fileVO.getName());
+                formFile.setUrl(fileVO.getUrl());
+                listt.add(formFile);
+            }
+            formFileService.saveBatch(listt);
+        }
     }
 
     private void edit(SmallProject formValue) {
+        formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
         this.updateById(formValue);
         smallProtectService.remove(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getSmallProjectId, formValue.getId()));
         List<SmallProtect> list = formValue.getList();
@@ -56,47 +81,79 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
             item.setSmallProjectId(formValue.getId());
         });
         smallProtectService.saveBatch(list);
-    }
 
-    private void change(SmallProject formValue) {
-        SmallProject smallProject = this.getById(formValue.getId());
-        smallProject.setHaveDisplay("否");
-        this.updateById(smallProject);
-        //
-        formValue.setId(null);
-        formValue.setProcessInstId(null);
-        formValue.setBeforeId(smallProject.getId());
-        formValue.setHaveDisplay("是");
-        formValue.setVersion(formValue.getVersion() + 1);
-        if (formValue.getBaseId() == null) {
-            //第一次修改
-            formValue.setBaseId(smallProject.getId());
-        } else {
-            //第二、三、N次修改
-            formValue.setBaseId(smallProject.getBaseId());
+        formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "SmallProject").eq(FormFile::getBusinessId, formValue.getId()));
+        //文件
+        List<FileVO> fileList = formValue.getFileList();
+        if (ObjectUtil.isNotEmpty(fileList)) {
+            List<FormFile> listt = new ArrayList<>();
+            for (FileVO fileVO : fileList) {
+                FormFile formFile = new FormFile();
+                formFile.setType("SmallProject");
+                formFile.setBusinessId(formValue.getId());
+                formFile.setName(fileVO.getName());
+                formFile.setUrl(fileVO.getUrl());
+                listt.add(formFile);
+            }
+            formFileService.saveBatch(listt);
         }
-        this.save(formValue);
-
-        List<SmallProtect> list = formValue.getList();
-        list.forEach(item -> {
-            item.setId(null);
-            item.setSmallProjectId(formValue.getId());
-        });
-        smallProtectService.saveBatch(list);
     }
 
     private void delete(SmallProject formValue) {
         this.removeById(formValue.getId());
         smallProtectService.remove(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getSmallProjectId, formValue.getId()));
-        Integer version = formValue.getVersion();
-        if (ObjectUtil.isNotEmpty(version) && version > 0) {
-            //回退到上一个版本
-            Integer beforeId = formValue.getBeforeId();
+        formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "SmallProject").eq(FormFile::getBusinessId, formValue.getId()));
+
+        Integer beforeId = formValue.getBeforeId();
+        if (beforeId != null) {
             SmallProject before = this.getById(beforeId);
             before.setHaveDisplay("是");
             this.updateById(before);
         }
     }
+
+    private void change(SmallProject current) {
+        SmallProject before = this.getById(current.getId());
+        before.setHaveDisplay("否");
+        this.updateById(before);
+        //
+        current.setId(null);
+        current.setProcessInstId(null);
+        current.setBeforeId(before.getId());
+        current.setHaveDisplay("是");
+        current.setVersion(current.getVersion() + 1);
+        if (current.getBaseId() == null) {
+            //第一次修改
+            current.setBaseId(before.getId());
+        } else {
+            //第二、三、N次修改
+            current.setBaseId(before.getBaseId());
+        }
+        current.setIdType(String.join(",", current.getIdTypeListTmp()));
+        this.save(current);
+        List<SmallProtect> list = current.getList();
+        list.forEach(item -> {
+            item.setId(null);
+            item.setSmallProjectId(current.getId());
+        });
+        smallProtectService.saveBatch(list);
+
+        //文件
+        List<FileVO> fileList = current.getFileList();
+        if (ObjectUtil.isNotEmpty(fileList)) {
+            List<FormFile> listt = new ArrayList<>();
+            for (FileVO fileVO : fileList) {
+                FormFile formFile = new FormFile();
+                formFile.setType("SmallProject");
+                formFile.setBusinessId(current.getId());
+                formFile.setName(fileVO.getName());
+                formFile.setUrl(fileVO.getUrl());
+                listt.add(formFile);
+            }
+            formFileService.saveBatch(listt);
+        }
+    }
+
 
     @Override
     public boolean btnHandle(SmallProjectAfter after) {
@@ -120,31 +177,31 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
                 edit(formValue);
             } else {
                 edit(formValue);
-                Integer processInstId = buttonHandleBean.addEdit(path, formValue, buttonName, formValue.getId(), formValue.getCustomerName());
+                Integer processInstId = buttonHandleBean.addEdit(path, formValue, buttonName, formValue.getId(), formValue.getName());
                 //
                 formValue.setProcessInstId(processInstId);
                 this.updateById(formValue);
             }
-        } else if (type.equals("change")) {
-            //旧processInst
-            ProcessInst old = processInstService.getById(formValue.getProcessInstId());
-            old.setBusinessHaveDisplay("否");
-            processInstService.updateById(old);
-            change(formValue);
-            Integer newProcessInstId = buttonHandleBean.change(old, path, formValue, buttonName, formValue.getId(), formValue.getCustomerName(),comment);
-            formValue.setProcessInstId(newProcessInstId);
-            this.updateById(formValue);
         } else if (type.equals("check") || type.equals("reject")) {
             String haveEditForm = after.getHaveEditForm();
             if (haveEditForm.equals("是")) {
                 edit(formValue);
             }
-            buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, after.getComment());
+            //
+            buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
         } else if (type.equals("recall")) {
             buttonHandleBean.recall(formValue.getProcessInstId(), buttonName);
         } else if (type.equals("delete")) {
             delete(formValue);
             buttonHandleBean.delete(formValue.getProcessInstId());
+        } else if (type.equals("change")) {
+            ProcessInst before = processInstService.getById(formValue.getProcessInstId());
+            before.setBusinessHaveDisplay("否");
+            processInstService.updateById(before);
+            change(formValue);
+            Integer newProcessInstId = buttonHandleBean.change(before, path, formValue, buttonName, formValue.getId(), formValue.getName(), comment);
+            formValue.setProcessInstId(newProcessInstId);
+            this.updateById(formValue);
         }
         return true;
     }

@@ -58,8 +58,35 @@ public class ProviderController {
 
         SysUser user = (SysUser) httpSession.getAttribute("user");
         if (!user.getDisplayName().equals("孙欢")) {
-            wrapper.eq(Provider::getLoginName, user.getLoginName());
+            wrapper.eq(Provider::getDisplayName, user.getDisplayName());
         }
+        return providerService.page(new Page<>(current, pageSize), wrapper);
+    }
+
+
+    @PostMapping("listSmallProject")
+    public IPage<Provider> listSmallProject(@RequestBody Map<String, Object> paramMap) {
+        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().eq(Provider::getUsee,"一般项目立项时(三类)").eq(Provider::getResult,"合格");
+        Integer current = (Integer) paramMap.get("current");
+        Integer pageSize = (Integer) paramMap.get("pageSize");
+        Object name = paramMap.get("name");
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like(Provider::getName, name);
+        }
+
+        return providerService.page(new Page<>(current, pageSize), wrapper);
+    }
+
+    @PostMapping("listBigProject")
+    public IPage<Provider> listBigProject(@RequestBody Map<String, Object> paramMap) {
+        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().eq(Provider::getUsee,"重大项目立项时(三类)").eq(Provider::getResult,"合格");
+        Integer current = (Integer) paramMap.get("current");
+        Integer pageSize = (Integer) paramMap.get("pageSize");
+        Object name = paramMap.get("name");
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like(Provider::getName, name);
+        }
+
         return providerService.page(new Page<>(current, pageSize), wrapper);
     }
 

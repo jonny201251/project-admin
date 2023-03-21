@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -50,7 +50,11 @@ public class ProviderQueryController {
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         IPage<ProviderQuery> page;
-        LambdaQueryWrapper<ProviderQuery> wrapper = new LambdaQueryWrapper<ProviderQuery>().eq(ProviderQuery::getDisplayName,user.getDisplayName()).eq(ProviderQuery::getHaveDisplay, "是").orderByDesc(ProviderQuery::getId);
+        LambdaQueryWrapper<ProviderQuery> wrapper = new LambdaQueryWrapper<ProviderQuery>().eq(ProviderQuery::getHaveDisplay, "是").orderByDesc(ProviderQuery::getId);
+        if (!user.getDeptName().equals("孙欢")) {
+            wrapper.eq(ProviderQuery::getDisplayName, user.getDisplayName());
+        }
+
         page = providerQueryService.page(new Page<>(current, pageSize), wrapper);
         List<ProviderQuery> recordList = page.getRecords();
         if (ObjectUtil.isNotEmpty(recordList)) {
@@ -102,7 +106,7 @@ public class ProviderQueryController {
     @GetMapping("get")
     public ProviderQuery get(Integer id) {
         ProviderQuery providerQuery = providerQueryService.getById(id);
-        providerQuery.setUserNameeList(Collections.singletonList(providerQuery.getUserNamee()));
+        providerQuery.setUserNameeList(Arrays.asList(providerQuery.getUserNamee().split(",")));
         List<FileVO> fileList = new ArrayList<>();
         List<FormFile> formFileList = formFileService.list(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "ProviderQuery").eq(FormFile::getBusinessId, id));
         for (FormFile formFile : formFileList) {
