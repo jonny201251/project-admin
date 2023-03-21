@@ -104,7 +104,6 @@ public class BigProjectController {
         List<BigProjectTest> list3 = new ArrayList<>();
         List<BigProjectTest> list4 = new ArrayList<>();
 
-
         List<BigProjectTest> list234 = bigProjectTestService.list(new LambdaQueryWrapper<BigProjectTest>().eq(BigProjectTest::getProjectId, id));
         for (BigProjectTest test : list234) {
             if (test.getType().equals("project")) {
