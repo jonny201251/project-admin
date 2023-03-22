@@ -1,12 +1,13 @@
-package com.haiying.project.common.utils;
-
+package com.haiying.project.bean;
 
 import com.haiying.project.common.result.PageData;
 import com.haiying.project.common.result.ResponseResult;
+import org.springframework.stereotype.Component;
 
-public class MyPageUtil {
+@Component
+public class PageBean {
     //获取分页数据
-    public static ResponseResult get(Integer currentPage, Integer pageSize, Integer total, Object dataList) {
+    public ResponseResult get(Integer currentPage, Integer pageSize, Integer total, Object dataList) {
         ResponseResult responseResult = ResponseResult.success();
         //计算总页数
         int totalPage = total / pageSize + ((total % pageSize == 0) ? 0 : 1);

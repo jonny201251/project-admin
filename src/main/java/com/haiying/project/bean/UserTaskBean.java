@@ -44,6 +44,8 @@ public class UserTaskBean {
     OtherPowerService otherPowerService;
     @Autowired
     SmallProjectService smallProjectService;
+    @Autowired
+    ProjectProtectService projectProtectService;
 
     public Set<String> getLoginNameList(ProcessDesignTask processDesignTask, Integer businessId, String actProcessInstanceId) {
         Set<String> loginNameSet = new TreeSet<>();
@@ -147,6 +149,11 @@ public class UserTaskBean {
                 //一般项目立项
                 SmallProject smallProject = smallProjectService.getById(businessId);
                 String userNamee = smallProject.getUserNamee();
+                loginNameSet.add(userNamee);
+            } else if (path.equals("projectProtectPath")) {
+                //投标保证金(函)登记
+                ProjectProtect projectProtect = projectProtectService.getById(businessId);
+                String userNamee = projectProtect.getUserNamee();
                 loginNameSet.add(userNamee);
             } else {
                 throw new PageTipException("需要处理人");

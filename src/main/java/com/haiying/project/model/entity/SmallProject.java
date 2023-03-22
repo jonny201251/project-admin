@@ -74,6 +74,8 @@ public class SmallProject implements Serializable {
 
     private String providerName;
 
+    private String providerUsee;
+
     /**
      * 法人身份证类型
      */
@@ -195,4 +197,8 @@ public class SmallProject implements Serializable {
     private String remark;
     //流程-财务部
     private String userNamee;
+
+    private String projectType;
+
+    private String projectStatus;
 }

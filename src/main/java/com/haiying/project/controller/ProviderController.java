@@ -63,6 +63,19 @@ public class ProviderController {
         return providerService.page(new Page<>(current, pageSize), wrapper);
     }
 
+    //项目备案
+    @PostMapping("listCode")
+    public IPage<Provider> listCode(@RequestBody Map<String, Object> paramMap) {
+        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().eq(Provider::getResult,"合格");
+        Integer current = (Integer) paramMap.get("current");
+        Integer pageSize = (Integer) paramMap.get("pageSize");
+        Object name = paramMap.get("name");
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like(Provider::getName, name);
+        }
+
+        return providerService.page(new Page<>(current, pageSize), wrapper);
+    }
 
     @PostMapping("listSmallProject")
     public IPage<Provider> listSmallProject(@RequestBody Map<String, Object> paramMap) {

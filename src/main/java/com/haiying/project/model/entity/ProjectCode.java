@@ -57,22 +57,15 @@ public class ProjectCode implements Serializable {
      */
     private String projectProperty;
 
-    /**
-     * 客户企业性质
-     */
+    private Integer customerId;
+    private String customerName;
     private String customerProperty;
 
-    /**
-     * 战略伙伴企业性质
-     */
-    private String providerProperty;
-
-    /**
-     * 客户名称
-     */
-    private String customerName;
-
+    private Integer providerId;
     private String providerName;
+    private String providerProperty;
+    private String providerUsee;
+
     @TableField(exist = false)
     private List<String> businessTypeTmp;
     /**

@@ -78,6 +78,8 @@ public class BigProject implements Serializable {
 
     private String providerName;
 
+    private String providerUsee;
+
     /**
      * 法人身份证类型
      */
@@ -135,5 +137,7 @@ public class BigProject implements Serializable {
 
     private String remark;
 
+    private String projectType;
 
+    private String projectStatus;
 }

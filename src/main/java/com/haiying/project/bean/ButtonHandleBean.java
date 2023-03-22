@@ -104,7 +104,7 @@ public class ButtonHandleBean {
         return processInst.getId();
     }
 
-    public Integer change(ProcessInst old, String path, Object formValue, String buttonName, Integer businessId, String businessName,String comment) {
+    public Integer change(ProcessInst old, String path, Object formValue, String buttonName, Integer businessId, String businessName, String comment) {
         SysUser user = (SysUser) httpSession.getAttribute("user");
         //启动流程
         String actProcessInstanceId = workFlowBean.startPrcoess(path, businessId, "变更流程");
@@ -220,8 +220,9 @@ public class ButtonHandleBean {
         processInstNode.setEndDatetime(LocalDateTime.now());
         processInstNodeService.save(processInstNode);
     }
+
     //一个节点一个人处理
-    public void checkReject(Integer processInstId, Object formValue, String buttonName, String comment) {
+    public boolean checkReject(Integer processInstId, Object formValue, String buttonName, String comment) {
         SysUser user = (SysUser) httpSession.getAttribute("user");
         ProcessInst processInst = processInstService.getById(processInstId);
         String actProcessInstanceId = processInst.getActProcessInstanceId();
@@ -283,7 +284,9 @@ public class ButtonHandleBean {
         if (flag) {
             workFlowBean.deleteProcessInstance(processInst.getActProcessInstanceId());
         }
+        return flag;
     }
+
     //申请人撤回
     public void recall(Integer processInstId, String buttonName) {
         SysUser user = (SysUser) httpSession.getAttribute("user");

@@ -64,4 +64,8 @@ public class SmallProjectNo implements Serializable {
     private String wbs;
 
     private String projectRate;
+
+    private String projectType;
+
+    private String projectStatus;
 }

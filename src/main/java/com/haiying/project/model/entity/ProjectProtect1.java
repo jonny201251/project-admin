@@ -32,6 +32,8 @@ public class ProjectProtect1 implements Serializable {
 
     private String name;
 
+    private String wbs;
+
     private String taskCode;
 
     private String property;
@@ -52,7 +54,13 @@ public class ProjectProtect1 implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createDatetime;
 
+    private Integer processInstId;
+
     @TableField(exist = false)
     private List<ProjectProtect2> list;
+
+    private String remark;
+    //流程-财务部
+    private String userNamee;
 
 }

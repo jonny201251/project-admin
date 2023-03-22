@@ -9,10 +9,7 @@ import com.haiying.project.mapper.SmallProjectMapper;
 import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.model.vo.SmallProjectAfter;
-import com.haiying.project.service.FormFileService;
-import com.haiying.project.service.ProcessInstService;
-import com.haiying.project.service.SmallProjectService;
-import com.haiying.project.service.SmallProtectService;
+import com.haiying.project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +35,8 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
     SmallProtectService smallProtectService;
     @Autowired
     FormFileService formFileService;
+    @Autowired
+    ProjectCodeService projectCodeService;
 
 
     private void add(SmallProject formValue) {
@@ -53,7 +52,7 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
         formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
         this.save(formValue);
         List<SmallProtect> list = formValue.getList();
-        list.forEach(item -> item.setSmallProjectId(formValue.getId()));
+        list.forEach(item -> item.setProjectId(formValue.getId()));
         smallProtectService.saveBatch(list);
         //文件
         List<FormFile> listt = new ArrayList<>();
@@ -74,11 +73,11 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
     private void edit(SmallProject formValue) {
         formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
         this.updateById(formValue);
-        smallProtectService.remove(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getSmallProjectId, formValue.getId()));
+        smallProtectService.remove(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getProjectId, formValue.getId()));
         List<SmallProtect> list = formValue.getList();
         list.forEach(item -> {
             item.setId(null);
-            item.setSmallProjectId(formValue.getId());
+            item.setProjectId(formValue.getId());
         });
         smallProtectService.saveBatch(list);
 
@@ -101,7 +100,7 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
 
     private void delete(SmallProject formValue) {
         this.removeById(formValue.getId());
-        smallProtectService.remove(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getSmallProjectId, formValue.getId()));
+        smallProtectService.remove(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getProjectId, formValue.getId()));
         formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "SmallProject").eq(FormFile::getBusinessId, formValue.getId()));
 
         Integer beforeId = formValue.getBeforeId();
@@ -134,7 +133,7 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
         List<SmallProtect> list = current.getList();
         list.forEach(item -> {
             item.setId(null);
-            item.setSmallProjectId(current.getId());
+            item.setProjectId(current.getId());
         });
         smallProtectService.saveBatch(list);
 
@@ -188,7 +187,12 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
                 edit(formValue);
             }
             //
-            buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            boolean flag=buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            if (flag) {
+                ProjectCode code = projectCodeService.getOne(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getTaskCode, formValue.getTaskCode()));
+                code.setStatus("已使用");
+                projectCodeService.updateById(code);
+            }
         } else if (type.equals("recall")) {
             buttonHandleBean.recall(formValue.getProcessInstId(), buttonName);
         } else if (type.equals("delete")) {

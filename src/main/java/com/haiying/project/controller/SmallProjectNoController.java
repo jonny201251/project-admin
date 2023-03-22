@@ -51,7 +51,7 @@ public class SmallProjectNoController {
 
     @PostMapping("add")
     public boolean add(@RequestBody SmallProjectNo smallProjectNo) {
-        return smallProjectNoService.save(smallProjectNo);
+        return smallProjectNoService.add(smallProjectNo);
     }
 
     @GetMapping("get")

@@ -88,7 +88,7 @@ public class SmallProjectController {
     @GetMapping("get")
     public SmallProject get(Integer id) {
         SmallProject smallProject = smallProjectService.getById(id);
-        List<SmallProtect> list = smallProtectService.list(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getSmallProjectId, id));
+        List<SmallProtect> list = smallProtectService.list(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getProjectId, id));
         smallProject.setList(list);
         smallProject.setIdTypeListTmp(Arrays.asList(smallProject.getIdType().split(",")));
 

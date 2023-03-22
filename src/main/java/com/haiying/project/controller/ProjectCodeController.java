@@ -7,10 +7,10 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.haiying.project.bean.PageBean;
 import com.haiying.project.common.result.PageData;
 import com.haiying.project.common.result.ResponseResult;
 import com.haiying.project.common.result.Wrapper;
-import com.haiying.project.common.utils.MyPageUtil;
 import com.haiying.project.model.entity.ProjectCode;
 import com.haiying.project.model.entity.SysUser;
 import com.haiying.project.model.vo.LabelValue;
@@ -40,6 +40,8 @@ public class ProjectCodeController {
     ProjectCodeService projectCodeService;
     @Autowired
     HttpSession httpSession;
+    @Autowired
+    PageBean pageBean;
 
     @Wrapper
     @PostMapping("list")
@@ -73,10 +75,9 @@ public class ProjectCodeController {
         return new PageData(1, 100, resultList.size(), 1, resultList);
     }
 
-    @Wrapper
     @PostMapping("add")
     public ResponseResult add(@RequestBody ProjectCode page) {
-        ResponseResult responseResult = ResponseResult.success();
+        ResponseResult responseResult = ResponseResult.success(true);
 
         List<ProjectCode> resultList = new ArrayList<>();
         //判断是否有相似度高的项目名称
@@ -93,7 +94,7 @@ public class ProjectCodeController {
         }
 
         if (ObjectUtil.isNotEmpty(resultList)) {
-            responseResult.setData(MyPageUtil.get(1, 100, resultList.size(), resultList));
+            responseResult.setData(pageBean.get(1, 100, resultList.size(), resultList));
         } else {
             projectCodeService.add(page);
         }

@@ -48,7 +48,7 @@ public class ProviderScore1Controller {
         Integer pageSize = (Integer) paramMap.get("pageSize");
         IPage<ProviderScore1> page;
         LambdaQueryWrapper<ProviderScore1> wrapper = new LambdaQueryWrapper<ProviderScore1>().eq(ProviderScore1::getHaveDisplay, "是").orderByDesc(ProviderScore1::getId);
-        if (!user.getDeptName().equals("孙欢")) {
+        if (!user.getDisplayName().equals("孙欢")) {
             wrapper.eq(ProviderScore1::getDisplayName, user.getDisplayName());
         }
         page = providerScore1Service.page(new Page<>(current, pageSize), wrapper);

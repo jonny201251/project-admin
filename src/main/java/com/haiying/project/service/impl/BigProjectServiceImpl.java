@@ -36,6 +36,8 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
     BigProjectTestService bigProjectTestService;
     @Autowired
     FormFileService formFileService;
+    @Autowired
+    ProjectCodeService projectCodeService;
 
 
     private void add(BigProject formValue) {
@@ -51,7 +53,7 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
         formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
         this.save(formValue);
         List<SmallProtect> list = formValue.getList();
-        list.forEach(item -> item.setSmallProjectId(formValue.getId()));
+        list.forEach(item -> item.setProjectId(formValue.getId()));
         smallProtectService.saveBatch(list);
 
         List<BigProjectTest> list234 = new ArrayList<>();
@@ -100,11 +102,11 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
         formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
         this.updateById(formValue);
 
-        smallProtectService.remove(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getSmallProjectId, formValue.getId()));
+        smallProtectService.remove(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getProjectId, formValue.getId()));
         List<SmallProtect> list = formValue.getList();
         list.forEach(item -> {
             item.setId(null);
-            item.setSmallProjectId(formValue.getId());
+            item.setProjectId(formValue.getId());
         });
         smallProtectService.saveBatch(list);
 
@@ -156,7 +158,7 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
 
     private void delete(BigProject formValue) {
         this.removeById(formValue.getId());
-        smallProtectService.remove(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getSmallProjectId, formValue.getId()));
+        smallProtectService.remove(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getProjectId, formValue.getId()));
         bigProjectTestService.remove(new LambdaQueryWrapper<BigProjectTest>().eq(BigProjectTest::getProjectId, formValue.getId()));
         formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "BigProject").eq(FormFile::getBusinessId, formValue.getId()));
 
@@ -190,7 +192,7 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
         List<SmallProtect> list = current.getList();
         list.forEach(item -> {
             item.setId(null);
-            item.setSmallProjectId(current.getId());
+            item.setProjectId(current.getId());
         });
         smallProtectService.saveBatch(list);
 
@@ -273,7 +275,12 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
                 edit(formValue);
             }
             //
-            buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            boolean flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            if (flag) {
+                ProjectCode code = projectCodeService.getOne(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getTaskCode, formValue.getTaskCode()));
+                code.setStatus("已使用");
+                projectCodeService.updateById(code);
+            }
         } else if (type.equals("recall")) {
             buttonHandleBean.recall(formValue.getProcessInstId(), buttonName);
         } else if (type.equals("delete")) {
