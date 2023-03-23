@@ -459,7 +459,6 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
             List<BudgetProject> list = budgetProjectService.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getProjectId, inOutVO.getProjectId()));
             if(ObjectUtil.isNotEmpty(list)){
                 list.forEach(item->{
-                    item.setWbs(inOutVO.getWbs());
                     item.setContractCode(inOutVO.getContractCode());
                 });
                 budgetProjectService.updateBatchById(list);

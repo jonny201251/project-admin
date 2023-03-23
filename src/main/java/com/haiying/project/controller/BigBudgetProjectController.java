@@ -35,7 +35,7 @@ public class BigBudgetProjectController {
 
     @PostMapping("list")
     public IPage<BudgetProject> list(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<BudgetProject> wrapper = new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getType, "重大项目");
+        LambdaQueryWrapper<BudgetProject> wrapper = new LambdaQueryWrapper<BudgetProject>();
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object type = paramMap.get("type");
@@ -48,7 +48,7 @@ public class BigBudgetProjectController {
 
     @PostMapping("add")
     public boolean add(@RequestBody BudgetProject budgetProject) {
-        return budgetProjectService.add(budgetProject, "重大项目");
+        return budgetProjectService.add(budgetProject);
     }
 
     @GetMapping("get")

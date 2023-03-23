@@ -13,7 +13,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface BudgetProjectService extends IService<BudgetProject> {
 
-    boolean add(BudgetProject budgetProject,String type);
+    boolean add(BudgetProject budgetProject);
 
     boolean edit(BudgetProject budgetProject);
 

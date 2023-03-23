@@ -58,9 +58,9 @@ public class SmallBudgetMoneyController {
             vo.setProperty(project.getProperty());
             vo.setTaskCode(project.getTaskCode());
             if (project.getBaseId() == null) {
-                vo.setType(project.getType() + "预算表");
+                vo.setType(project.getProjectType() + "预算表");
             } else {
-                vo.setType(project.getType() + "预算表(第" + project.getVersion() + "次调整)");
+                vo.setType(project.getProjectType() + "预算表(第" + project.getVersion() + "次调整)");
             }
             vo.setContractMoney(project.getContractMoney());
             vo.setTotalCost(project.getTotalCost());

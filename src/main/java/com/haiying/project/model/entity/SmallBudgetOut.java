@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -27,9 +29,15 @@ public class SmallBudgetOut implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    private String haveDisplay;
+
+    private Integer version;
+
     private Integer budgetId;
 
     private Integer projectId;
+
+    private String projectType;
 
     /**
      * 项目名称
@@ -40,7 +48,7 @@ public class SmallBudgetOut implements Serializable {
      * 项目任务号
      */
     private String taskCode;
-    private String type;
+
     private String costType;
 
     private String costRate;
@@ -57,8 +65,14 @@ public class SmallBudgetOut implements Serializable {
 
     private String remark;
 
-    private String haveDisplay;
+    private String displayName;
 
-    private Integer version;
+    private String loginName;
+
+    private Integer deptId;
+
+    private String deptName;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createDatetime;
 
 }

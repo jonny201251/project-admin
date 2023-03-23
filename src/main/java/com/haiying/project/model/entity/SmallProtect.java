@@ -32,5 +32,5 @@ public class SmallProtect implements Serializable {
 
     private String type;
 
-    private Double money;
+    private String money;
 }

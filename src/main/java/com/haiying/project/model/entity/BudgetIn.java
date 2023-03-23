@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -28,9 +29,15 @@ public class BudgetIn implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    private String haveDisplay;
+
+    private Integer version;
+
     private Integer budgetId;
 
     private Integer projectId;
+
+    private String projectType;
 
     /**
      * 项目名称
@@ -42,19 +49,14 @@ public class BudgetIn implements Serializable {
      */
     private String taskCode;
 
-    private String type;
-
     /**
      * 收入类型
      */
     private String inType;
 
-    private Double sort;
-
     /**
      * 预计回款日期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private String inDate;
 
     //年月，生成预算表时排序
@@ -66,9 +68,18 @@ public class BudgetIn implements Serializable {
      */
     private Double money;
 
+    private Double sort;
+
     private String remark;
 
-    private String haveDisplay;
+    private String displayName;
 
-    private Integer version;
+    private String loginName;
+
+    private Integer deptId;
+
+    private String deptName;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createDatetime;
+
 }

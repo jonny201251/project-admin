@@ -53,7 +53,10 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
         formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
         this.save(formValue);
         List<SmallProtect> list = formValue.getList();
-        list.forEach(item -> item.setProjectId(formValue.getId()));
+        list.forEach(item -> {
+            item.setProjectId(formValue.getId());
+            item.setProjectType("重大项目");
+        });
         smallProtectService.saveBatch(list);
 
         List<BigProjectTest> list234 = new ArrayList<>();
@@ -107,6 +110,7 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
         list.forEach(item -> {
             item.setId(null);
             item.setProjectId(formValue.getId());
+            item.setProjectType("重大项目");
         });
         smallProtectService.saveBatch(list);
 
@@ -193,6 +197,7 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
         list.forEach(item -> {
             item.setId(null);
             item.setProjectId(current.getId());
+            item.setProjectType("重大项目");
         });
         smallProtectService.saveBatch(list);
 

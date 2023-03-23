@@ -1,5 +1,6 @@
 package com.haiying.project.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haiying.project.mapper.BudgetInMapper;
@@ -26,19 +27,27 @@ public class BudgetInServiceImpl extends ServiceImpl<BudgetInMapper, BudgetIn> i
         this.remove(new LambdaQueryWrapper<BudgetIn>().eq(BudgetIn::getBudgetId, budgetInVO.getBudgetId()).eq(BudgetIn::getInType, budgetInVO.getInType()));
         double count = 1;
         List<BudgetIn> list = budgetInVO.getList();
-        budgetInVO.setId(null);
         for (BudgetIn budgetIn : list) {
             budgetIn.setId(null);
-            budgetIn.setSort(count++);
+            if (ObjectUtil.isEmpty(budgetInVO.getSort())) {
+                budgetIn.setSort(count++);
+            } else {
+                budgetIn.setSort(budgetInVO.getSort());
+            }
+            budgetIn.setHaveDisplay(budgetInVO.getHaveDisplay());
+            budgetIn.setVersion(budgetInVO.getVersion());
             budgetIn.setBudgetId(budgetInVO.getBudgetId());
             budgetIn.setProjectId(budgetInVO.getProjectId());
+            budgetIn.setProjectType(budgetInVO.getProjectType());
             budgetIn.setName(budgetInVO.getName());
             budgetIn.setTaskCode(budgetInVO.getTaskCode());
             budgetIn.setInType(budgetInVO.getInType());
-            budgetIn.setSort(budgetInVO.getSort());
             budgetIn.setRemark(budgetInVO.getRemark());
-            budgetIn.setHaveDisplay(budgetInVO.getHaveDisplay());
-            budgetIn.setVersion(budgetInVO.getVersion());
+            budgetIn.setLoginName(budgetInVO.getLoginName());
+            budgetIn.setDisplayName(budgetInVO.getDisplayName());
+            budgetIn.setDeptId(budgetInVO.getDeptId());
+            budgetIn.setDeptName(budgetInVO.getDeptName());
+            budgetIn.setCreateDatetime(budgetInVO.getCreateDatetime());
         }
         return this.saveBatch(list);
     }

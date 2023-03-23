@@ -31,11 +31,6 @@ public class BudgetProject implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    /**
-     * 一般项目，重大项目
-     */
-    private String type;
-
     private Integer baseId;
 
     private Integer beforeId;
@@ -58,6 +53,8 @@ public class BudgetProject implements Serializable {
      * 一般和重大项目的id
      */
     private Integer projectId;
+
+    private String projectType;
 
     private String name;
 
@@ -137,18 +134,11 @@ public class BudgetProject implements Serializable {
     private String remark;
 
     /**
-     * 审批中,完成
-     */
-    private String status;
-
-    /**
      * 项目负责人
      */
     private String projectDisplayName;
 
     private String projectLoginName;
-
-    private String wbs;
 
     @TableField(exist = false)
     private List<BudgetProtect> list;

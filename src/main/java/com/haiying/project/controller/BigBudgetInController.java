@@ -1,20 +1,18 @@
 package com.haiying.project.controller;
 
 
-import cn.hutool.core.util.ObjectUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.model.entity.BudgetIn;
-import com.haiying.project.model.vo.BudgetInVO;
 import com.haiying.project.service.BudgetInService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,39 +39,4 @@ public class BigBudgetInController {
     }
 
 
-    @PostMapping("add")
-    public boolean add(@RequestBody BudgetInVO budgetInVO) {
-        double count = 1;
-        List<BudgetIn> list = budgetInVO.getList();
-        for (BudgetIn budgetIn : list) {
-            if (ObjectUtil.isEmpty(budgetInVO.getSort())) {
-                budgetIn.setSort(count++);
-            } else {
-                budgetIn.setSort(budgetInVO.getSort());
-            }
-            budgetIn.setBudgetId(budgetInVO.getBudgetId());
-            budgetIn.setProjectId(budgetInVO.getProjectId());
-            budgetIn.setName(budgetInVO.getName());
-            budgetIn.setTaskCode(budgetInVO.getTaskCode());
-            budgetIn.setType("重大项目");
-            budgetIn.setInType(budgetInVO.getInType());
-            budgetIn.setRemark(budgetInVO.getRemark());
-
-        }
-        return budgetInService.saveBatch(list);
-    }
-
-    @GetMapping("get")
-    public BudgetInVO get(Integer budgetId, String inType) {
-        BudgetInVO budgetInVO = new BudgetInVO();
-        List<BudgetIn> list = budgetInService.list(new LambdaQueryWrapper<BudgetIn>().eq(BudgetIn::getBudgetId, budgetId).eq(BudgetIn::getInType, inType));
-        BeanUtils.copyProperties(list.get(0), budgetInVO);
-        budgetInVO.setList(list);
-        return budgetInVO;
-    }
-
-    @PostMapping("edit")
-    public boolean edit(@RequestBody BudgetInVO budgetInVO) {
-        return budgetInService.edit(budgetInVO);
-    }
 }

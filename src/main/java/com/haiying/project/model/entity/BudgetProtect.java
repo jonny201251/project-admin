@@ -27,14 +27,11 @@ public class BudgetProtect implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    /**
-     * 一般项目，重大项目
-     */
-    private String type;
-
     private Integer budgetId;
 
     private Integer projectId;
+
+    private String projectType;
 
     /**
      * 担保名称

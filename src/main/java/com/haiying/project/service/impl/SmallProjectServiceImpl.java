@@ -52,7 +52,10 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
         formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
         this.save(formValue);
         List<SmallProtect> list = formValue.getList();
-        list.forEach(item -> item.setProjectId(formValue.getId()));
+        list.forEach(item -> {
+            item.setProjectId(formValue.getId());
+            item.setProjectType("一般项目");
+        });
         smallProtectService.saveBatch(list);
         //文件
         List<FormFile> listt = new ArrayList<>();
@@ -78,6 +81,7 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
         list.forEach(item -> {
             item.setId(null);
             item.setProjectId(formValue.getId());
+            item.setProjectType("一般项目");
         });
         smallProtectService.saveBatch(list);
 
@@ -134,6 +138,7 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
         list.forEach(item -> {
             item.setId(null);
             item.setProjectId(current.getId());
+            item.setProjectType("一般项目");
         });
         smallProtectService.saveBatch(list);
 
@@ -187,7 +192,7 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
                 edit(formValue);
             }
             //
-            boolean flag=buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            boolean flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
             if (flag) {
                 ProjectCode code = projectCodeService.getOne(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getTaskCode, formValue.getTaskCode()));
                 code.setStatus("已使用");

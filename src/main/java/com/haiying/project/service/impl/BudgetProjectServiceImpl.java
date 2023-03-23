@@ -3,15 +3,13 @@ package com.haiying.project.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.mapper.BudgetProjectMapper;
 import com.haiying.project.model.entity.BudgetIn;
 import com.haiying.project.model.entity.BudgetProject;
 import com.haiying.project.model.entity.BudgetProtect;
 import com.haiying.project.model.entity.SmallBudgetOut;
-import com.haiying.project.service.BudgetInService;
-import com.haiying.project.service.BudgetProjectService;
-import com.haiying.project.service.BudgetProtectService;
-import com.haiying.project.service.SmallBudgetOutService;
+import com.haiying.project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,37 +31,78 @@ public class BudgetProjectServiceImpl extends ServiceImpl<BudgetProjectMapper, B
     BudgetInService inService;
     @Autowired
     SmallBudgetOutService outService;
+    @Autowired
+    SmallProjectService smallProjectService;
+    @Autowired
+    SmallProjectNoService smallProjectNoService;
+    @Autowired
+    BigProjectService bigProjectService;
 
     @Override
-    public boolean add(BudgetProject project, String type) {
-        project.setHaveDisplay("是");
-        project.setVersion(0);
-        project.setType(type);
-        this.save(project);
-        List<BudgetProtect> list = project.getList();
-        if (ObjectUtil.isNotEmpty(list)) {
-            for (BudgetProtect protect : list) {
-                protect.setBudgetId(project.getId());
-                protect.setProjectId(project.getProjectId());
-            }
-            budgetProtectService.saveBatch(list);
+    public boolean add(BudgetProject obj) {
+        //判断是否重复
+        List<BudgetProject> ll = this.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getTaskCode, obj.getTaskCode()));
+        if (ObjectUtil.isNotEmpty(ll)) {
+            throw new PageTipException("任务号   已存在");
         }
+        //页面的毛利率>立项时的毛利率
+        int page = Integer.parseInt(obj.getProjectRate().replaceAll("%", ""));
+        int build;
+        String tmp = "";
+        if (obj.getProjectType().equals("一般项目")) {
+            tmp = smallProjectService.getById(obj.getProjectId()).getProjectRate();
+        } else if (obj.getProjectType().equals("重大项目")) {
+            tmp = bigProjectService.getById(obj.getProjectId()).getProjectRate();
+        } else if (obj.getProjectType().equals("一般项目非")) {
+            tmp = smallProjectNoService.getById(obj.getProjectId()).getProjectRate();
+        }
+        build = Integer.parseInt(tmp.replaceAll("%", ""));
+        if (page < build) {
+            throw new PageTipException("预计毛利率低于立项时的毛利率");
+        }
+
+        obj.setHaveDisplay("是");
+        obj.setVersion(0);
+        obj.setProjectDisplayName(obj.getProjectLoginName());
+        this.save(obj);
+        List<BudgetProtect> list = obj.getList();
+        list.forEach(item -> {
+            item.setBudgetId(obj.getId());
+            item.setProjectId(obj.getProjectId());
+            item.setProjectType(obj.getProjectType());
+        });
+        budgetProtectService.saveBatch(list);
         return true;
     }
 
     @Override
-    public boolean edit(BudgetProject project) {
-        this.updateById(project);
-        //
-        budgetProtectService.remove(new LambdaQueryWrapper<BudgetProtect>().eq(BudgetProtect::getBudgetId, project.getId()));
-        List<BudgetProtect> list = project.getList();
-        if (ObjectUtil.isNotEmpty(list)) {
-            for (BudgetProtect protect : list) {
-                protect.setBudgetId(project.getId());
-                protect.setProjectId(project.getProjectId());
-            }
-            budgetProtectService.saveBatch(list);
+    public boolean edit(BudgetProject obj) {
+        //页面的毛利率>立项时的毛利率
+        int page = Integer.parseInt(obj.getProjectRate().replaceAll("%", ""));
+        int build;
+        String tmp = "";
+        if (obj.getProjectType().equals("一般项目")) {
+            tmp = smallProjectService.getById(obj.getProjectId()).getProjectRate();
+        } else if (obj.getProjectType().equals("重大项目")) {
+            tmp = bigProjectService.getById(obj.getProjectId()).getProjectRate();
+        } else if (obj.getProjectType().equals("一般项目非")) {
+            tmp = smallProjectNoService.getById(obj.getProjectId()).getProjectRate();
         }
+        build = Integer.parseInt(tmp.replaceAll("%", ""));
+        if (page < build) {
+            throw new PageTipException("预计毛利率低于立项时的毛利率");
+        }
+
+        this.updateById(obj);
+        //
+        budgetProtectService.remove(new LambdaQueryWrapper<BudgetProtect>().eq(BudgetProtect::getBudgetId, obj.getId()));
+        List<BudgetProtect> list = obj.getList();
+        list.forEach(item -> {
+            item.setBudgetId(obj.getId());
+            item.setProjectId(obj.getProjectId());
+            item.setProjectType(obj.getProjectType());
+        });
+        budgetProtectService.saveBatch(list);
         return true;
     }
 

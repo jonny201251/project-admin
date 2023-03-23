@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <p>
@@ -31,11 +29,6 @@ public class ProjectCodeServiceImpl extends ServiceImpl<ProjectCodeMapper, Proje
     @Autowired
     HttpSession httpSession;
 
-    public List<String> have(ProjectCode projectCode) {
-        List<String> list = new ArrayList<>();
-
-        return list;
-    }
 
     @Override
     public boolean add(ProjectCode projectCode) {
