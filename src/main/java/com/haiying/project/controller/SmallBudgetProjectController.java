@@ -42,7 +42,7 @@ public class SmallBudgetProjectController {
     public IPage<BudgetProject> list(@RequestBody Map<String, Object> paramMap) {
         SysUser user = (SysUser) httpSession.getAttribute("user");
 
-        LambdaQueryWrapper<BudgetProject> wrapper = new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getHaveDisplay, "是");
+        LambdaQueryWrapper<BudgetProject> wrapper = new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getHaveDisplay, "是").orderByDesc(BudgetProject::getId);
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object projectType = paramMap.get("projectType");

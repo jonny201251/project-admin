@@ -66,50 +66,50 @@ public class SmallBudgetInController {
 
 
     @PostMapping("add")
-    public boolean add(@RequestBody BudgetInVO budgetInVO) {
+    public boolean add(@RequestBody BudgetInVO vo) {
         //判断是否重复添加
-        List<BudgetIn> ll = budgetInService.list(new LambdaQueryWrapper<BudgetIn>().eq(BudgetIn::getTaskCode, budgetInVO.getTaskCode()).eq(BudgetIn::getInType, budgetInVO.getInType()));
+        List<BudgetIn> ll = budgetInService.list(new LambdaQueryWrapper<BudgetIn>().eq(BudgetIn::getBudgetId, vo.getBudgetId()).eq(BudgetIn::getInType, vo.getInType()));
         if (ObjectUtil.isNotEmpty(ll)) {
             throw new PageTipException("任务号和收入类型   已存在");
         }
 
         double count = 1;
-        List<BudgetIn> list = budgetInVO.getList();
+        List<BudgetIn> list = vo.getList();
         for (BudgetIn budgetIn : list) {
-            if (ObjectUtil.isEmpty(budgetInVO.getSort())) {
+            if (ObjectUtil.isEmpty(vo.getSort())) {
                 budgetIn.setSort(count++);
             } else {
-                budgetIn.setSort(budgetInVO.getSort());
+                budgetIn.setSort(vo.getSort());
             }
-            budgetIn.setHaveDisplay(budgetInVO.getHaveDisplay());
-            budgetIn.setVersion(budgetInVO.getVersion());
-            budgetIn.setBudgetId(budgetInVO.getBudgetId());
-            budgetIn.setProjectId(budgetInVO.getProjectId());
-            budgetIn.setProjectType(budgetInVO.getProjectType());
-            budgetIn.setName(budgetInVO.getName());
-            budgetIn.setTaskCode(budgetInVO.getTaskCode());
-            budgetIn.setInType(budgetInVO.getInType());
-            budgetIn.setRemark(budgetInVO.getRemark());
-            budgetIn.setLoginName(budgetInVO.getLoginName());
-            budgetIn.setDisplayName(budgetInVO.getDisplayName());
-            budgetIn.setDeptId(budgetInVO.getDeptId());
-            budgetIn.setDeptName(budgetInVO.getDeptName());
-            budgetIn.setCreateDatetime(budgetInVO.getCreateDatetime());
+            budgetIn.setHaveDisplay(vo.getHaveDisplay());
+            budgetIn.setVersion(vo.getVersion());
+            budgetIn.setBudgetId(vo.getBudgetId());
+            budgetIn.setProjectId(vo.getProjectId());
+            budgetIn.setProjectType(vo.getProjectType());
+            budgetIn.setName(vo.getName());
+            budgetIn.setTaskCode(vo.getTaskCode());
+            budgetIn.setInType(vo.getInType());
+            budgetIn.setRemark(vo.getRemark());
+            budgetIn.setLoginName(vo.getLoginName());
+            budgetIn.setDisplayName(vo.getDisplayName());
+            budgetIn.setDeptId(vo.getDeptId());
+            budgetIn.setDeptName(vo.getDeptName());
+            budgetIn.setCreateDatetime(vo.getCreateDatetime());
         }
         return budgetInService.saveBatch(list);
     }
 
     @GetMapping("get")
     public BudgetInVO get(Integer budgetId, String inType) {
-        BudgetInVO budgetInVO = new BudgetInVO();
+        BudgetInVO vo = new BudgetInVO();
         List<BudgetIn> list = budgetInService.list(new LambdaQueryWrapper<BudgetIn>().eq(BudgetIn::getBudgetId, budgetId).eq(BudgetIn::getInType, inType));
-        BeanUtils.copyProperties(list.get(0), budgetInVO);
-        budgetInVO.setList(list);
-        return budgetInVO;
+        BeanUtils.copyProperties(list.get(0), vo);
+        vo.setList(list);
+        return vo;
     }
 
     @PostMapping("edit")
-    public boolean edit(@RequestBody BudgetInVO budgetInVO) {
-        return budgetInService.edit(budgetInVO);
+    public boolean edit(@RequestBody BudgetInVO vo) {
+        return budgetInService.edit(vo);
     }
 }

@@ -152,6 +152,7 @@ public class BudgetProjectServiceImpl extends ServiceImpl<BudgetProjectMapper, B
                 tmp.setId(null);
                 tmp.setBudgetId(newId);
                 tmp.setHaveDisplay("是");
+                tmp.setVersion(project.getVersion());
             }
             inService.saveBatch(inList);
         }
@@ -161,6 +162,7 @@ public class BudgetProjectServiceImpl extends ServiceImpl<BudgetProjectMapper, B
                 tmp.setId(null);
                 tmp.setBudgetId(newId);
                 tmp.setHaveDisplay("是");
+                tmp.setVersion(project.getVersion());
             }
             outService.saveBatch(outList);
         }

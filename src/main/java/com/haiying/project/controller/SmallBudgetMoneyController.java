@@ -8,6 +8,7 @@ import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.*;
 import com.haiying.project.service.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ import static java.util.Optional.ofNullable;
 //一般项目预算表
 @RestController
 @RequestMapping("/smallBudgetMoney")
+@Slf4j
 public class SmallBudgetMoneyController {
     @Autowired
     BudgetProjectService budgetProjectService;
@@ -220,7 +222,7 @@ public class SmallBudgetMoneyController {
 
     //支出明细-第一次
     @GetMapping("out")
-    public synchronized Map<String, List<SmallBudgetMoney2VO>> out(Integer budgetId) {
+    public synchronized Map<String, List<SmallBudgetMoney2VO>> out(Integer budgetId) throws Exception {
         Map<String, List<SmallBudgetMoney2VO>> map = new HashMap<>();
         List<SmallBudgetMoney2VO> list = new ArrayList<>();
         //第一个
@@ -259,7 +261,7 @@ public class SmallBudgetMoneyController {
             Map<String, Integer> inDateMap = inDateMapp.get(budgetId);
             String inDateString = String.join(",", inDateMap.keySet());
             if (!outDateString.equals(inDateString)) {
-                throw new PageTipException("收入明细和支出明细的日期不一致");
+                throw new Exception("收入明细和支出明细的日期不一致");
             }
             //first
             for (Map.Entry<String, Integer> entry : dateMap.entrySet()) {
@@ -624,6 +626,7 @@ public class SmallBudgetMoneyController {
             Map<String, Integer> inDateMap = inDateMapp.get(budgetId);
             String inDateString = String.join(",", inDateMap.keySet());
             if (!outDateString.equals(inDateString)) {
+                log.error("收入明细和支出明细的日期不一致");
                 throw new PageTipException("收入明细和支出明细的日期不一致");
             }
             //first

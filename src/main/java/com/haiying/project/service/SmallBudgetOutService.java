@@ -14,5 +14,7 @@ import com.haiying.project.model.vo.SmallBudgetOutVO;
  */
 public interface SmallBudgetOutService extends IService<SmallBudgetOut> {
 
-    boolean edit(SmallBudgetOutVO smallBudgetOutVO);
+    boolean edit(SmallBudgetOutVO vo);
+
+    boolean add(SmallBudgetOutVO vo);
 }

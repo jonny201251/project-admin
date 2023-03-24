@@ -23,31 +23,31 @@ import java.util.List;
 public class BudgetInServiceImpl extends ServiceImpl<BudgetInMapper, BudgetIn> implements BudgetInService {
 
     @Override
-    public boolean edit(BudgetInVO budgetInVO) {
-        this.remove(new LambdaQueryWrapper<BudgetIn>().eq(BudgetIn::getBudgetId, budgetInVO.getBudgetId()).eq(BudgetIn::getInType, budgetInVO.getInType()));
+    public boolean edit(BudgetInVO vo) {
+        this.remove(new LambdaQueryWrapper<BudgetIn>().eq(BudgetIn::getBudgetId, vo.getBudgetId()).eq(BudgetIn::getInType, vo.getInType()));
         double count = 1;
-        List<BudgetIn> list = budgetInVO.getList();
+        List<BudgetIn> list = vo.getList();
         for (BudgetIn budgetIn : list) {
             budgetIn.setId(null);
-            if (ObjectUtil.isEmpty(budgetInVO.getSort())) {
+            if (ObjectUtil.isEmpty(vo.getSort())) {
                 budgetIn.setSort(count++);
             } else {
-                budgetIn.setSort(budgetInVO.getSort());
+                budgetIn.setSort(vo.getSort());
             }
-            budgetIn.setHaveDisplay(budgetInVO.getHaveDisplay());
-            budgetIn.setVersion(budgetInVO.getVersion());
-            budgetIn.setBudgetId(budgetInVO.getBudgetId());
-            budgetIn.setProjectId(budgetInVO.getProjectId());
-            budgetIn.setProjectType(budgetInVO.getProjectType());
-            budgetIn.setName(budgetInVO.getName());
-            budgetIn.setTaskCode(budgetInVO.getTaskCode());
-            budgetIn.setInType(budgetInVO.getInType());
-            budgetIn.setRemark(budgetInVO.getRemark());
-            budgetIn.setLoginName(budgetInVO.getLoginName());
-            budgetIn.setDisplayName(budgetInVO.getDisplayName());
-            budgetIn.setDeptId(budgetInVO.getDeptId());
-            budgetIn.setDeptName(budgetInVO.getDeptName());
-            budgetIn.setCreateDatetime(budgetInVO.getCreateDatetime());
+            budgetIn.setHaveDisplay(vo.getHaveDisplay());
+            budgetIn.setVersion(vo.getVersion());
+            budgetIn.setBudgetId(vo.getBudgetId());
+            budgetIn.setProjectId(vo.getProjectId());
+            budgetIn.setProjectType(vo.getProjectType());
+            budgetIn.setName(vo.getName());
+            budgetIn.setTaskCode(vo.getTaskCode());
+            budgetIn.setInType(vo.getInType());
+            budgetIn.setRemark(vo.getRemark());
+            budgetIn.setLoginName(vo.getLoginName());
+            budgetIn.setDisplayName(vo.getDisplayName());
+            budgetIn.setDeptId(vo.getDeptId());
+            budgetIn.setDeptName(vo.getDeptName());
+            budgetIn.setCreateDatetime(vo.getCreateDatetime());
         }
         return this.saveBatch(list);
     }

@@ -14,5 +14,5 @@ import com.haiying.project.model.vo.BudgetInVO;
  */
 public interface BudgetInService extends IService<BudgetIn> {
 
-    boolean edit(BudgetInVO budgetInVO);
+    boolean edit(BudgetInVO vo);
 }
