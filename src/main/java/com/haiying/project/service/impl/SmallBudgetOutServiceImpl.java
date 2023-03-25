@@ -4,13 +4,13 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haiying.project.common.exception.PageTipException;
+import com.haiying.project.common.utils.SpringUtil;
 import com.haiying.project.mapper.SmallBudgetOutMapper;
 import com.haiying.project.model.entity.BudgetProject;
 import com.haiying.project.model.entity.SmallBudgetOut;
 import com.haiying.project.model.vo.SmallBudgetOutVO;
 import com.haiying.project.service.BudgetProjectService;
 import com.haiying.project.service.SmallBudgetOutService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,9 +27,6 @@ import static java.util.Optional.ofNullable;
  */
 @Service
 public class SmallBudgetOutServiceImpl extends ServiceImpl<SmallBudgetOutMapper, SmallBudgetOut> implements SmallBudgetOutService {
-    @Autowired
-    BudgetProjectService budgetProjectService;
-
     @Override
     public boolean add(SmallBudgetOutVO vo) {
         //判断是否重复添加
@@ -70,6 +67,7 @@ public class SmallBudgetOutServiceImpl extends ServiceImpl<SmallBudgetOutMapper,
         }
         this.saveBatch(list);
         //成本总预算
+        BudgetProjectService budgetProjectService= SpringUtil.getBean(BudgetProjectService.class);
         BudgetProject budgetProject = budgetProjectService.getById(vo.getBudgetId());
         budgetProject.setTotalCost(totalCost);
         budgetProjectService.updateById(budgetProject);
@@ -113,6 +111,7 @@ public class SmallBudgetOutServiceImpl extends ServiceImpl<SmallBudgetOutMapper,
         }
         this.saveBatch(list);
         //成本总预算
+        BudgetProjectService budgetProjectService= SpringUtil.getBean(BudgetProjectService.class);
         BudgetProject budgetProject = budgetProjectService.getById(vo.getBudgetId());
         budgetProject.setTotalCost(totalCost);
         budgetProjectService.updateById(budgetProject);

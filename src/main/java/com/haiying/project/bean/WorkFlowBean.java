@@ -61,6 +61,7 @@ public class WorkFlowBean {
             //先部署
             BpmnToActivitiBean bpmnToActivitiBean = SpringUtil.getBean(BpmnToActivitiBean.class);
             String activitiXml = bpmnToActivitiBean.convert(processdesign);
+//            System.out.println(activitiXml);
             Deployment deployment = this.deploy(actProcessName, activitiXml);
             //
             processdesign.setDeployId(deployment.getId());
@@ -115,7 +116,6 @@ public class WorkFlowBean {
     public Set<String> getExclusiveGatewayJavaVarName(Integer processDesignId, String taskKey) {
         ProcessDesignEdgeService processDesignEdgeService = SpringUtil.getBean(ProcessDesignEdgeService.class);
         Set<String> set = new HashSet<>();
-        System.out.println();
         //排他网关的连线的id
         List<ProcessDesignEdge> edgeList = processDesignEdgeService.list(new LambdaQueryWrapper<ProcessDesignEdge>().eq(ProcessDesignEdge::getProcessDesignId, processDesignId).eq(ProcessDesignEdge::getSourceTaskKey, taskKey).likeRight(ProcessDesignEdge::getTargetTaskKey, "ExclusiveGateway"));
         if (ObjectUtil.isNotEmpty(edgeList)) {

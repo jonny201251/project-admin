@@ -75,4 +75,6 @@ public class SmallBudgetOut implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createDatetime;
 
+    @TableField(exist = false)
+    private ProcessInst processInst;
 }

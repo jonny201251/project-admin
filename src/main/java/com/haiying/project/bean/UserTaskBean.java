@@ -46,6 +46,8 @@ public class UserTaskBean {
     SmallProjectService smallProjectService;
     @Autowired
     ProjectProtectService projectProtectService;
+    @Autowired
+    SmallBudgetRunService smallBudgetRunService;
 
     public Set<String> getLoginNameList(ProcessDesignTask processDesignTask, Integer businessId, String actProcessInstanceId) {
         Set<String> loginNameSet = new TreeSet<>();
@@ -98,17 +100,7 @@ public class UserTaskBean {
             //表单---删除
             ProcessDesign processDesign = processDesignService.getById(processDesignTask.getProcessDesignId());
             String path = processDesign.getPath();
-            if (path.equals("providerScore1Path")) {
-                //供方评分
-                ProviderScore1 providerScore1 = providerScore1Service.getById(businessId);
-                String typee = providerScore1.getType();
-                if (typee.equals("民用产业项目")) {
-                    loginNameSet.add("张强");
-                } else {
-                    //技改或自筹项目
-                    loginNameSet.add("张强");
-                }
-            } else if (path.equals("providerQueryPath")) {
+            if (path.equals("providerQueryPath")) {
                 //供方尽职调查
                 ProviderQuery providerQuery = providerQueryService.getById(businessId);
                 String str = providerQuery.getUserNamee();
@@ -154,6 +146,11 @@ public class UserTaskBean {
                 //投标保证金(函)登记
                 ProjectProtect projectProtect = projectProtectService.getById(businessId);
                 String userNamee = projectProtect.getUserNamee();
+                loginNameSet.add(userNamee);
+            } else if (path.equals("smallBudgetRunPath") || path.equals("bigBudgetRunPath")) {
+                //一般项目预算
+                SmallBudgetRun smallBudgetRun = smallBudgetRunService.getById(businessId);
+                String userNamee = smallBudgetRun.getUserNamee();
                 loginNameSet.add(userNamee);
             } else {
                 throw new PageTipException("需要处理人");

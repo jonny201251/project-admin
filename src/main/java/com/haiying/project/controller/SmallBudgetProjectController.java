@@ -8,15 +8,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.model.entity.BudgetProject;
 import com.haiying.project.model.entity.BudgetProtect;
+import com.haiying.project.model.entity.ProcessInst;
 import com.haiying.project.model.entity.SysUser;
 import com.haiying.project.service.BudgetProjectService;
 import com.haiying.project.service.BudgetProtectService;
+import com.haiying.project.service.ProcessInstService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -36,13 +39,15 @@ public class SmallBudgetProjectController {
     BudgetProtectService budgetProtectService;
     @Autowired
     HttpSession httpSession;
+    @Autowired
+    ProcessInstService processInstService;
 
 
     @PostMapping("list")
     public IPage<BudgetProject> list(@RequestBody Map<String, Object> paramMap) {
         SysUser user = (SysUser) httpSession.getAttribute("user");
 
-        LambdaQueryWrapper<BudgetProject> wrapper = new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getHaveDisplay, "是").orderByDesc(BudgetProject::getId);
+        LambdaQueryWrapper<BudgetProject> wrapper = new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getHaveDisplay, "是");
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object projectType = paramMap.get("projectType");
@@ -73,7 +78,16 @@ public class SmallBudgetProjectController {
             wrapper.eq(BudgetProject::getDisplayName, user.getDisplayName());
         }
 
-        return budgetProjectService.page(new Page<>(current, pageSize), wrapper);
+        IPage<BudgetProject> page = budgetProjectService.page(new Page<>(current, pageSize), wrapper);
+        List<BudgetProject> recordList = page.getRecords();
+        if (ObjectUtil.isNotEmpty(recordList)) {
+            List<Integer> idList = recordList.stream().map(BudgetProject::getId).collect(Collectors.toList());
+            List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().like(ProcessInst::getPath,"BudgetRunPath").in(ProcessInst::getBusinessId, idList));
+            Map<Integer, ProcessInst> processInstMap = processInstList.stream().collect(Collectors.toMap(ProcessInst::getBusinessId, v -> v));
+            recordList.forEach(record -> record.setProcessInst(processInstMap.get(record.getId())));
+        }
+
+        return page;
     }
 
     //用于 预计收入、支出、预算

@@ -7,9 +7,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.result.Wrapper;
+import com.haiying.project.model.entity.ProcessInst;
 import com.haiying.project.model.entity.SmallBudgetOut;
 import com.haiying.project.model.entity.SysUser;
 import com.haiying.project.model.vo.SmallBudgetOutVO;
+import com.haiying.project.service.ProcessInstService;
 import com.haiying.project.service.SmallBudgetOutService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -35,6 +38,8 @@ public class SmallBudgetOutController {
     SmallBudgetOutService smallBudgetOutService;
     @Autowired
     HttpSession httpSession;
+    @Autowired
+    ProcessInstService processInstService;
 
     @PostMapping("list")
     public IPage<SmallBudgetOut> list(@RequestBody Map<String, Object> paramMap) {
@@ -60,7 +65,15 @@ public class SmallBudgetOutController {
             wrapper.eq("display_name", user.getDisplayName());
         }
         wrapper.select("distinct budget_id,project_id,name,task_code,cost_type,cost_rate,version,display_name,dept_name,create_datetime").orderByAsc("budget_id,sort");
-        return smallBudgetOutService.page(new Page<>(current, pageSize), wrapper);
+        IPage<SmallBudgetOut> page = smallBudgetOutService.page(new Page<>(current, pageSize), wrapper);
+        List<SmallBudgetOut> recordList = page.getRecords();
+        if (ObjectUtil.isNotEmpty(recordList)) {
+            List<Integer> idList = recordList.stream().map(SmallBudgetOut::getBudgetId).collect(Collectors.toList());
+            List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().like(ProcessInst::getPath, "BudgetRunPath").in(ProcessInst::getBusinessId, idList));
+            Map<Integer, ProcessInst> processInstMap = processInstList.stream().collect(Collectors.toMap(ProcessInst::getBusinessId, v -> v));
+            recordList.forEach(record -> record.setProcessInst(processInstMap.get(record.getBudgetId())));
+        }
+        return page;
     }
 
 

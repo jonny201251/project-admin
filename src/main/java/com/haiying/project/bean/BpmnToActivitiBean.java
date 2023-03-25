@@ -23,14 +23,14 @@ public class BpmnToActivitiBean {
 
     private Map<String, String> getEgeMap(ProcessDesign processDesign) {
         Map<String, String> map = new HashMap<>();
-        List<ProcessDesignEdge> edgeList = processDesignEdgeService.list(new LambdaQueryWrapper<ProcessDesignEdge>().eq(ProcessDesignEdge::getProcessDesignId, processDesign.getId()).isNotNull(ProcessDesignEdge::getEdgeName));
+        List<ProcessDesignEdge> edgeList = processDesignEdgeService.list(new LambdaQueryWrapper<ProcessDesignEdge>().eq(ProcessDesignEdge::getProcessDesignId, processDesign.getId()));
         if (ObjectUtil.isNotEmpty(edgeList)) {
             for (ProcessDesignEdge edge : edgeList) {
                 List<String> tmp = new ArrayList<>();
                 tmp.add("<sequenceFlow id=\"" + edge.getEdgeId() + "\" name=\"" + edge.getEdgeName() + "\" sourceRef=\"" + edge.getSourceTaskKey() + "\" targetRef=\"" + edge.getTargetTaskKey() + "\">");
                 if (ObjectUtil.isNotEmpty(edge.getButtonName())) {
                     tmp.add("<conditionExpression xsi:type=\"tFormalExpression\"><![CDATA[#{" + edge.getSourceTaskKey() + "==\"" + edge.getButtonName() + "\"}]]></conditionExpression>");
-                } else {
+                } else if (ObjectUtil.isNotEmpty(edge.getConditionExpression())) {
                     tmp.add("<conditionExpression xsi:type=\"tFormalExpression\"><![CDATA[#{" + edge.getConditionExpression() + "}]]></conditionExpression>");
                 }
                 tmp.add("</sequenceFlow>");

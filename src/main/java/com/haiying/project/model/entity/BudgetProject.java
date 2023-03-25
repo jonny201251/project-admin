@@ -142,4 +142,7 @@ public class BudgetProject implements Serializable {
 
     @TableField(exist = false)
     private List<BudgetProtect> list;
+
+    @TableField(exist = false)
+    private ProcessInst processInst;
 }

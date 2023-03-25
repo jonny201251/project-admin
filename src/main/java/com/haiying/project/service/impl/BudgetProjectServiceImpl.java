@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.mapper.BudgetProjectMapper;
-import com.haiying.project.model.entity.BudgetIn;
-import com.haiying.project.model.entity.BudgetProject;
-import com.haiying.project.model.entity.BudgetProtect;
-import com.haiying.project.model.entity.SmallBudgetOut;
+import com.haiying.project.model.entity.*;
 import com.haiying.project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,7 +38,7 @@ public class BudgetProjectServiceImpl extends ServiceImpl<BudgetProjectMapper, B
     @Override
     public boolean add(BudgetProject obj) {
         //判断是否重复
-        List<BudgetProject> ll = this.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getTaskCode, obj.getTaskCode()));
+        List<BudgetProject> ll = this.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getHaveDisplay, "是").eq(BudgetProject::getTaskCode, obj.getTaskCode()));
         if (ObjectUtil.isNotEmpty(ll)) {
             throw new PageTipException("任务号   已存在");
         }
@@ -111,9 +108,9 @@ public class BudgetProjectServiceImpl extends ServiceImpl<BudgetProjectMapper, B
         Integer oldId, newId;
         BudgetProject project = this.getById(id);
         oldId = project.getId();
-        List<BudgetProtect> protectList = budgetProtectService.list(new LambdaQueryWrapper<BudgetProtect>().eq(BudgetProtect::getBudgetId, id));
-        List<BudgetIn> inList = inService.list(new LambdaQueryWrapper<BudgetIn>().eq(BudgetIn::getBudgetId, id));
-        List<SmallBudgetOut> outList = outService.list(new LambdaQueryWrapper<SmallBudgetOut>().eq(SmallBudgetOut::getBudgetId, id));
+        List<BudgetProtect> protectList = budgetProtectService.list(new LambdaQueryWrapper<BudgetProtect>().eq(BudgetProtect::getBudgetId, oldId));
+        List<BudgetIn> inList = inService.list(new LambdaQueryWrapper<BudgetIn>().eq(BudgetIn::getBudgetId, oldId));
+        List<SmallBudgetOut> outList = outService.list(new LambdaQueryWrapper<SmallBudgetOut>().eq(SmallBudgetOut::getBudgetId, oldId));
 
         project.setHaveDisplay("否");
         this.updateById(project);
