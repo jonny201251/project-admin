@@ -8,10 +8,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.model.entity.ProjectIn;
+import com.haiying.project.model.entity.SysUser;
 import com.haiying.project.service.ProjectInService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,17 +32,26 @@ import java.util.stream.Stream;
 @Wrapper
 public class ProjectInController {
     @Autowired
+    HttpSession httpSession;
+    @Autowired
     ProjectInService projectInService;
 
     @PostMapping("list")
     public IPage<ProjectIn> list(@RequestBody Map<String, Object> paramMap) {
+        SysUser user = (SysUser) httpSession.getAttribute("user");
         LambdaQueryWrapper<ProjectIn> wrapper = new LambdaQueryWrapper<>();
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
-        Object type = paramMap.get("type");
         Object name = paramMap.get("name");
-        if (ObjectUtil.isNotEmpty(type)) {
-            wrapper.like(ProjectIn::getId, type);
+        Object taskCode = paramMap.get("taskCode");
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like(ProjectIn::getName, name);
+        }
+        if (ObjectUtil.isNotEmpty(taskCode)) {
+            wrapper.like(ProjectIn::getTaskCode, taskCode);
+        }
+        if (!user.getDeptName().equals("综合计划部")) {
+            wrapper.eq(ProjectIn::getDisplayName, user.getDisplayName());
         }
         return projectInService.page(new Page<>(current, pageSize), wrapper);
     }
@@ -48,10 +59,10 @@ public class ProjectInController {
     @PostMapping("add")
     public boolean add(@RequestBody ProjectIn projectIn) {
         if (ObjectUtil.isAllEmpty(projectIn.getMoney1(), projectIn.getMoney2())) {
-            throw new PageTipException("必须有一个开票金额或者付款金额");
+            throw new PageTipException("必须有一个开票金额或者收款金额");
         }
         if (ObjectUtil.isAllNotEmpty(projectIn.getMoney1(), projectIn.getMoney2())) {
-            throw new PageTipException("只能有一个开票金额或者付款金额");
+            throw new PageTipException("只能有一个开票金额或者收款金额");
         }
         return projectInService.add(projectIn);
     }
@@ -64,10 +75,10 @@ public class ProjectInController {
     @PostMapping("edit")
     public boolean edit(@RequestBody ProjectIn projectIn) {
         if (ObjectUtil.isAllEmpty(projectIn.getMoney1(), projectIn.getMoney2())) {
-            throw new PageTipException("必须有一个开票金额或者付款金额");
+            throw new PageTipException("必须有一个开票金额或者收款金额");
         }
         if (ObjectUtil.isAllNotEmpty(projectIn.getMoney1(), projectIn.getMoney2())) {
-            throw new PageTipException("只能有一个开票金额或者付款金额");
+            throw new PageTipException("只能有一个开票金额或者收款金额");
         }
         return projectInService.updateById(projectIn);
     }

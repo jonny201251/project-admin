@@ -7,10 +7,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.model.entity.ProjectIo;
+import com.haiying.project.model.entity.SysUser;
 import com.haiying.project.service.ProjectIoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,17 +31,26 @@ import java.util.stream.Stream;
 @Wrapper
 public class ProjectIoController {
     @Autowired
+    HttpSession httpSession;
+    @Autowired
     ProjectIoService projectIoService;
 
     @PostMapping("list")
     public IPage<ProjectIo> list(@RequestBody Map<String, Object> paramMap) {
+        SysUser user = (SysUser) httpSession.getAttribute("user");
         LambdaQueryWrapper<ProjectIo> wrapper = new LambdaQueryWrapper<>();
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
-        Object type = paramMap.get("type");
         Object name = paramMap.get("name");
-        if (ObjectUtil.isNotEmpty(type)) {
-            wrapper.like(ProjectIo::getId, type);
+        Object taskCode = paramMap.get("taskCode");
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like(ProjectIo::getName, name);
+        }
+        if (ObjectUtil.isNotEmpty(taskCode)) {
+            wrapper.like(ProjectIo::getTaskCode, taskCode);
+        }
+        if (!user.getDeptName().equals("综合计划部")) {
+            wrapper.eq(ProjectIo::getDisplayName, user.getDisplayName());
         }
         return projectIoService.page(new Page<>(current, pageSize), wrapper);
     }

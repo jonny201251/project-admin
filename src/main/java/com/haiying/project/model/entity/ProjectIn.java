@@ -33,6 +33,8 @@ public class ProjectIn implements Serializable {
 
     private Integer projectId;
 
+    private String projectType;
+
     private String taskCode;
 
     private String name;

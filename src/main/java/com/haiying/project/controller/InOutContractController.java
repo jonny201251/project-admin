@@ -108,34 +108,13 @@ public class InOutContractController {
 
     @PostMapping("add")
     public boolean add(@RequestBody InOutVO inOutVO) {
-        if(inOutVO.getContractType().equals("收款合同")){
-            return true;
-        }else{
-            return true;
-//                    outContractService.updateCode(inOutVO);
+        if (inOutVO.getContractType().equals("收款合同")) {
+            inContractService.updateCode(inOutVO);
+        } else {
+            outContractService.updateCode(inOutVO);
         }
+        return true;
     }
 
-//    public boolean updateCode(InOutVO inOutVO) {
-//        OutContract outcontract = this.getById(inOutVO.getId());
-//        outcontract.setContractCode(inOutVO.getContractCode());
-//        if (ObjectUtil.isEmpty(outcontract.getWbs())) {
-//            outcontract.setWbs(inOutVO.getWbs());
-//
-//            List<BudgetProject> list = budgetProjectService.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getProjectId, inOutVO.getProjectId()));
-//            if (ObjectUtil.isNotEmpty(list)) {
-//                budgetProjectService.updateBatchById(list);
-//            }
-//
-//            InContractService inContractService = SpringUtil.getBean(InContractService.class);
-//            List<InContract> list2 = inContractService.list(new LambdaQueryWrapper<InContract>().eq(InContract::getProjectId, inOutVO.getProjectId()));
-//            if (ObjectUtil.isNotEmpty(list2)) {
-//                list2.forEach(item -> item.setWbs(inOutVO.getWbs()));
-//                inContractService.updateBatchById(list2);
-//            }
-//        }
-//        this.updateById(outcontract);
-//        return true;
-//    }
 
 }

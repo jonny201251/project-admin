@@ -70,7 +70,7 @@ public class SmallBudgetMoneyController {
             vo.setEndDate(project.getEndDate().toString());
             vo.setProtectRate(project.getProtectRate());
             vo.setProjectRate(project.getProjectRate());
-            vo.setEndMoney(project.getEndMoney());
+            vo.setEndMoney(String.valueOf(project.getEndMoney()));
             vo.setInChangeMoney(project.getInChangeMoney());
             vo.setOutChangeMoney(project.getOutChangeMoney());
             vo.setInvoiceRate(project.getInvoiceRate());

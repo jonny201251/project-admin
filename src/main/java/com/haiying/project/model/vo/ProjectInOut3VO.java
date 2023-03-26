@@ -16,7 +16,7 @@ public class ProjectInOut3VO {
     //合同金额
     private Double contractMoney;
     //结算金额
-    private Double endMoney;
+    private String endMoney;
     //税率
     private String rate;
     //备注

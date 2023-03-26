@@ -33,6 +33,8 @@ public class ProjectIo implements Serializable {
 
     private Integer projectId;
 
+    private String projectType;
+
     /**
      * wbs编号
      */

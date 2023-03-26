@@ -7,15 +7,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.result.Wrapper;
-import com.haiying.project.model.entity.ProjectIn;
-import com.haiying.project.model.entity.ProjectIo;
-import com.haiying.project.model.entity.ProjectOut;
+import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.ProjectInOut2VO;
 import com.haiying.project.model.vo.ProjectInOut3VO;
 import com.haiying.project.model.vo.ProjectInOutVO;
-import com.haiying.project.service.ProjectInService;
-import com.haiying.project.service.ProjectIoService;
-import com.haiying.project.service.ProjectOutService;
+import com.haiying.project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +37,10 @@ public class ProjectInOutController {
     ProjectOutService projectOutService;
     @Autowired
     ProjectIoService projectIoService;
+    @Autowired
+    BudgetProjectService budgetProjectService;
+    @Autowired
+    InContractService inContractService;
 
     //收支明细表、项目收支表
     @PostMapping("list")
@@ -62,14 +62,21 @@ public class ProjectInOutController {
     public synchronized Map<String, List<ProjectInOutVO>> getInOut1(Integer projectId) {
         ProjectInOutVO projectInOutVO = new ProjectInOutVO();
         List<ProjectIn> inList = projectInService.list(new LambdaQueryWrapper<ProjectIn>().eq(ProjectIn::getProjectId, projectId));
-
+        List<BudgetProject> budgetList = budgetProjectService.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getProjectId, projectId));
         ProjectIn projectIn = inList.get(0);
+        BudgetProject budget = budgetList.get(0);
         //
         projectInOutVO.setName(projectIn.getName());
         projectInOutVO.setTaskCode(projectIn.getTaskCode());
         projectInOutVO.setProperty(projectIn.getProperty());
         projectInOutVO.setWbs(projectIn.getWbs());
         projectInOutVO.setContractCode(projectIn.getContractCode());
+        projectInOutVO.setDeptName(projectIn.getDeptName());
+        projectInOutVO.setEndMoney(String.valueOf(projectIn.getEndMoney()));
+        //
+        projectInOutVO.setCostMoneyTotal(budget.getTotalCost());
+        projectInOutVO.setRate1(budget.getProjectRatee());
+        projectInOutVO.setRate2(budget.getProjectRate());
 
         Double inMoneyTotal = 0.0;
         for (ProjectIn in : inList) {
@@ -203,6 +210,18 @@ public class ProjectInOutController {
         return map;
     }
 
+    //项目明细表-项目信息
+    @GetMapping("getProjectDetail")
+    public synchronized Map<String, List<InContract>> getProjectDetail(Integer projectId) {
+        InContract inContract = inContractService.list(new LambdaQueryWrapper<InContract>().eq(InContract::getProjectId, projectId)).get(0);
+        List<InContract> list = new ArrayList<>();
+        list.add(inContract);
+
+        Map<String, List<InContract>> map = new HashMap<>();
+        map.put("data", list);
+        return map;
+    }
+
     //项目明细表-收款明细
     @GetMapping("getInDetail")
     public synchronized Map<String, List<ProjectInOut3VO>> getInDetail(Integer projectId) {
@@ -224,7 +243,11 @@ public class ProjectInOutController {
                     vo.setContractCode(item.getContractCode());
                     vo.setName(item.getCustomerName());
                     vo.setContractMoney(item.getContractMoney());
-                    vo.setEndMoney(item.getEndMoney());
+                    if (ObjectUtil.isEmpty(item.getEndMoney())) {
+                        vo.setEndMoney(" ");
+                    } else {
+                        vo.setEndMoney(String.valueOf(item.getEndMoney()));
+                    }
                     vo.setRemarkk(item.getRemarkk());
                     vo.setInOutDate(item.getInDate().toString());
                     vo.setRemark(item.getRemark());
@@ -273,7 +296,11 @@ public class ProjectInOutController {
                             vo.setContractCode(item.getContractCode());
                             vo.setName(item.getProviderName());
                             vo.setContractMoney(item.getContractMoney());
-                            vo.setEndMoney(item.getEndMoney());
+                            if (ObjectUtil.isEmpty(item.getEndMoney())) {
+                                vo.setEndMoney(" ");
+                            } else {
+                                vo.setEndMoney(String.valueOf(item.getEndMoney()));
+                            }
                             vo.setRate(item.getCostRate());
                             vo.setRemarkk(item.getRemarkk());
                             vo.setInOutDate(item.getOutDate().toString());
@@ -310,7 +337,11 @@ public class ProjectInOutController {
                             vo.setContractCode(item.getContractCode());
                             vo.setName(item.getProviderName());
                             vo.setContractMoney(item.getContractMoney());
-                            vo.setEndMoney(item.getEndMoney());
+                            if (ObjectUtil.isEmpty(item.getEndMoney())) {
+                                vo.setEndMoney(" ");
+                            } else {
+                                vo.setEndMoney(String.valueOf(item.getEndMoney()));
+                            }
                             vo.setRate(item.getCostRate());
                             vo.setRemarkk(item.getRemarkk());
                             vo.setInOutDate(item.getOutDate().toString());

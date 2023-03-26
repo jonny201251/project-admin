@@ -54,11 +54,13 @@ public class InContractController {
         LambdaQueryWrapper<InContract> wrapper = new LambdaQueryWrapper<InContract>().orderByDesc(InContract::getId);
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
-        Object type = paramMap.get("type");
         Object name = paramMap.get("name");
-
+        Object taskCode = paramMap.get("taskCode");
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(InContract::getName, name);
+        }
+        if (ObjectUtil.isNotEmpty(taskCode)) {
+            wrapper.like(InContract::getTaskCode, taskCode);
         }
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq(InContract::getDisplayName, user.getDisplayName());

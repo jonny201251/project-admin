@@ -14,6 +14,6 @@ public class ProjectInOutVO {
     private Double costMoneyTotal;//成本预算
     private String rate1;//预计利润率
     private String rate2;//实时利润率
-    private Double endMoney;//结算金额
+    private String endMoney;//结算金额
     private String deptName;
 }

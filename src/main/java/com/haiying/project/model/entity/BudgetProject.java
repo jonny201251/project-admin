@@ -111,15 +111,17 @@ public class BudgetProject implements Serializable {
      */
     private String invoiceRate;
 
+    //预计毛利率
+    private String projectRatee;
     /**
-     * 项目毛利率
+     * 实时毛利率
      */
     private String projectRate;
 
     /**
      * 结算金额
      */
-    private String endMoney;
+    private Double endMoney;
 
     /**
      * 收入调整金额

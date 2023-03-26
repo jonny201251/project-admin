@@ -8,14 +8,20 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.model.entity.ProjectOut;
+import com.haiying.project.model.entity.SmallBudgetOut;
+import com.haiying.project.model.entity.SysUser;
 import com.haiying.project.service.ProjectOutService;
+import com.haiying.project.service.SmallBudgetOutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * <p>
@@ -30,17 +36,28 @@ import java.util.stream.Stream;
 @Wrapper
 public class ProjectOutController {
     @Autowired
+    HttpSession httpSession;
+    @Autowired
     ProjectOutService projectOutService;
+    @Autowired
+    SmallBudgetOutService smallBudgetOutService;
 
     @PostMapping("list")
     public IPage<ProjectOut> list(@RequestBody Map<String, Object> paramMap) {
+        SysUser user = (SysUser) httpSession.getAttribute("user");
         LambdaQueryWrapper<ProjectOut> wrapper = new LambdaQueryWrapper<>();
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
-        Object type = paramMap.get("type");
         Object name = paramMap.get("name");
-        if (ObjectUtil.isNotEmpty(type)) {
-            wrapper.like(ProjectOut::getId, type);
+        Object taskCode = paramMap.get("taskCode");
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like(ProjectOut::getName, name);
+        }
+        if (ObjectUtil.isNotEmpty(taskCode)) {
+            wrapper.like(ProjectOut::getTaskCode, taskCode);
+        }
+        if (!user.getDeptName().equals("综合计划部")) {
+            wrapper.eq(ProjectOut::getDisplayName, user.getDisplayName());
         }
         return projectOutService.page(new Page<>(current, pageSize), wrapper);
     }
@@ -90,6 +107,25 @@ public class ProjectOutController {
             projectOut.setCostRate(null);
             projectOut.setOutStyle(null);
             projectOut.setArriveDate(null);
+        }
+
+        //支出不能超出预算
+        if (projectOut.getHaveContract().equals("有")) {
+            List<SmallBudgetOut> ll = smallBudgetOutService.list(new LambdaQueryWrapper<SmallBudgetOut>().eq(SmallBudgetOut::getHaveDisplay, "是").eq(SmallBudgetOut::getTaskCode, projectOut.getTaskCode()).eq(SmallBudgetOut::getCostType, projectOut.getCostType()));
+            double totalCost = 0.0;
+            for (SmallBudgetOut smallBudgetOut : ll) {
+                totalCost += ofNullable(smallBudgetOut.getMoney()).orElse(0.0);
+            }
+            if (ObjectUtil.isNotEmpty(projectOut.getMoney1())) {
+                if (projectOut.getMoney1() > totalCost) {
+                    throw new PageTipException("开票金额:" + projectOut.getMoney1() + " ,超出预算额:" + totalCost);
+                }
+            }
+            if (ObjectUtil.isNotEmpty(projectOut.getMoney2())) {
+                if (projectOut.getMoney2() > totalCost) {
+                    throw new PageTipException("付款金额:" + projectOut.getMoney2() + " ,超出预算额:" + totalCost);
+                }
+            }
         }
         return projectOutService.updateById(projectOut);
     }
