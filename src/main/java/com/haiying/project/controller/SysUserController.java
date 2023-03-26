@@ -48,12 +48,16 @@ public class SysUserController {
         Integer pageSize = (Integer) paramMap.get("pageSize");
         LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
         Object deptName = paramMap.get("deptName");
+        Object displayName = paramMap.get("displayName");
         Object loginName = paramMap.get("loginName");
         if (ObjectUtil.isNotEmpty(deptName)) {
             wrapper.like(SysUser::getDeptName, deptName);
         }
         if (ObjectUtil.isNotEmpty(loginName)) {
             wrapper.like(SysUser::getLoginName, loginName);
+        }
+        if (ObjectUtil.isNotEmpty(displayName)) {
+            wrapper.like(SysUser::getDisplayName, displayName);
         }
         return sysUserService.page(new Page<>(current, pageSize), wrapper);
     }
@@ -102,9 +106,9 @@ public class SysUserController {
 
         List<SysPermission> menuList;
         if (dbUser.getDisplayName().equals("张强")) {
-            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().ne(SysPermission::getId,45).orderByAsc(SysPermission::getSort));
+            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().ne(SysPermission::getId, 45).orderByAsc(SysPermission::getSort));
         } else {
-            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().notIn(SysPermission::getId,45).gt(SysPermission::getId, 34).orderByAsc(SysPermission::getSort));
+            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().notIn(SysPermission::getId, 45).gt(SysPermission::getId, 34).orderByAsc(SysPermission::getSort));
         }
         userVO.setMenuList(TreeUtil.getTree(menuList));
 
