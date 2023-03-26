@@ -56,6 +56,8 @@ public class SmallBudgetProjectController {
         Object property = paramMap.get("property");
         Object contractCode = paramMap.get("contractCode");
         Object contractName = paramMap.get("contractName");
+        Object displayName = paramMap.get("displayName");
+        Object deptName = paramMap.get("deptName");
         if (ObjectUtil.isNotEmpty(projectType)) {
             wrapper.like(BudgetProject::getProjectType, projectType);
         }
@@ -74,6 +76,12 @@ public class SmallBudgetProjectController {
         if (ObjectUtil.isNotEmpty(contractName)) {
             wrapper.like(BudgetProject::getContractName, contractName);
         }
+        if (ObjectUtil.isNotEmpty(displayName)) {
+            wrapper.like(BudgetProject::getDisplayName, displayName);
+        }
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper.like(BudgetProject::getDeptName, deptName);
+        }
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq(BudgetProject::getDisplayName, user.getDisplayName());
         }
@@ -82,7 +90,7 @@ public class SmallBudgetProjectController {
         List<BudgetProject> recordList = page.getRecords();
         if (ObjectUtil.isNotEmpty(recordList)) {
             List<Integer> idList = recordList.stream().map(BudgetProject::getId).collect(Collectors.toList());
-            List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().like(ProcessInst::getPath,"BudgetRunPath").in(ProcessInst::getBusinessId, idList));
+            List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().like(ProcessInst::getPath, "BudgetRunPath").in(ProcessInst::getBusinessId, idList));
             Map<Integer, ProcessInst> processInstMap = processInstList.stream().collect(Collectors.toMap(ProcessInst::getBusinessId, v -> v));
             recordList.forEach(record -> record.setProcessInst(processInstMap.get(record.getId())));
         }

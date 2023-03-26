@@ -45,12 +45,40 @@ public class OutContractController {
         LambdaQueryWrapper<OutContract> wrapper = new LambdaQueryWrapper<OutContract>().orderByDesc(OutContract::getId);
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
-        Object type = paramMap.get("type");
-        Object name = paramMap.get("name");
 
+        Object name = paramMap.get("name");
+        Object taskCode = paramMap.get("taskCode");
+        Object wbs = paramMap.get("wbs");
+        Object contractCode = paramMap.get("contractCode");
+        Object contractName = paramMap.get("contractName");
+        Object providerName = paramMap.get("providerName");
+        Object displayName = paramMap.get("displayName");
+        Object deptName = paramMap.get("deptName");
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(OutContract::getName, name);
         }
+        if (ObjectUtil.isNotEmpty(taskCode)) {
+            wrapper.like(OutContract::getTaskCode, taskCode);
+        }
+        if (ObjectUtil.isNotEmpty(wbs)) {
+            wrapper.like(OutContract::getWbs, wbs);
+        }
+        if (ObjectUtil.isNotEmpty(contractCode)) {
+            wrapper.like(OutContract::getContractCode, contractCode);
+        }
+        if (ObjectUtil.isNotEmpty(contractName)) {
+            wrapper.like(OutContract::getContractName, contractName);
+        }
+        if (ObjectUtil.isNotEmpty(providerName)) {
+            wrapper.like(OutContract::getProviderName, providerName);
+        }
+        if (ObjectUtil.isNotEmpty(displayName)) {
+            wrapper.like(OutContract::getDisplayName, displayName);
+        }
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper.like(OutContract::getDeptName, deptName);
+        }
+
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq(OutContract::getDisplayName, user.getDisplayName());
         }

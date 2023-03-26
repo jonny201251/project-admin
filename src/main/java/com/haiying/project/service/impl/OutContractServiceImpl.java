@@ -89,9 +89,9 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
 
     @Override
     public boolean add(OutContract outContract) {
-        if (ObjectUtil.isEmpty(outContract.getWbs())) {
-            throw new PageTipException("必须有WBS编号，如果没有，合同签署情况->合同号和WBS号,进行补全");
-        }
+//        if (ObjectUtil.isEmpty(outContract.getWbs())) {
+//            throw new PageTipException("必须有WBS编号，如果没有，合同签署情况->合同号和WBS号,进行补全");
+//        }
         //先有收款合同，才能进行付款合同
         List<InContract> ll = inContractService.list(new LambdaQueryWrapper<InContract>().eq(InContract::getTaskCode, outContract.getTaskCode()));
         if (ObjectUtil.isEmpty(ll)) {

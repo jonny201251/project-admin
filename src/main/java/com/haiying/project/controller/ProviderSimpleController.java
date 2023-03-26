@@ -46,7 +46,11 @@ public class ProviderSimpleController {
         LambdaQueryWrapper<ProviderSimple> wrapper = new LambdaQueryWrapper<>();
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
-        Object name = paramMap.get("namee");
+        Object usee = paramMap.get("usee");
+        Object name = paramMap.get("name");
+        if (ObjectUtil.isNotEmpty(usee)) {
+            wrapper.like(ProviderSimple::getUsee, usee);
+        }
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(ProviderSimple::getName, name);
         }

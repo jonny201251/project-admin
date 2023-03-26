@@ -49,6 +49,17 @@ public class CustomerScore1Controller {
         Integer pageSize = (Integer) paramMap.get("pageSize");
         IPage<CustomerScore1> page;
         LambdaQueryWrapper<CustomerScore1> wrapper = new LambdaQueryWrapper<CustomerScore1>().eq(CustomerScore1::getHaveDisplay, "是").orderByDesc(CustomerScore1::getId);
+
+        Object customerName = paramMap.get("customerName");
+        Object result = paramMap.get("result");
+        if (ObjectUtil.isNotEmpty(customerName)) {
+            wrapper.like(CustomerScore1::getCustomerName, customerName);
+        }
+        if (ObjectUtil.isNotEmpty(result)) {
+            wrapper.like(CustomerScore1::getResult, result);
+        }
+
+
         if (!user.getDisplayName().equals("宋思奇")) {
             wrapper.eq(CustomerScore1::getDisplayName, user.getDisplayName());
         }

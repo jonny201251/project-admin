@@ -5,13 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haiying.project.bean.ButtonHandleBean;
 import com.haiying.project.mapper.CustomerScore1Mapper;
-import com.haiying.project.model.entity.CustomerScore1;
-import com.haiying.project.model.entity.CustomerScore2;
-import com.haiying.project.model.entity.ProcessInst;
-import com.haiying.project.model.entity.SysUser;
+import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.CustomerScore1After;
 import com.haiying.project.service.CustomerScore1Service;
 import com.haiying.project.service.CustomerScore2Service;
+import com.haiying.project.service.CustomerService;
 import com.haiying.project.service.ProcessInstService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +35,8 @@ public class CustomerScore1ServiceImpl extends ServiceImpl<CustomerScore1Mapper,
     CustomerScore2Service customerScore2Service;
     @Autowired
     HttpSession httpSession;
+    @Autowired
+    CustomerService customerService;
 
 
     private void add(CustomerScore1 formValue) {
@@ -166,7 +166,12 @@ public class CustomerScore1ServiceImpl extends ServiceImpl<CustomerScore1Mapper,
             if (haveEditForm.equals("是")) {
                 edit(formValue);
             }
-            buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            boolean flag=buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            if (flag) {
+                Customer customer = customerService.getById(formValue.getCustomerId());
+                customer.setResult(formValue.getResult());
+                customerService.updateById(customer);
+            }
         } else if (type.equals("recall")) {
             buttonHandleBean.recall(formValue.getProcessInstId(), buttonName);
         } else if (type.equals("delete")) {

@@ -104,7 +104,7 @@ public class SysUserController {
         if (dbUser.getDisplayName().equals("张强")) {
             menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().ne(SysPermission::getId,45).orderByAsc(SysPermission::getSort));
         } else {
-            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().ne(SysPermission::getId,45).gt(SysPermission::getId, 34).orderByAsc(SysPermission::getSort));
+            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().notIn(SysPermission::getId,45).gt(SysPermission::getId, 34).orderByAsc(SysPermission::getSort));
         }
         userVO.setMenuList(TreeUtil.getTree(menuList));
 

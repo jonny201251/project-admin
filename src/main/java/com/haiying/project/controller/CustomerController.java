@@ -51,8 +51,16 @@ public class CustomerController {
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");
+        Object property = paramMap.get("property");
+        Object code = paramMap.get("code");
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(Customer::getName, name);
+        }
+        if (ObjectUtil.isNotEmpty(property)) {
+            wrapper.like(Customer::getProperty, property);
+        }
+        if (ObjectUtil.isNotEmpty(code)) {
+            wrapper.like(Customer::getCode, code);
         }
 
         SysUser user = (SysUser) httpSession.getAttribute("user");

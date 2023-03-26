@@ -54,14 +54,36 @@ public class InContractController {
         LambdaQueryWrapper<InContract> wrapper = new LambdaQueryWrapper<InContract>().orderByDesc(InContract::getId);
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
+
         Object name = paramMap.get("name");
         Object taskCode = paramMap.get("taskCode");
+        Object wbs = paramMap.get("wbs");
+        Object contractCode = paramMap.get("contractCode");
+        Object contractName = paramMap.get("contractName");
+        Object displayName = paramMap.get("displayName");
+        Object deptName = paramMap.get("deptName");
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(InContract::getName, name);
         }
         if (ObjectUtil.isNotEmpty(taskCode)) {
             wrapper.like(InContract::getTaskCode, taskCode);
         }
+        if (ObjectUtil.isNotEmpty(wbs)) {
+            wrapper.like(InContract::getWbs, wbs);
+        }
+        if (ObjectUtil.isNotEmpty(contractCode)) {
+            wrapper.like(InContract::getContractCode, contractCode);
+        }
+        if (ObjectUtil.isNotEmpty(contractName)) {
+            wrapper.like(InContract::getContractName, contractName);
+        }
+        if (ObjectUtil.isNotEmpty(displayName)) {
+            wrapper.like(InContract::getDisplayName, displayName);
+        }
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper.like(InContract::getDeptName, deptName);
+        }
+
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq(InContract::getDisplayName, user.getDisplayName());
         }

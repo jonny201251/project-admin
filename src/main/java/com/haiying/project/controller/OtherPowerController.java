@@ -51,6 +51,33 @@ public class OtherPowerController {
         Integer pageSize = (Integer) paramMap.get("pageSize");
         IPage<OtherPower> page;
         LambdaQueryWrapper<OtherPower> wrapper = new LambdaQueryWrapper<OtherPower>().eq(OtherPower::getDisplayName, user.getDisplayName()).eq(OtherPower::getHaveDisplay, "是").orderByDesc(OtherPower::getId);
+
+
+        Object displayNamee = paramMap.get("displayNamee");
+        Object descc = paramMap.get("descc");
+        Object code = paramMap.get("code");
+        Object status = paramMap.get("status");
+        Object displayName = paramMap.get("displayName");
+        Object deptName = paramMap.get("deptName");
+        if (ObjectUtil.isNotEmpty(displayNamee)) {
+            wrapper.like(OtherPower::getDisplayNamee, displayNamee);
+        }
+        if (ObjectUtil.isNotEmpty(descc)) {
+            wrapper.like(OtherPower::getDescc, descc);
+        }
+        if (ObjectUtil.isNotEmpty(code)) {
+            wrapper.like(OtherPower::getCode, code);
+        }
+        if (ObjectUtil.isNotEmpty(status)) {
+            wrapper.like(OtherPower::getStatus, status);
+        }
+        if (ObjectUtil.isNotEmpty(displayName)) {
+            wrapper.like(OtherPower::getDisplayName, displayName);
+        }
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper.like(OtherPower::getDeptName, deptName);
+        }
+
         page = otherPowerService.page(new Page<>(current, pageSize), wrapper);
         List<OtherPower> recordList = page.getRecords();
         if (ObjectUtil.isNotEmpty(recordList)) {

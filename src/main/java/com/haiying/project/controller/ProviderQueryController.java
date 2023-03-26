@@ -51,6 +51,16 @@ public class ProviderQueryController {
         Integer pageSize = (Integer) paramMap.get("pageSize");
         IPage<ProviderQuery> page;
         LambdaQueryWrapper<ProviderQuery> wrapper = new LambdaQueryWrapper<ProviderQuery>().eq(ProviderQuery::getHaveDisplay, "是").orderByDesc(ProviderQuery::getId);
+
+        Object usee = paramMap.get("usee");
+        Object name = paramMap.get("name");
+        if (ObjectUtil.isNotEmpty(usee)) {
+            wrapper.like(ProviderQuery::getUsee, usee);
+        }
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like(ProviderQuery::getName, name);
+        }
+
         if (!user.getDisplayName().equals("孙欢")) {
             wrapper.eq(ProviderQuery::getDisplayName, user.getDisplayName());
         }

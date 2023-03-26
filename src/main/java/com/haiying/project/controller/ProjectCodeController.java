@@ -55,11 +55,26 @@ public class ProjectCodeController {
             wrapper.like(ProjectCode::getBusinessType, type);
         }
 
-
-/*        SysUser user = (SysUser) httpSession.getAttribute("user");
-        if (!user.getDisplayName().equals("代佳宝")) {
-            wrapper.eq(ProjectCode::getLoginName, user.getLoginName());
-        }*/
+        Object projectName = paramMap.get("projectName");
+        Object taskCode = paramMap.get("taskCode");
+        Object status = paramMap.get("status");
+        Object displayName = paramMap.get("displayName");
+        Object deptName = paramMap.get("deptName");
+        if (ObjectUtil.isNotEmpty(projectName)) {
+            wrapper.like(ProjectCode::getProjectName, projectName);
+        }
+        if (ObjectUtil.isNotEmpty(taskCode)) {
+            wrapper.like(ProjectCode::getTaskCode, taskCode);
+        }
+        if (ObjectUtil.isNotEmpty(status)) {
+            wrapper.like(ProjectCode::getStatus, status);
+        }
+        if (ObjectUtil.isNotEmpty(displayName)) {
+            wrapper.like(ProjectCode::getDisplayName, displayName);
+        }
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper.like(ProjectCode::getDeptName, deptName);
+        }
 
         return projectCodeService.page(new Page<>(current, pageSize), wrapper);
     }

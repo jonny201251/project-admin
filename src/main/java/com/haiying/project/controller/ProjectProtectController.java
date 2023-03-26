@@ -46,7 +46,34 @@ public class ProjectProtectController {
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         IPage<ProjectProtect> page;
+
         LambdaQueryWrapper<ProjectProtect> wrapper = new LambdaQueryWrapper<ProjectProtect>().orderByDesc(ProjectProtect::getId);
+
+        Object name = paramMap.get("name");
+        Object taskCode = paramMap.get("taskCode");
+        Object status = paramMap.get("status");
+        Object type = paramMap.get("type");
+        Object displayName = paramMap.get("displayName");
+        Object deptName = paramMap.get("deptName");
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like(ProjectProtect::getName, name);
+        }
+        if (ObjectUtil.isNotEmpty(taskCode)) {
+            wrapper.like(ProjectProtect::getTaskCode, taskCode);
+        }
+        if (ObjectUtil.isNotEmpty(status)) {
+            wrapper.like(ProjectProtect::getStatus, status);
+        }
+        if (ObjectUtil.isNotEmpty(type)) {
+            wrapper.like(ProjectProtect::getType, type);
+        }
+        if (ObjectUtil.isNotEmpty(displayName)) {
+            wrapper.like(ProjectProtect::getDisplayName, displayName);
+        }
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper.like(ProjectProtect::getDeptName, deptName);
+        }
+
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq(ProjectProtect::getDisplayName, user.getDisplayName());
         }

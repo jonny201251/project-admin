@@ -41,14 +41,32 @@ public class ProjectIoController {
         LambdaQueryWrapper<ProjectIo> wrapper = new LambdaQueryWrapper<>();
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
+
         Object name = paramMap.get("name");
         Object taskCode = paramMap.get("taskCode");
+        Object wbs = paramMap.get("wbs");
+        Object type2 = paramMap.get("type2");
+        Object displayName = paramMap.get("displayName");
+        Object deptName = paramMap.get("deptName");
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(ProjectIo::getName, name);
         }
         if (ObjectUtil.isNotEmpty(taskCode)) {
             wrapper.like(ProjectIo::getTaskCode, taskCode);
         }
+        if (ObjectUtil.isNotEmpty(wbs)) {
+            wrapper.like(ProjectIo::getWbs, wbs);
+        }
+        if (ObjectUtil.isNotEmpty(type2)) {
+            wrapper.like(ProjectIo::getType2, type2);
+        }
+        if (ObjectUtil.isNotEmpty(displayName)) {
+            wrapper.like(ProjectIo::getDisplayName, displayName);
+        }
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper.like(ProjectIo::getDeptName, deptName);
+        }
+
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq(ProjectIo::getDisplayName, user.getDisplayName());
         }

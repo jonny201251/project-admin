@@ -37,10 +37,28 @@ public class SmallProjectNoController {
         LambdaQueryWrapper<SmallProjectNo> wrapper = new LambdaQueryWrapper<>();
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
+
         Object name = paramMap.get("name");
+        Object taskCode = paramMap.get("taskCode");
+        Object projectStatus = paramMap.get("projectStatus");
+        Object displayName = paramMap.get("displayName");
+        Object deptName = paramMap.get("deptName");
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(SmallProjectNo::getName, name);
         }
+        if (ObjectUtil.isNotEmpty(taskCode)) {
+            wrapper.like(SmallProjectNo::getTaskCode, taskCode);
+        }
+        if (ObjectUtil.isNotEmpty(projectStatus)) {
+            wrapper.like(SmallProjectNo::getProjectStatus, projectStatus);
+        }
+        if (ObjectUtil.isNotEmpty(displayName)) {
+            wrapper.like(SmallProjectNo::getDisplayName, displayName);
+        }
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper.like(SmallProjectNo::getDeptName, deptName);
+        }
+
         SysUser user = (SysUser) httpSession.getAttribute("user");
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq(SmallProjectNo::getLoginName, user.getLoginName());

@@ -42,14 +42,36 @@ public class ProjectInController {
         LambdaQueryWrapper<ProjectIn> wrapper = new LambdaQueryWrapper<>();
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
+
         Object name = paramMap.get("name");
         Object taskCode = paramMap.get("taskCode");
+        Object wbs = paramMap.get("wbs");
+        Object contractCode = paramMap.get("contractCode");
+        Object contractName = paramMap.get("contractName");
+        Object displayName = paramMap.get("displayName");
+        Object deptName = paramMap.get("deptName");
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(ProjectIn::getName, name);
         }
         if (ObjectUtil.isNotEmpty(taskCode)) {
             wrapper.like(ProjectIn::getTaskCode, taskCode);
         }
+        if (ObjectUtil.isNotEmpty(wbs)) {
+            wrapper.like(ProjectIn::getWbs, wbs);
+        }
+        if (ObjectUtil.isNotEmpty(contractCode)) {
+            wrapper.like(ProjectIn::getContractCode, contractCode);
+        }
+        if (ObjectUtil.isNotEmpty(contractName)) {
+            wrapper.like(ProjectIn::getContractName, contractName);
+        }
+        if (ObjectUtil.isNotEmpty(displayName)) {
+            wrapper.like(ProjectIn::getDisplayName, displayName);
+        }
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper.like(ProjectIn::getDeptName, deptName);
+        }
+
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq(ProjectIn::getDisplayName, user.getDisplayName());
         }

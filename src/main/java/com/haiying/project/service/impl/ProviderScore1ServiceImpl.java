@@ -6,14 +6,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haiying.project.bean.ButtonHandleBean;
 import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.mapper.ProviderScore1Mapper;
-import com.haiying.project.model.entity.ProcessInst;
-import com.haiying.project.model.entity.ProviderScore1;
-import com.haiying.project.model.entity.ProviderScore2;
-import com.haiying.project.model.entity.SysUser;
+import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.ProviderScore1After;
 import com.haiying.project.service.ProcessInstService;
 import com.haiying.project.service.ProviderScore1Service;
 import com.haiying.project.service.ProviderScore2Service;
+import com.haiying.project.service.ProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +36,8 @@ public class ProviderScore1ServiceImpl extends ServiceImpl<ProviderScore1Mapper,
     ProcessInstService processInstService;
     @Autowired
     HttpSession httpSession;
+    @Autowired
+    ProviderService providerService;
 
     private void add(ProviderScore1 formValue) {
         //判断是否重复添加
@@ -171,7 +171,12 @@ public class ProviderScore1ServiceImpl extends ServiceImpl<ProviderScore1Mapper,
             if (haveEditForm.equals("是")) {
                 edit(formValue);
             }
-            buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            boolean flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            if (flag) {
+                Provider provider = providerService.getById(formValue.getProviderId());
+                provider.setResult(formValue.getResult());
+                providerService.updateById(provider);
+            }
         } else if (type.equals("recall")) {
             buttonHandleBean.recall(formValue.getProcessInstId(), buttonName);
         } else if (type.equals("delete")) {

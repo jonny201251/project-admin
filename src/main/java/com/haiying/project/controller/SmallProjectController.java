@@ -51,6 +51,37 @@ public class SmallProjectController {
         Integer pageSize = (Integer) paramMap.get("pageSize");
         IPage<SmallProject> page;
         LambdaQueryWrapper<SmallProject> wrapper = new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getHaveDisplay, "是").orderByDesc(SmallProject::getId);
+
+        Object name = paramMap.get("name");
+        Object taskCode = paramMap.get("taskCode");
+        Object projectStatus = paramMap.get("projectStatus");
+        Object customerName = paramMap.get("customerName");
+        Object providerName = paramMap.get("providerName");
+        Object displayName = paramMap.get("displayName");
+        Object deptName = paramMap.get("deptName");
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like(SmallProject::getName, name);
+        }
+        if (ObjectUtil.isNotEmpty(taskCode)) {
+            wrapper.like(SmallProject::getTaskCode, taskCode);
+        }
+        if (ObjectUtil.isNotEmpty(projectStatus)) {
+            wrapper.like(SmallProject::getProjectStatus, projectStatus);
+        }
+        if (ObjectUtil.isNotEmpty(customerName)) {
+            wrapper.like(SmallProject::getCustomerName, customerName);
+        }
+        if (ObjectUtil.isNotEmpty(providerName)) {
+            wrapper.like(SmallProject::getProviderName, providerName);
+        }
+        if (ObjectUtil.isNotEmpty(displayName)) {
+            wrapper.like(SmallProject::getDisplayName, displayName);
+        }
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper.like(SmallProject::getDeptName, deptName);
+        }
+
+
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq(SmallProject::getDisplayName, user.getDisplayName());
         }

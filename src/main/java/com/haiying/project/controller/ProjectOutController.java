@@ -48,14 +48,40 @@ public class ProjectOutController {
         LambdaQueryWrapper<ProjectOut> wrapper = new LambdaQueryWrapper<>();
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
+
         Object name = paramMap.get("name");
         Object taskCode = paramMap.get("taskCode");
+        Object wbs = paramMap.get("wbs");
+        Object costType = paramMap.get("costType");
+        Object contractCode = paramMap.get("contractCode");
+        Object contractName = paramMap.get("contractName");
+        Object displayName = paramMap.get("displayName");
+        Object deptName = paramMap.get("deptName");
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(ProjectOut::getName, name);
         }
         if (ObjectUtil.isNotEmpty(taskCode)) {
             wrapper.like(ProjectOut::getTaskCode, taskCode);
         }
+        if (ObjectUtil.isNotEmpty(wbs)) {
+            wrapper.like(ProjectOut::getWbs, wbs);
+        }
+        if (ObjectUtil.isNotEmpty(costType)) {
+            wrapper.like(ProjectOut::getCostType, costType);
+        }
+        if (ObjectUtil.isNotEmpty(contractCode)) {
+            wrapper.like(ProjectOut::getContractCode, contractCode);
+        }
+        if (ObjectUtil.isNotEmpty(contractName)) {
+            wrapper.like(ProjectOut::getContractName, contractName);
+        }
+        if (ObjectUtil.isNotEmpty(displayName)) {
+            wrapper.like(ProjectOut::getDisplayName, displayName);
+        }
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper.like(ProjectOut::getDeptName, deptName);
+        }
+
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq(ProjectOut::getDisplayName, user.getDisplayName());
         }
