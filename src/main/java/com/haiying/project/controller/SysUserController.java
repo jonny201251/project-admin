@@ -9,15 +9,19 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.common.utils.TreeUtil;
+import com.haiying.project.model.entity.LoginLog;
 import com.haiying.project.model.entity.SysPermission;
 import com.haiying.project.model.entity.SysUser;
 import com.haiying.project.model.vo.UserVO;
+import com.haiying.project.service.LoginLogService;
 import com.haiying.project.service.SysPermissionService;
 import com.haiying.project.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,6 +45,10 @@ public class SysUserController {
     HttpSession httpSession;
     @Autowired
     SysPermissionService sysPermissionService;
+    @Autowired
+    LoginLogService loginLogService;
+    @Autowired
+    HttpServletRequest request;
 
     @PostMapping("list")
     public IPage<SysUser> list(@RequestBody Map<String, Object> paramMap) {
@@ -85,8 +93,25 @@ public class SysUserController {
         return sysUserService.removeByIds(idList);
     }
 
+    private String getClientIp() {
+        String remoteAddr = "";
+        if (request != null) {
+            remoteAddr = request.getHeader("X-FORWARDED-FOR");
+            if (remoteAddr == null || "".equals(remoteAddr)) {
+                remoteAddr = request.getRemoteAddr();
+            }
+        }
+        return remoteAddr;
+    }
+
     @PostMapping("login")
     public UserVO login(@RequestBody SysUser pageUser) {
+        LoginLog log = new LoginLog();
+        log.setLoginName(pageUser.getLoginName());
+        log.setIp(getClientIp());
+        log.setCreateDatetime(LocalDateTime.now());
+        loginLogService.save(log);
+
         SysUser dbUser = sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getLoginName, pageUser.getLoginName()));
         if (dbUser == null) {
             throw new PageTipException("用户名不存在");
