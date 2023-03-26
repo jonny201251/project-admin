@@ -43,8 +43,8 @@ public class InOutContractController {
         Integer pageSize = (Integer) paramMap.get("pageSize");
 
         SysUser user = (SysUser) httpSession.getAttribute("user");
-        List<InContract> list1 = inContractService.list(new LambdaQueryWrapper<InContract>().eq(InContract::getHaveDisplay, "是").eq(InContract::getDeptId, user.getDeptId()).isNull(InContract::getContractCode));
-        List<OutContract> list2 = outContractService.list(new LambdaQueryWrapper<OutContract>().eq(OutContract::getHaveDisplay, "是").eq(OutContract::getDeptId, user.getDeptId()).isNull(OutContract::getContractCode));
+        List<InContract> list1 = inContractService.list(new LambdaQueryWrapper<InContract>().eq(InContract::getDeptId, user.getDeptId()).isNull(InContract::getContractCode));
+        List<OutContract> list2 = outContractService.list(new LambdaQueryWrapper<OutContract>().eq(OutContract::getDeptId, user.getDeptId()).isNull(OutContract::getContractCode));
 
         if (ObjectUtil.isNotEmpty(list1)) {
             for (InContract item : list1) {
@@ -54,6 +54,7 @@ public class InOutContractController {
                 vo.setProjectId(item.getProjectId());
                 vo.setName(item.getName());
                 vo.setWbs(item.getWbs());
+                vo.setTaskCode(item.getTaskCode());
                 vo.setContractType("收款合同");
                 vo.setContractName(item.getContractName());
                 vo.setContractCode(item.getContractCode());
@@ -76,6 +77,7 @@ public class InOutContractController {
                 vo.setProjectId(item.getProjectId());
                 vo.setName(item.getName());
                 vo.setWbs(item.getWbs());
+                vo.setTaskCode(item.getTaskCode());
                 vo.setContractType("付款合同");
                 vo.setContractName(item.getContractName());
                 vo.setContractCode(item.getContractCode());
@@ -107,10 +109,33 @@ public class InOutContractController {
     @PostMapping("add")
     public boolean add(@RequestBody InOutVO inOutVO) {
         if(inOutVO.getContractType().equals("收款合同")){
-            return inContractService.updateCode(inOutVO);
+            return true;
         }else{
-            return outContractService.updateCode(inOutVO);
+            return true;
+//                    outContractService.updateCode(inOutVO);
         }
     }
+
+//    public boolean updateCode(InOutVO inOutVO) {
+//        OutContract outcontract = this.getById(inOutVO.getId());
+//        outcontract.setContractCode(inOutVO.getContractCode());
+//        if (ObjectUtil.isEmpty(outcontract.getWbs())) {
+//            outcontract.setWbs(inOutVO.getWbs());
+//
+//            List<BudgetProject> list = budgetProjectService.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getProjectId, inOutVO.getProjectId()));
+//            if (ObjectUtil.isNotEmpty(list)) {
+//                budgetProjectService.updateBatchById(list);
+//            }
+//
+//            InContractService inContractService = SpringUtil.getBean(InContractService.class);
+//            List<InContract> list2 = inContractService.list(new LambdaQueryWrapper<InContract>().eq(InContract::getProjectId, inOutVO.getProjectId()));
+//            if (ObjectUtil.isNotEmpty(list2)) {
+//                list2.forEach(item -> item.setWbs(inOutVO.getWbs()));
+//                inContractService.updateBatchById(list2);
+//            }
+//        }
+//        this.updateById(outcontract);
+//        return true;
+//    }
 
 }

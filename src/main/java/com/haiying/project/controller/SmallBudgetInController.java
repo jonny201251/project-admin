@@ -65,7 +65,7 @@ public class SmallBudgetInController {
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq("display_name", user.getDisplayName());
         }
-        wrapper.select("distinct budget_id,name,task_code,in_type,version,display_name,dept_name,create_datetime").orderByAsc("budget_id,sort");
+        wrapper.select("distinct budget_id,name,task_code,in_type,version,display_name,dept_name").orderByAsc("budget_id,sort");
         IPage<BudgetIn> page = budgetInService.page(new Page<>(current, pageSize), wrapper);
         List<BudgetIn> recordList = page.getRecords();
         if (ObjectUtil.isNotEmpty(recordList)) {

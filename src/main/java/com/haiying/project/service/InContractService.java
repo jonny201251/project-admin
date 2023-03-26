@@ -2,8 +2,7 @@ package com.haiying.project.service;
 
 import com.haiying.project.model.entity.InContract;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.haiying.project.model.vo.InContractVO;
-import com.haiying.project.model.vo.InOutVO;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * <p>
@@ -11,11 +10,13 @@ import com.haiying.project.model.vo.InOutVO;
  * </p>
  *
  * @author 作者
- * @since 2022-04-21
+ * @since 2023-03-25
  */
 public interface InContractService extends IService<InContract> {
 
-    boolean btnHandle(InContractVO inContractVO);
+    boolean upload(MultipartFile multipartFile);
 
-    boolean updateCode(InOutVO inOutVO);
+    boolean edit(InContract inContract);
+
+    boolean add(InContract inContract);
 }

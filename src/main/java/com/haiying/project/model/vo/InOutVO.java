@@ -12,6 +12,7 @@ public class InOutVO {
     private Integer projectId;
     private String name;
     private String wbs;
+    private String taskCode;
     //合同类型：收款合同、付款合同
     private String contractType;
     private String contractName;

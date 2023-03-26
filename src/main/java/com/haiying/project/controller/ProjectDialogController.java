@@ -52,7 +52,10 @@ public class ProjectDialogController {
         Object taskCode = paramMap.get("taskCode");
         String projectType = (String) paramMap.get("projectType");
         if (projectType.equals("一般项目")) {
-            LambdaQueryWrapper<SmallProject> wrapper = new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getHaveDisplay, "是").eq(SmallProject::getDeptId, user.getDeptId()).like(SmallProject::getName, name);
+            LambdaQueryWrapper<SmallProject> wrapper = new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getHaveDisplay, "是").like(SmallProject::getName, name);
+            if (!user.getDeptName().equals("综合计划部")) {
+                wrapper.eq(SmallProject::getDeptId, user.getDeptId());
+            }
             if (ObjectUtil.isNotEmpty(taskCode)) {
                 wrapper.like(SmallProject::getTaskCode, taskCode);
             }

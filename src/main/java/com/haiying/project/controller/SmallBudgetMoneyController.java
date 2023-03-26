@@ -397,7 +397,7 @@ public class SmallBudgetMoneyController {
         List<SmallBudgetOut> outList = budgetOutService.list(new LambdaQueryWrapper<SmallBudgetOut>().eq(SmallBudgetOut::getBudgetId, beforeBudgetId).orderByAsc(SmallBudgetOut::getSort));
         if (ObjectUtil.isNotEmpty(outList)) {
             //a4,已签合同额--没有判断 审批流程是否结束
-            List<OutContract> outContractList = outContractService.list(new LambdaQueryWrapper<OutContract>().eq(OutContract::getProjectId, projectId).eq(OutContract::getHaveDisplay, "是"));
+            List<OutContract> outContractList = outContractService.list(new LambdaQueryWrapper<OutContract>().eq(OutContract::getProjectId, projectId));
             //a5,截止2022年11月已支出额
             List<ProjectOut> projectOutList = projectOutService.list(new LambdaQueryWrapper<ProjectOut>().eq(ProjectOut::getProjectId, projectId).isNotNull(ProjectOut::getMoney2).lt(ProjectOut::getOutDate, fisrtInDate));
             //分组

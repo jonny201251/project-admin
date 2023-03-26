@@ -19,7 +19,7 @@ import java.util.List;
  * </p>
  *
  * @author 作者
- * @since 2022-04-21
+ * @since 2023-03-26
  */
 @Getter
 @Setter
@@ -31,13 +31,28 @@ public class OutContract implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    private Integer baseId;
+    /**
+     * 一般项目，重大项目
+     */
+    private String projectType;
 
-    private Integer beforeId;
+    /**
+     * 一般和重大项目的id
+     */
+    private Integer projectId;
 
-    private String haveDisplay;
+    private String name;
 
-    private Integer version;
+    private String wbs;
+
+    /**
+     * 任务号
+     */
+    private String taskCode;
+
+    private Integer budgetId;
+
+    private String property;
 
     private String displayName;
 
@@ -49,29 +64,11 @@ public class OutContract implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createDatetime;
 
-    /**
-     * 一般项目，重大项目
-     */
-    private String type;
-    private String wbs;
-    private Integer budgetId;
-    /**
-     * 一般和重大项目的id
-     */
-    private Integer projectId;
-
-    private String name;
-
-    /**
-     * 任务号
-     */
-    private String taskCode;
-
-    private String property;
-
     private Integer providerId;
 
     private String providerName;
+
+    private String providerUsee;
 
     /**
      * 合同号
@@ -83,7 +80,9 @@ public class OutContract implements Serializable {
      */
     private Double contractMoney;
 
-    //结算金额
+    /**
+     * 结算金额
+     */
     private Double endMoney;
 
     /**
@@ -93,14 +92,9 @@ public class OutContract implements Serializable {
 
     private String remark;
 
-    private Integer processInstId;
-
     private String costType;
 
     private String costRate;
-
-    @TableField(exist = false)
-    private ProcessInst processInst;
 
     @TableField(exist = false)
     private List<FileVO> fileList;

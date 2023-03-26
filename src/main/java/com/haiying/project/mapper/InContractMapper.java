@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author 作者
- * @since 2022-04-21
+ * @since 2023-03-25
  */
 @Mapper
 public interface InContractMapper extends BaseMapper<InContract> {
