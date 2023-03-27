@@ -48,7 +48,6 @@ public class SmallBudgetMoneyController {
     //基本信息
     @GetMapping("get")
     public synchronized Map<String, List<SmallBudgetMoney1VO>> get(Integer budgetId) {
-        System.out.println(budgetId);
         Map<String, List<SmallBudgetMoney1VO>> map = new HashMap<>();
         List<SmallBudgetMoney1VO> list = new ArrayList<>();
         SmallBudgetMoney1VO vo = new SmallBudgetMoney1VO();
@@ -434,7 +433,6 @@ public class SmallBudgetMoneyController {
                 a245Map.put(beforeBudgetId + "-" + key, vo);
             }
         }
-        System.out.println();
     }
 
     //收入明细-调整
