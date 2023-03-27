@@ -64,7 +64,7 @@ public class SmallBudgetOutController {
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq("display_name", user.getDisplayName());
         }
-        wrapper.select("distinct budget_id,project_id,name,task_code,cost_type,cost_rate,version,display_name,dept_name,create_datetime").orderByAsc("budget_id,sort");
+        wrapper.select("distinct budget_id,project_id,name,task_code,wbs,cost_type,cost_rate,version,display_name,dept_name,create_datetime").orderByAsc("budget_id,sort");
         IPage<SmallBudgetOut> page = smallBudgetOutService.page(new Page<>(current, pageSize), wrapper);
         List<SmallBudgetOut> recordList = page.getRecords();
         if (ObjectUtil.isNotEmpty(recordList)) {

@@ -8,27 +8,28 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.utils.ExcelListener;
-import com.haiying.project.common.utils.SpringUtil;
 import com.haiying.project.mapper.InContractMapper;
 import com.haiying.project.model.entity.BudgetProject;
 import com.haiying.project.model.entity.FormFile;
 import com.haiying.project.model.entity.InContract;
-import com.haiying.project.model.entity.OutContract;
+import com.haiying.project.model.entity.SmallBudgetOut;
 import com.haiying.project.model.excel.InContractExcel;
 import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.model.vo.InOutVO;
 import com.haiying.project.service.BudgetProjectService;
 import com.haiying.project.service.FormFileService;
 import com.haiying.project.service.InContractService;
-import com.haiying.project.service.OutContractService;
+import com.haiying.project.service.SmallBudgetOutService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -44,11 +45,27 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
     FormFileService formFileService;
     @Autowired
     BudgetProjectService budgetProjectService;
+    @Autowired
+    SmallBudgetOutService smallBudgetOutService;
+
+
+    private LocalDate getDate(String str) {
+        LocalDate parse = null;
+        if (ObjectUtil.isNotEmpty(str)) {
+            String[] arr = str.split("[-|/]");
+            if (arr.length == 3) {
+                String year = arr[0];
+                String month = arr[1].length() == 1 ? "0" + arr[1] : arr[1];
+                String day = arr[2].length() == 1 ? "0" + arr[2] : arr[2];
+                parse = LocalDate.parse(year + "-" + month + "-" + day, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            }
+        }
+        return parse;
+    }
 
     @Override
     @SneakyThrows
-    public boolean upload(MultipartFile file) {
-        InputStream inputStream = file.getInputStream();
+    public boolean upload(InputStream inputStream) {
         //
         ExcelReader excelReader = EasyExcel.read(inputStream).build();
         //
@@ -60,6 +77,40 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
         //获取数据
         List<InContractExcel> list = listener.getData();
 
+        if (ObjectUtil.isNotEmpty(list)) {
+            List<InContract> resultList = new ArrayList<>();
+
+            for (InContractExcel tmp : list) {
+                InContract obj = new InContract();
+                obj.setName(tmp.getContractName());
+                obj.setLoginName(tmp.getDisplayName());
+
+                obj.setContractCode(tmp.getContractCode());
+                obj.setContractName(tmp.getContractName());
+                obj.setCustomerName(tmp.getCustomerName());
+                obj.setContractMoney(tmp.getContractMoney());
+                obj.setTaskCode(tmp.getTaskCode());
+                obj.setProperty(tmp.getProperty());
+                obj.setContractType(tmp.getContractType());
+                obj.setContractLevel(tmp.getContractLevel());
+                obj.setPrintType(tmp.getPrintType());
+                obj.setDeptName(tmp.getDeptName());
+                obj.setPrintDate(getDate(tmp.getPrintDate()));
+                obj.setDisplayName(tmp.getDisplayName());
+                obj.setLocation(tmp.getLocation());
+                obj.setStartDate(getDate(tmp.getStartDate()));
+                obj.setEndDate(getDate(tmp.getEndDate()));
+                obj.setExpectDate(getDate(tmp.getExpectDate()));
+                obj.setDocumentDate(getDate(tmp.getDocumentDate()));
+                obj.setRemark(tmp.getRemark());
+
+                resultList.add(obj);
+
+                //先删除，后插入
+                this.remove(new LambdaQueryWrapper<InContract>().in(InContract::getTaskCode, resultList.stream().map(InContract::getTaskCode).collect(Collectors.toList())));
+                this.saveBatch(resultList);
+            }
+        }
         return true;
     }
 
@@ -111,26 +162,27 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
 
     @Override
     public boolean updateCode(InOutVO inOutVO) {
-        InContract incontract = this.getById(inOutVO.getId());
-        incontract.setContractCode(inOutVO.getContractCode());
-        if (ObjectUtil.isEmpty(incontract.getWbs())) {
-            incontract.setWbs(inOutVO.getWbs());
+        InContract inContract = this.getById(inOutVO.getId());
+        inContract.setContractCode(inOutVO.getContractCode());
+        inContract.setWbs(inOutVO.getWbs());
+        this.updateById(inContract);
 
-            List<BudgetProject> list = budgetProjectService.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getProjectId, inOutVO.getProjectId()));
-            if(ObjectUtil.isNotEmpty(list)){
-                list.forEach(item->{
-                    item.setContractCode(inOutVO.getContractCode());
-                });
-                budgetProjectService.updateBatchById(list);
-            }
-            OutContractService outContractService = SpringUtil.getBean(OutContractService.class);
-            List<OutContract> list2 = outContractService.list(new LambdaQueryWrapper<OutContract>().eq(OutContract::getProjectId, inOutVO.getProjectId()));
-            if(ObjectUtil.isNotEmpty(list2)){
-                list2.forEach(item->item.setWbs(inOutVO.getWbs()));
-                outContractService.updateBatchById(list2);
-            }
+        List<BudgetProject> list1 = budgetProjectService.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getTaskCode, inOutVO.getTaskCode()));
+        if (ObjectUtil.isNotEmpty(list1)) {
+            list1.forEach(item -> {
+                item.setWbs(inOutVO.getWbs());
+                item.setContractCode(inOutVO.getContractCode());
+            });
+            budgetProjectService.updateBatchById(list1);
         }
-        this.updateById(incontract);
+        List<SmallBudgetOut> list2 = smallBudgetOutService.list(new LambdaQueryWrapper<SmallBudgetOut>().eq(SmallBudgetOut::getTaskCode, inOutVO.getTaskCode()));
+        if (ObjectUtil.isNotEmpty(list2)) {
+            list2.forEach(item -> {
+                item.setWbs(inOutVO.getWbs());
+            });
+            smallBudgetOutService.updateBatchById(list2);
+        }
+
         return true;
     }
 }

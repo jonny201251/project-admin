@@ -105,7 +105,7 @@ public class BudgetDialogController {
         if (ObjectUtil.isNotEmpty(costType)) {
             wrapper.like("cost_type", costType);
         }
-        wrapper.select("distinct budget_id,project_id,name,task_code,cost_type,cost_rate,money,display_name,dept_name");
+        wrapper.select("distinct budget_id,project_id,name,task_code,wbs,cost_type,cost_rate,display_name,dept_name");
         List<SmallBudgetOut> list = smallBudgetOutService.list(wrapper);
         if (ObjectUtil.isNotEmpty(list)) {
             List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getBusinessHaveDisplay, "是").eq(ProcessInst::getProcessStatus, "完成").like(ProcessInst::getPath, "BudgetRunPath").in(ProcessInst::getBusinessId, list.stream().map(SmallBudgetOut::getBudgetId).collect(Collectors.toList())));

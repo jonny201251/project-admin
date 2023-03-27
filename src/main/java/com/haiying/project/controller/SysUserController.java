@@ -50,6 +50,7 @@ public class SysUserController {
     @Autowired
     HttpServletRequest request;
 
+
     @PostMapping("list")
     public IPage<SysUser> list(@RequestBody Map<String, Object> paramMap) {
         Integer current = (Integer) paramMap.get("current");

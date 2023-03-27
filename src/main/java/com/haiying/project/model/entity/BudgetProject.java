@@ -58,6 +58,8 @@ public class BudgetProject implements Serializable {
 
     private String name;
 
+    private String wbs;
+
     /**
      * 任务号
      */

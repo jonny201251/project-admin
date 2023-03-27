@@ -35,7 +35,7 @@ public class InOutContractController {
     HttpSession httpSession;
 
     @PostMapping("list")
-    public ResponseResult list2(@RequestBody Map<String, Object> paramMap) {
+    public ResponseResult list(@RequestBody Map<String, Object> paramMap) {
         ResponseResult responseResult = ResponseResult.success();
         List<InOutVO> dataList = new ArrayList<>();
 
@@ -43,12 +43,61 @@ public class InOutContractController {
         Integer pageSize = (Integer) paramMap.get("pageSize");
 
         SysUser user = (SysUser) httpSession.getAttribute("user");
-        List<InContract> list1 = inContractService.list(new LambdaQueryWrapper<InContract>().eq(InContract::getDeptId, user.getDeptId()).isNull(InContract::getContractCode));
-        List<OutContract> list2 = outContractService.list(new LambdaQueryWrapper<OutContract>().eq(OutContract::getDeptId, user.getDeptId()).isNull(OutContract::getContractCode));
+
+
+        LambdaQueryWrapper<InContract> wrapper1=new LambdaQueryWrapper<InContract>().and(qr->qr.isNull(InContract::getContractCode).or().isNull(InContract::getWbs));
+        LambdaQueryWrapper<OutContract> wrapper2=new LambdaQueryWrapper<OutContract>().and(qr->qr.isNull(OutContract::getContractCode).or().isNull(OutContract::getWbs));
+
+        if (!user.getDeptName().equals("综合计划部")) {
+            wrapper1.eq(InContract::getDisplayName, user.getDisplayName());
+            wrapper2.eq(OutContract::getDisplayName, user.getDisplayName());
+        }
+
+        Object name = paramMap.get("name");
+        Object taskCode = paramMap.get("taskCode");
+        Object wbs = paramMap.get("wbs");
+        Object contractCode = paramMap.get("contractCode");
+        Object contractName = paramMap.get("contractName");
+        Object displayName = paramMap.get("displayName");
+        Object deptName = paramMap.get("deptName");
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper1.like(InContract::getName, name);
+            wrapper2.like(OutContract::getName, name);
+        }
+        if (ObjectUtil.isNotEmpty(taskCode)) {
+            wrapper1.like(InContract::getTaskCode, taskCode);
+            wrapper2.like(OutContract::getTaskCode, taskCode);
+        }
+        if (ObjectUtil.isNotEmpty(wbs)) {
+            wrapper1.like(InContract::getWbs, wbs);
+            wrapper2.like(OutContract::getWbs, wbs);
+        }
+        if (ObjectUtil.isNotEmpty(contractCode)) {
+            wrapper1.like(InContract::getContractCode, contractCode);
+            wrapper2.like(OutContract::getContractCode, contractCode);
+        }
+        if (ObjectUtil.isNotEmpty(contractName)) {
+            wrapper1.like(InContract::getContractName, contractName);
+            wrapper2.like(OutContract::getContractName, contractName);
+        }
+        if (ObjectUtil.isNotEmpty(displayName)) {
+            wrapper1.like(InContract::getDisplayName, displayName);
+            wrapper2.like(OutContract::getDisplayName, displayName);
+        }
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper1.like(InContract::getDeptName, deptName);
+            wrapper2.like(OutContract::getDeptName, deptName);
+        }
+
+        List<InContract> list1 = inContractService.list(wrapper1);
+        List<OutContract> list2 = outContractService.list(wrapper2);
+
+        int i=1;
 
         if (ObjectUtil.isNotEmpty(list1)) {
             for (InContract item : list1) {
                 InOutVO vo = new InOutVO();
+                vo.setIdd(i++);
                 vo.setId(item.getId());
                 vo.setBudgetId(item.getBudgetId());
                 vo.setProjectId(item.getProjectId());
@@ -72,6 +121,7 @@ public class InOutContractController {
         if (ObjectUtil.isNotEmpty(list2)) {
             for (OutContract item : list2) {
                 InOutVO vo = new InOutVO();
+                vo.setIdd(i++);
                 vo.setId(item.getId());
                 vo.setBudgetId(item.getBudgetId());
                 vo.setProjectId(item.getProjectId());

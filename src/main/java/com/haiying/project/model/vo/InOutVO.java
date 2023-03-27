@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class InOutVO {
+    private Integer idd;
     private Integer id;
     private Integer budgetId;
     private Integer projectId;

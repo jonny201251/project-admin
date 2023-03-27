@@ -26,9 +26,11 @@ public class SmallProjectNoServiceImpl extends ServiceImpl<SmallProjectNoMapper,
     @Override
     public boolean add(SmallProjectNo smallProjectNo) {
         this.save(smallProjectNo);
+
         ProjectCode code = projectCodeService.getOne(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getTaskCode, smallProjectNo.getTaskCode()));
         code.setStatus("已使用");
         projectCodeService.updateById(code);
+
         return true;
     }
 }

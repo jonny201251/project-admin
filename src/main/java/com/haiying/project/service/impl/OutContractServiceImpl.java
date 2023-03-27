@@ -4,18 +4,11 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haiying.project.common.exception.PageTipException;
-import com.haiying.project.common.utils.SpringUtil;
 import com.haiying.project.mapper.OutContractMapper;
-import com.haiying.project.model.entity.BudgetProject;
-import com.haiying.project.model.entity.FormFile;
-import com.haiying.project.model.entity.InContract;
-import com.haiying.project.model.entity.OutContract;
+import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.model.vo.InOutVO;
-import com.haiying.project.service.BudgetProjectService;
-import com.haiying.project.service.FormFileService;
-import com.haiying.project.service.InContractService;
-import com.haiying.project.service.OutContractService;
+import com.haiying.project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +31,8 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
     InContractService inContractService;
     @Autowired
     BudgetProjectService budgetProjectService;
+    @Autowired
+    SmallBudgetOutService smallBudgetOutService;
 
     @Override
     public boolean edit(OutContract outContract) {
@@ -69,29 +64,30 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
     public void updateCode(InOutVO inOutVO) {
         OutContract outcontract = this.getById(inOutVO.getId());
         outcontract.setContractCode(inOutVO.getContractCode());
-        if (ObjectUtil.isEmpty(outcontract.getWbs())) {
-            outcontract.setWbs(inOutVO.getWbs());
-
-            List<BudgetProject> list = budgetProjectService.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getProjectId, inOutVO.getProjectId()));
-            if (ObjectUtil.isNotEmpty(list)) {
-                budgetProjectService.updateBatchById(list);
-            }
-
-            InContractService inContractService = SpringUtil.getBean(InContractService.class);
-            List<InContract> list2 = inContractService.list(new LambdaQueryWrapper<InContract>().eq(InContract::getProjectId, inOutVO.getProjectId()));
-            if (ObjectUtil.isNotEmpty(list2)) {
-                list2.forEach(item -> item.setWbs(inOutVO.getWbs()));
-                inContractService.updateBatchById(list2);
-            }
-        }
+        outcontract.setWbs(inOutVO.getWbs());
         this.updateById(outcontract);
+
+        List<BudgetProject> list1 = budgetProjectService.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getTaskCode, inOutVO.getTaskCode()));
+        if (ObjectUtil.isNotEmpty(list1)) {
+            list1.forEach(item -> {
+                item.setWbs(inOutVO.getWbs());
+            });
+            budgetProjectService.updateBatchById(list1);
+        }
+        List<SmallBudgetOut> list2 = smallBudgetOutService.list(new LambdaQueryWrapper<SmallBudgetOut>().eq(SmallBudgetOut::getTaskCode, inOutVO.getTaskCode()));
+        if (ObjectUtil.isNotEmpty(list2)) {
+            list2.forEach(item -> {
+                item.setWbs(inOutVO.getWbs());
+            });
+            smallBudgetOutService.updateBatchById(list2);
+        }
     }
 
     @Override
     public boolean add(OutContract outContract) {
-//        if (ObjectUtil.isEmpty(outContract.getWbs())) {
-//            throw new PageTipException("必须有WBS编号，如果没有，合同签署情况->合同号和WBS号,进行补全");
-//        }
+        if (ObjectUtil.isEmpty(outContract.getWbs())) {
+            throw new PageTipException("必须有WBS编号，如果没有，合同签署情况->合同号和WBS号,进行补全");
+        }
         //先有收款合同，才能进行付款合同
         List<InContract> ll = inContractService.list(new LambdaQueryWrapper<InContract>().eq(InContract::getTaskCode, outContract.getTaskCode()));
         if (ObjectUtil.isEmpty(ll)) {

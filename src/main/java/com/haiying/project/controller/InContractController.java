@@ -19,10 +19,11 @@ import com.haiying.project.service.FormFileService;
 import com.haiying.project.service.InContractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -118,8 +119,11 @@ public class InContractController {
     }
 
     @PostMapping("upload")
-    public boolean upload(@RequestBody MultipartFile multipartFile) {
-        return inContractService.upload(multipartFile);
+    public boolean upload(@RequestBody InContract inContract) throws FileNotFoundException {
+        String url = inContract.getFileList().get(0).getUrl();
+        String filePath = url.replace("/project", "D:/appFile/projectFile");
+        FileInputStream inputStream = new FileInputStream(filePath);
+        return inContractService.upload(inputStream);
     }
 
     @GetMapping("download")

@@ -44,6 +44,8 @@ public class SmallBudgetOut implements Serializable {
      */
     private String name;
 
+    private String wbs;
+
     /**
      * 项目任务号
      */
