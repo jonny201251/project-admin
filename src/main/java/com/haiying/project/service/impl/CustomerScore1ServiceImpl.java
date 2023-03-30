@@ -7,14 +7,13 @@ import com.haiying.project.bean.ButtonHandleBean;
 import com.haiying.project.mapper.CustomerScore1Mapper;
 import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.CustomerScore1After;
-import com.haiying.project.service.CustomerScore1Service;
-import com.haiying.project.service.CustomerScore2Service;
-import com.haiying.project.service.CustomerService;
-import com.haiying.project.service.ProcessInstService;
+import com.haiying.project.model.vo.FileVO;
+import com.haiying.project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,6 +36,8 @@ public class CustomerScore1ServiceImpl extends ServiceImpl<CustomerScore1Mapper,
     HttpSession httpSession;
     @Autowired
     CustomerService customerService;
+    @Autowired
+    FormFileService formFileService;
 
 
     private void add(CustomerScore1 formValue) {
@@ -44,21 +45,50 @@ public class CustomerScore1ServiceImpl extends ServiceImpl<CustomerScore1Mapper,
         formValue.setVersion(0);
         formValue.setDesc2(String.join(",", formValue.getDesc2Tmp()));
         this.save(formValue);
-        List<CustomerScore2> list = formValue.getList();
-        list.forEach(item -> item.setCustomerScore1Id(formValue.getId()));
-        customerScore2Service.saveBatch(list);
+        List<CustomerScore2> ll = formValue.getList();
+        ll.forEach(item -> item.setCustomerScore1Id(formValue.getId()));
+        customerScore2Service.saveBatch(ll);
+        //文件
+        List<FormFile> list = new ArrayList<>();
+        List<FileVO> fileList = formValue.getFileList();
+        if (ObjectUtil.isNotEmpty(fileList)) {
+            for (FileVO fileVO : fileList) {
+                FormFile formFile = new FormFile();
+                formFile.setType("CustomerScore1");
+                formFile.setBusinessId(formValue.getId());
+                formFile.setName(fileVO.getName());
+                formFile.setUrl(fileVO.getUrl());
+                list.add(formFile);
+            }
+            formFileService.saveBatch(list);
+        }
     }
 
     private void edit(CustomerScore1 formValue) {
         formValue.setDesc2(String.join(",", formValue.getDesc2Tmp()));
         this.updateById(formValue);
         customerScore2Service.remove(new LambdaQueryWrapper<CustomerScore2>().eq(CustomerScore2::getCustomerScore1Id, formValue.getId()));
-        List<CustomerScore2> list = formValue.getList();
-        list.forEach(item -> {
+        List<CustomerScore2> ll = formValue.getList();
+        ll.forEach(item -> {
             item.setId(null);
             item.setCustomerScore1Id(formValue.getId());
         });
-        customerScore2Service.saveBatch(list);
+        customerScore2Service.saveBatch(ll);
+        //文件
+        formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "CustomerScore1").eq(FormFile::getBusinessId, formValue.getId()));
+        List<FileVO> fileList = formValue.getFileList();
+        if (ObjectUtil.isNotEmpty(fileList)) {
+            List<FormFile> list = new ArrayList<>();
+            for (FileVO fileVO : fileList) {
+                FormFile formFile = new FormFile();
+                formFile.setType("CustomerScore1");
+                formFile.setBusinessId(formValue.getId());
+                formFile.setName(fileVO.getName());
+                formFile.setUrl(fileVO.getUrl());
+                list.add(formFile);
+            }
+            formFileService.saveBatch(list);
+        }
     }
 
     private void delete(CustomerScore1 formValue) {
@@ -72,6 +102,8 @@ public class CustomerScore1ServiceImpl extends ServiceImpl<CustomerScore1Mapper,
             before.setHaveDisplay("是");
             this.updateById(before);
         }
+
+        formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "CustomerScore1").eq(FormFile::getBusinessId, formValue.getId()));
     }
 
     private void change(CustomerScore1 current) {
@@ -103,15 +135,30 @@ public class CustomerScore1ServiceImpl extends ServiceImpl<CustomerScore1Mapper,
         this.save(current);
 
         customerScore2Service.remove(new LambdaQueryWrapper<CustomerScore2>().eq(CustomerScore2::getCustomerScore1Id, current.getId()));
-        List<CustomerScore2> list = current.getList();
-        for (CustomerScore2 item : list) {
+        List<CustomerScore2> ll = current.getList();
+        for (CustomerScore2 item : ll) {
             item.setId(null);
             item.setCustomerScore1Id(current.getId());
             if (!user.getLoginName().equals("宋思奇")) {
                 item.setEndScore(null);
             }
         }
-        customerScore2Service.saveBatch(list);
+        customerScore2Service.saveBatch(ll);
+
+        //文件
+        List<FileVO> fileList = current.getFileList();
+        if (ObjectUtil.isNotEmpty(fileList)) {
+            List<FormFile> list = new ArrayList<>();
+            for (FileVO fileVO : fileList) {
+                FormFile formFile = new FormFile();
+                formFile.setType("CustomerScore1");
+                formFile.setBusinessId(current.getId());
+                formFile.setName(fileVO.getName());
+                formFile.setUrl(fileVO.getUrl());
+                list.add(formFile);
+            }
+            formFileService.saveBatch(list);
+        }
 
     }
 

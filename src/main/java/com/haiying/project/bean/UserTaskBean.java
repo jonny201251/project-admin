@@ -48,6 +48,8 @@ public class UserTaskBean {
     ProjectProtectService projectProtectService;
     @Autowired
     SmallBudgetRunService smallBudgetRunService;
+    @Autowired
+    ProjectOutService projectOutService;
 
     public Set<String> getLoginNameList(ProcessDesignTask processDesignTask, Integer businessId, String actProcessInstanceId) {
         Set<String> loginNameSet = new TreeSet<>();
@@ -152,6 +154,12 @@ public class UserTaskBean {
                 SmallBudgetRun smallBudgetRun = smallBudgetRunService.getById(businessId);
                 String userNamee = smallBudgetRun.getUserNamee();
                 loginNameSet.add(userNamee);
+            } else if (path.equals("projectOutPath")) {
+                //项目收支的支出信息
+                ProjectOut projectOut = projectOutService.getById(businessId);
+                String str = projectOut.getUserNamee();
+                String[] tmp = str.split(",");
+                loginNameSet.addAll(Arrays.asList(tmp));
             } else {
                 throw new PageTipException("需要处理人");
             }

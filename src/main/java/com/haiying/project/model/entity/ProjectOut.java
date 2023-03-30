@@ -1,6 +1,7 @@
 package com.haiying.project.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -40,6 +42,8 @@ public class ProjectOut implements Serializable {
     private String name;
 
     private String property;
+
+    private Integer outContractId;
 
     /**
      * 有无合同
@@ -113,4 +117,12 @@ public class ProjectOut implements Serializable {
     private String deptName;
 
 
+    private Integer processInstId;
+    @TableField(exist = false)
+    private ProcessInst processInst;
+
+    //财务部
+    @TableField(exist = false)
+    private List<String> userNameeList;
+    private String userNamee;
 }

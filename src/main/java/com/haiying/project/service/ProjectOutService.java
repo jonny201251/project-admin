@@ -2,6 +2,7 @@ package com.haiying.project.service;
 
 import com.haiying.project.model.entity.ProjectOut;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.haiying.project.model.vo.ProjectOutAfter;
 
 /**
  * <p>
@@ -13,5 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ProjectOutService extends IService<ProjectOut> {
 
-    boolean add(ProjectOut projectOut);
+    boolean btnHandle(ProjectOutAfter after);
 }

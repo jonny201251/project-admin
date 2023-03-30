@@ -8,13 +8,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.CustomerScore1After;
+import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.service.CustomerScore1Service;
 import com.haiying.project.service.CustomerScore2Service;
+import com.haiying.project.service.FormFileService;
 import com.haiying.project.service.ProcessInstService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +43,8 @@ public class CustomerScore1Controller {
     HttpSession httpSession;
     @Autowired
     ProcessInstService processInstService;
+    @Autowired
+    FormFileService formFileService;
 
     @PostMapping("list")
     public IPage<CustomerScore1> list(@RequestBody Map<String, Object> paramMap) {
@@ -97,9 +102,23 @@ public class CustomerScore1Controller {
     @GetMapping("get")
     public CustomerScore1 get(Integer id) {
         CustomerScore1 customerScore1 = customerScore1Service.getById(id);
+        //
         customerScore1.setDesc2Tmp(Arrays.asList(customerScore1.getDesc2().split(",")));
         List<CustomerScore2> list = customerScore2Service.list(new LambdaQueryWrapper<CustomerScore2>().eq(CustomerScore2::getCustomerScore1Id, id));
         customerScore1.setList(list);
+        //
+        List<FormFile> formFileList = formFileService.list(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "CustomerScore1").eq(FormFile::getBusinessId, id));
+        if (ObjectUtil.isNotEmpty(formFileList)) {
+            List<FileVO> fileList = new ArrayList<>();
+            for (FormFile formFile : formFileList) {
+                FileVO fileVO = new FileVO();
+                fileVO.setName(formFile.getName());
+                fileVO.setUrl(formFile.getUrl());
+                fileVO.setStatus("done");
+                fileList.add(fileVO);
+            }
+            customerScore1.setFileList(fileList);
+        }
         return customerScore1;
     }
 

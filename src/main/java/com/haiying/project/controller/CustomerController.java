@@ -65,24 +65,26 @@ public class CustomerController {
 
         SysUser user = (SysUser) httpSession.getAttribute("user");
         if (!user.getDisplayName().equals("宋思奇")) {
-            wrapper.eq(Customer::getDisplayName, user.getDisplayName());
+            wrapper.eq(Customer::getDeptId, user.getDeptId());
         }
         return customerService.page(new Page<>(current, pageSize), wrapper);
     }
 
 
-
     //用于 客户评分
     @PostMapping("list2")
     public IPage<Customer> list2(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<Customer>().isNull(Customer::getResult);
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(Customer::getName, name);
         }
-
+/*        SysUser user = (SysUser) httpSession.getAttribute("user");
+        if (!user.getDisplayName().equals("宋思奇")) {
+            wrapper.eq(Customer::getDisplayName, user.getDisplayName());
+        }*/
         return customerService.page(new Page<>(current, pageSize), wrapper);
     }
 
@@ -92,10 +94,10 @@ public class CustomerController {
         LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<Customer>().in(Customer::getResult, Arrays.asList("优秀", "良好", "一般"));
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
-        Object name = paramMap.get("name");
+/*        Object name = paramMap.get("name");
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(Customer::getName, name);
-        }
+        }*/
 
         SysUser user = (SysUser) httpSession.getAttribute("user");
 

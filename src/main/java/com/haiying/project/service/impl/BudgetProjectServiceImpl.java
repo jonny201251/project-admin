@@ -43,8 +43,8 @@ public class BudgetProjectServiceImpl extends ServiceImpl<BudgetProjectMapper, B
             throw new PageTipException("任务号   已存在");
         }
         //页面的毛利率>立项时的毛利率
-        int page = Integer.parseInt(obj.getProjectRate().replaceAll("%", ""));
-        int build;
+        double page = Double.parseDouble(obj.getProjectRate().replaceAll("%", ""));
+        double build;
         String tmp = "";
         if (obj.getProjectType().equals("一般项目")) {
             tmp = smallProjectService.getById(obj.getProjectId()).getProjectRate();
@@ -53,7 +53,7 @@ public class BudgetProjectServiceImpl extends ServiceImpl<BudgetProjectMapper, B
         } else if (obj.getProjectType().equals("一般项目非")) {
             tmp = smallProjectNoService.getById(obj.getProjectId()).getProjectRate();
         }
-        build = Integer.parseInt(tmp.replaceAll("%", ""));
+        build = Double.parseDouble(tmp.replaceAll("%", ""));
         if (page < build) {
             throw new PageTipException("预计毛利率低于立项时的毛利率");
         }

@@ -52,6 +52,9 @@ public class ProjectCode implements Serializable {
      */
     private String projectName;
 
+    private Double projectMoney;
+    private String projectLocation;
+
     /**
      * 项目性质
      */

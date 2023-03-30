@@ -121,7 +121,9 @@ public class ProjectCodeController {
     @GetMapping("get")
     public ProjectCode get(String id) {
         ProjectCode projectCode = projectCodeService.getById(id);
-        projectCode.setBusinessTypeTmp(Arrays.asList(projectCode.getBusinessType().split(",")));
+        if (ObjectUtil.isNotEmpty(projectCode.getBusinessType())) {
+            projectCode.setBusinessTypeTmp(Arrays.asList(projectCode.getBusinessType().split(",")));
+        }
         return projectCode;
     }
 

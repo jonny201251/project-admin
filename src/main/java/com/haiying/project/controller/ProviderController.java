@@ -70,7 +70,7 @@ public class ProviderController {
 
         SysUser user = (SysUser) httpSession.getAttribute("user");
         if (!user.getDisplayName().equals("孙欢")) {
-            wrapper.eq(Provider::getDisplayName, user.getDisplayName());
+            wrapper.eq(Provider::getDeptId, user.getDeptId());
         }
         return providerService.page(new Page<>(current, pageSize), wrapper);
     }
@@ -91,7 +91,7 @@ public class ProviderController {
 
     @PostMapping("listSmallProject")
     public IPage<Provider> listSmallProject(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().eq(Provider::getUsee, "一般项目立项时(三类)").eq(Provider::getResult, "合格");
+        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>()/*.eq(Provider::getUsee, "一般项目立项时(三类)")*/.eq(Provider::getResult, "合格");
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");
@@ -104,7 +104,7 @@ public class ProviderController {
 
     @PostMapping("listBigProject")
     public IPage<Provider> listBigProject(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().eq(Provider::getUsee, "重大项目立项时(三类)").eq(Provider::getResult, "合格");
+        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>()/*.eq(Provider::getUsee, "重大项目立项时(三类)")*/.eq(Provider::getResult, "合格");
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");

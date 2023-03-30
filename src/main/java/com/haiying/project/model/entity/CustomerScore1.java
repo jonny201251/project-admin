@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.haiying.project.model.vo.FileVO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -87,4 +88,7 @@ public class CustomerScore1 implements Serializable {
 
     @TableField(exist = false)
     private ProcessInst processInst;
+
+    @TableField(exist = false)
+    private List<FileVO> fileList;
 }
