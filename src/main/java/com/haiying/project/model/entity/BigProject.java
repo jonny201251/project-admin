@@ -140,4 +140,8 @@ public class BigProject implements Serializable {
     private String projectType;
 
     private String projectStatus;
+
+    private String havePower;
+    private String powerDesc;
+    private String powerCode;
 }

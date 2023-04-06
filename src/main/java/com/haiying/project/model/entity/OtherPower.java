@@ -110,4 +110,6 @@ public class OtherPower implements Serializable {
 
     @TableField(exist = false)
     private List<FileVO> fileList;
+
+    private String userNamee;
 }

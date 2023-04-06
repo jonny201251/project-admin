@@ -135,6 +135,47 @@ public class InitDataController {
         return true;
     }
 
+    @GetMapping("customer2")
+    public boolean customer2() throws Exception {
+        List<SysDept> deptList = deptService.list();
+        Map<String, Integer> deptMap = new HashMap<>();
+        for (SysDept tmp : deptList) {
+            deptMap.put(tmp.getName(), tmp.getId());
+        }
+
+
+        InputStream inputStream = new FileInputStream("d:/a/客户2.xls");
+        //
+        ExcelReader excelReader = EasyExcel.read(inputStream).build();
+        //
+        ExcelListener<CustomerExcel> listener = new ExcelListener<>();
+        //获取sheet对象
+        ReadSheet sheet0 = EasyExcel.readSheet(1).head(CustomerExcel.class).registerReadListener(listener).build();
+        //读取数据
+        excelReader.read(sheet0);
+        //获取数据
+        List<CustomerExcel> list = listener.getData();
+        System.out.println();
+
+
+        List<Customer> ll = new ArrayList<>();
+        for (CustomerExcel tmp : list) {
+            if(ObjectUtil.isNotEmpty(tmp.getName())){
+                Customer p = new Customer();
+                p.setName(tmp.getName());
+                p.setHaveDisplay("是");
+                p.setVersion(0);
+                p.setResult("优秀");
+                ll.add(p);
+            }
+
+        }
+        System.out.println();
+        customerService.saveBatch(ll);
+
+        return true;
+    }
+
     @GetMapping("customer")
     public boolean customer() throws Exception {
         List<SysDept> deptList = deptService.list();
@@ -144,7 +185,7 @@ public class InitDataController {
         }
 
 
-        InputStream inputStream = new FileInputStream("d:/a/客户.xlsx");
+        InputStream inputStream = new FileInputStream("d:/a/客户2.xls");
         //
         ExcelReader excelReader = EasyExcel.read(inputStream).build();
         //
@@ -201,7 +242,6 @@ public class InitDataController {
 
         return true;
     }
-
 
     @GetMapping("code")
     public boolean code() throws Exception {

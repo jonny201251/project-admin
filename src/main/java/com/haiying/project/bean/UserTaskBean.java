@@ -127,23 +127,34 @@ public class UserTaskBean {
             } else if (path.equals("otherPowerPath")) {
                 //一事一授权
                 OtherPower otherPower = otherPowerService.getById(businessId);
-                String endType = otherPower.getEndType();
-                if (endType.equals("董事长")) {
-                    loginNameSet.add("高志国");
-                } else {
-                    //公司主管领导
-                    List<String> leader2List = chargeDeptLeaderService
-                            .list(new LambdaQueryWrapper<ChargeDeptLeader>().in(ChargeDeptLeader::getDeptId, otherPower.getDeptId()))
-                            .stream().map(ChargeDeptLeader::getLoginName).collect(Collectors.toList());
-                    if (ObjectUtil.isNotEmpty(leader2List)) {
-                        loginNameSet.addAll(leader2List);
+                if (processDesignTask.getTaskName().equals("授权人意见")) {
+                    String endType = otherPower.getEndType();
+                    if (endType.equals("董事长")) {
+                        loginNameSet.add("高志国");
+                    } else {
+                        //公司主管领导
+                        List<String> leader2List = chargeDeptLeaderService
+                                .list(new LambdaQueryWrapper<ChargeDeptLeader>().in(ChargeDeptLeader::getDeptId, otherPower.getDeptId()))
+                                .stream().map(ChargeDeptLeader::getLoginName).collect(Collectors.toList());
+                        if (ObjectUtil.isNotEmpty(leader2List)) {
+                            loginNameSet.addAll(leader2List);
+                        }
                     }
+                } else {
+                    String userNamee = otherPower.getUserNamee();
+                    loginNameSet.add(userNamee);
                 }
             } else if (path.equals("smallProjectPath")) {
                 //一般项目立项
+                //计划、法审
+                loginNameSet.add("于欣坤");
+                loginNameSet.add("祁瑛");
                 SmallProject smallProject = smallProjectService.getById(businessId);
-                String userNamee = smallProject.getUserNamee();
-                loginNameSet.add(userNamee);
+                if (smallProject.getHaveGiveMoney().equals("是")) {
+                    //财务
+                    String userNamee = smallProject.getUserNamee();
+                    loginNameSet.add(userNamee);
+                }
             } else if (path.equals("projectProtectPath")) {
                 //投标保证金(函)登记
                 ProjectProtect projectProtect = projectProtectService.getById(businessId);

@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.bean.PageBean;
-import com.haiying.project.common.result.PageData;
 import com.haiying.project.common.result.ResponseResult;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.model.entity.ProjectCode;
@@ -79,15 +78,20 @@ public class ProjectCodeController {
         return projectCodeService.page(new Page<>(current, pageSize), wrapper);
     }
 
-    //是否有重复的项目名称
-    @PostMapping("have")
-    public PageData have(@RequestBody ProjectCode projectCode) {
-        List<ProjectCode> resultList = new ArrayList<>();
-        //判断是否有相似度高的项目名称
-        Integer year = Integer.parseInt(DateUtil.format(DateUtil.date(), "yyyy"));
-        List<ProjectCode> list = projectCodeService.list(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getYear, year));
 
-        return new PageData(1, 100, resultList.size(), 1, resultList);
+    @Wrapper
+    @PostMapping("list2")
+    public IPage<ProjectCode> list2(@RequestBody Map<String, Object> paramMap) {
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+        LambdaQueryWrapper<ProjectCode> wrapper = new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getStatus,"未使用").eq(ProjectCode::getDeptId,user.getDeptId());
+        Integer current = (Integer) paramMap.get("current");
+        Integer pageSize = (Integer) paramMap.get("pageSize");
+        Object projectName = paramMap.get("projectName");
+        if (ObjectUtil.isNotEmpty(projectName)) {
+            wrapper.like(ProjectCode::getProjectName, projectName);
+        }
+
+        return projectCodeService.page(new Page<>(current, pageSize), wrapper);
     }
 
     @PostMapping("add")
@@ -131,8 +135,13 @@ public class ProjectCodeController {
     @GetMapping("getLabelValue")
     public List<LabelValue> getLabelValue() {
         List<LabelValue> list = new ArrayList<>();
+        LambdaQueryWrapper<ProjectCode> wrapper = new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getStatus, "未使用");
+
         SysUser user = (SysUser) httpSession.getAttribute("user");
-        List<ProjectCode> codeList = projectCodeService.list(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getDeptId, user.getDeptId()).eq(ProjectCode::getStatus, "未使用"));
+        if (!user.getDeptName().equals("综合计划部")) {
+            wrapper.eq(ProjectCode::getDeptId, user.getDeptId());
+        }
+        List<ProjectCode> codeList = projectCodeService.list(wrapper);
         if (ObjectUtil.isNotEmpty(codeList)) {
             list = codeList.stream().map(item -> new LabelValue(item.getTaskCode(), item.getTaskCode())).collect(Collectors.toList());
         }

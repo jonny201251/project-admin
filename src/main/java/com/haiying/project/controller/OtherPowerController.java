@@ -108,8 +108,8 @@ public class OtherPowerController {
         SysUser user = (SysUser) httpSession.getAttribute("user");
         if (user.getDisplayName().equals("祁瑛") && otherPower.getCode() == null) {
             otherPower.setStatus("未使用");
-            String code = otherPowerService.getCode(otherPower);
-            otherPower.setCode(code);
+/*            String code = otherPowerService.getCode(otherPower);
+            otherPower.setCode(code);*/
         }
         return otherPower;
     }

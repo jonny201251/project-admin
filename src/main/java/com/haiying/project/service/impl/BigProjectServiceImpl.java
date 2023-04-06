@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,6 +39,8 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
     FormFileService formFileService;
     @Autowired
     ProjectCodeService projectCodeService;
+    @Autowired
+    CustomerService customerService;
 
 
     private void add(BigProject formValue) {
@@ -278,6 +281,15 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
             String haveEditForm = after.getHaveEditForm();
             if (haveEditForm.equals("是")) {
                 edit(formValue);
+            }
+            //
+            ProcessInst processInst = processInstService.getById(formValue.getProcessInstId());
+            //业务主管领导
+            if (processInst.getDisplayProcessStep().contains("业务主管领导")) {
+                List<Customer> list = customerService.list(new LambdaQueryWrapper<Customer>().eq(Customer::getName, after.getFormValue().getCustomerName()).in(Customer::getResult, Arrays.asList("优秀", "良好", "一般")));
+                if (ObjectUtil.isEmpty(list)) {
+                    throw new PageTipException("先审批 客户信用评级评分,客户名称=" + after.getFormValue().getCustomerName());
+                }
             }
             //
             boolean flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);

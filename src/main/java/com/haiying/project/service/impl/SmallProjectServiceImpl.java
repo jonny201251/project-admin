@@ -13,7 +13,9 @@ import com.haiying.project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -37,6 +39,10 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
     FormFileService formFileService;
     @Autowired
     ProjectCodeService projectCodeService;
+    @Autowired
+    CustomerService customerService;
+    @Autowired
+    HttpSession httpSession;
 
 
     private void add(SmallProject formValue) {
@@ -187,12 +193,30 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
                 this.updateById(formValue);
             }
         } else if (type.equals("check") || type.equals("reject")) {
+            //
+            SysUser user = (SysUser) httpSession.getAttribute("user");
             String haveEditForm = after.getHaveEditForm();
-            if (haveEditForm.equals("是")) {
+            if (haveEditForm.equals("是") || user.getDisplayName().equals("祁瑛")) {
                 edit(formValue);
             }
             //
-            boolean flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            boolean flag = false;
+            ProcessInst processInst = processInstService.getById(formValue.getProcessInstId());
+            //业务主管领导
+            if (processInst.getDisplayProcessStep().contains("业务主管领导")) {
+                List<Customer> list = customerService.list(new LambdaQueryWrapper<Customer>().eq(Customer::getName, after.getFormValue().getCustomerName()).in(Customer::getResult, Arrays.asList("优秀", "良好", "一般")));
+                if (ObjectUtil.isEmpty(list)) {
+                    throw new PageTipException("先审批 客户信用评级评分,客户名称=" + after.getFormValue().getCustomerName());
+                }
+            }
+
+
+            String[] tmp = processInst.getLoginProcessStep().split(",");
+            if (tmp.length > 1 && buttonName.contains("同意")) {
+                buttonHandleBean.checkUpOne(formValue.getProcessInstId(), formValue, buttonName, comment);
+            } else {
+                flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            }
             if (flag) {
                 ProjectCode code = projectCodeService.getOne(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getTaskCode, formValue.getTaskCode()));
                 code.setStatus("已使用");
