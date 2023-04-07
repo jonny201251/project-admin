@@ -58,6 +58,7 @@ public class BigProjectController {
         Object projectStatus = paramMap.get("projectStatus");
         Object customerName = paramMap.get("customerName");
         Object providerName = paramMap.get("providerName");
+        Object powerCode = paramMap.get("powerCode");
         Object displayName = paramMap.get("displayName");
         Object deptName = paramMap.get("deptName");
         if (ObjectUtil.isNotEmpty(name)) {
@@ -74,6 +75,9 @@ public class BigProjectController {
         }
         if (ObjectUtil.isNotEmpty(providerName)) {
             wrapper.like(BigProject::getProviderName, providerName);
+        }
+        if (ObjectUtil.isNotEmpty(powerCode)) {
+            wrapper.like(BigProject::getPowerCode, powerCode);
         }
         if (ObjectUtil.isNotEmpty(displayName)) {
             wrapper.like(BigProject::getDisplayName, displayName);

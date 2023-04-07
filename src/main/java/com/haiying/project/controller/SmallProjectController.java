@@ -57,6 +57,7 @@ public class SmallProjectController {
         Object projectStatus = paramMap.get("projectStatus");
         Object customerName = paramMap.get("customerName");
         Object providerName = paramMap.get("providerName");
+        Object powerCode = paramMap.get("powerCode");
         Object displayName = paramMap.get("displayName");
         Object deptName = paramMap.get("deptName");
         if (ObjectUtil.isNotEmpty(name)) {
@@ -73,6 +74,9 @@ public class SmallProjectController {
         }
         if (ObjectUtil.isNotEmpty(providerName)) {
             wrapper.like(SmallProject::getProviderName, providerName);
+        }
+        if (ObjectUtil.isNotEmpty(powerCode)) {
+            wrapper.like(SmallProject::getPowerCode, powerCode);
         }
         if (ObjectUtil.isNotEmpty(displayName)) {
             wrapper.like(SmallProject::getDisplayName, displayName);
