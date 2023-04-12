@@ -126,8 +126,9 @@ public class SmallProject implements Serializable {
     /**
      * 开竣工日期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate workDate;
+    @TableField(exist = false)
+    private List<String> workDateTmp;
+    private String workDate;
 
     /**
      * 是否垫资

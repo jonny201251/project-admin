@@ -126,6 +126,7 @@ public class SmallProjectController {
         List<SmallProtect> list = smallProtectService.list(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getProjectId, id));
         smallProject.setList(list);
         smallProject.setIdTypeListTmp(Arrays.asList(smallProject.getIdType().split(",")));
+        smallProject.setWorkDateTmp(Arrays.asList(smallProject.getWorkDate().split("至")));
 
         List<FileVO> fileList = new ArrayList<>();
         List<FormFile> formFileList = formFileService.list(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "SmallProject").eq(FormFile::getBusinessId, id));

@@ -42,6 +42,8 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
     @Autowired
     CustomerService customerService;
     @Autowired
+    ProviderService providerService;
+    @Autowired
     HttpSession httpSession;
 
 
@@ -56,6 +58,7 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
         formValue.setVersion(0);
         //
         formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
+        formValue.setWorkDate(String.join("至", formValue.getWorkDateTmp()));
         this.save(formValue);
         List<SmallProtect> list = formValue.getList();
         list.forEach(item -> {
@@ -81,6 +84,7 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
 
     private void edit(SmallProject formValue) {
         formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
+        formValue.setWorkDate(String.join("至", formValue.getWorkDateTmp()));
         this.updateById(formValue);
         smallProtectService.remove(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getProjectId, formValue.getId()));
         List<SmallProtect> list = formValue.getList();
@@ -196,11 +200,17 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
             //
             SysUser user = (SysUser) httpSession.getAttribute("user");
             String haveEditForm = after.getHaveEditForm();
-            if (haveEditForm.equals("是") || user.getDisplayName().equals("祁瑛")) {
+            if (haveEditForm.equals("是")) {
                 edit(formValue);
             }
+            if (user.getDisplayName().equals("祁瑛")) {
+                if (ObjectUtil.isNotEmpty(formValue.getPowerCode())) {
+                    SmallProject db = this.getById(formValue.getId());
+                    db.setPowerCode(formValue.getPowerCode());
+                    this.updateById(db);
+                }
+            }
             //
-            boolean flag = false;
             ProcessInst processInst = processInstService.getById(formValue.getProcessInstId());
             //业务主管领导
             if (processInst.getDisplayProcessStep().contains("业务主管领导")) {
@@ -208,14 +218,20 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
                 if (ObjectUtil.isEmpty(list)) {
                     throw new PageTipException("先审批 客户信用评级评分,客户名称=" + after.getFormValue().getCustomerName());
                 }
+                if (formValue.getProperty().equals("三类")) {
+                    List<Provider> listt = providerService.list(new LambdaQueryWrapper<Provider>().eq(Provider::getName, after.getFormValue().getProviderName()).eq(Provider::getResult, "合格"));
+                    if (ObjectUtil.isEmpty(listt)) {
+                        throw new PageTipException("先审批 供方信息,供方名称=" + after.getFormValue().getProviderName());
+                    }
+                }
             }
 
-
-            String[] tmp = processInst.getLoginProcessStep().split(",");
-            if (tmp.length > 1 && buttonName.contains("同意")) {
-                buttonHandleBean.checkUpOne(formValue.getProcessInstId(), formValue, buttonName, comment);
-            } else {
-                flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            boolean flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            if (user.getDisplayName().equals("郭琳")) {
+                ProcessInst processInstt = processInstService.getById(formValue.getProcessInstId());
+                if (processInstt.getDisplayProcessStep().contains("郭琳")) {
+                    flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+                }
             }
             if (flag) {
                 ProjectCode code = projectCodeService.getOne(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getTaskCode, formValue.getTaskCode()));

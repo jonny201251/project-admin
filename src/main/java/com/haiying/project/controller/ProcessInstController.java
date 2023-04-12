@@ -54,7 +54,6 @@ public class ProcessInstController {
                 .likeLeft(ProcessInst::getLoginProcessStep, "," + user.getLoginName()).or()
                 .likeRight(ProcessInst::getLoginProcessStep, user.getLoginName() + ",").or()
                 .like(ProcessInst::getLoginProcessStep, "," + user.getLoginName() + ",");
-        wrapper.orderByAsc(ProcessInst::getProcessName);
         return processInstService.page(new Page<>(1, 100), wrapper);
     }
 

@@ -70,7 +70,7 @@ public class ProviderController {
 
         SysUser user = (SysUser) httpSession.getAttribute("user");
         if (!user.getDisplayName().equals("孙欢")) {
-            wrapper.and(qr->qr.isNull(Provider::getLoginName).or().eq(Provider::getDeptId, user.getDeptId()));
+            wrapper.and(qr -> qr.isNull(Provider::getLoginName).or().eq(Provider::getDeptId, user.getDeptId()));
         }
         return providerService.page(new Page<>(current, pageSize), wrapper);
     }
@@ -91,7 +91,7 @@ public class ProviderController {
 
     @PostMapping("listSmallProject")
     public IPage<Provider> listSmallProject(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().and(qr->qr.isNull(Provider::getLoginName).or().eq(Provider::getUsee, "一般项目立项时(三类)")).eq(Provider::getResult, "合格");
+        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().and(qr -> qr.isNull(Provider::getLoginName).or().eq(Provider::getUsee, "一般项目立项时(三类)")).eq(Provider::getResult, "合格");
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");
@@ -104,7 +104,7 @@ public class ProviderController {
 
     @PostMapping("listBigProject")
     public IPage<Provider> listBigProject(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().and(qr->qr.isNull(Provider::getLoginName).or().eq(Provider::getUsee, "重大项目立项时(三类)")).eq(Provider::getResult, "合格");
+        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().and(qr -> qr.isNull(Provider::getLoginName).or().eq(Provider::getUsee, "重大项目立项时(三类)")).eq(Provider::getResult, "合格");
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");
@@ -138,19 +138,72 @@ public class ProviderController {
         return providerService.page(new Page<>(current, pageSize), wrapper);
     }
 
-    //供方评分 弹窗
-    @PostMapping("list3")
-    public List<Provider> list3(@RequestBody Map<String, Object> paramMap) {
+    //尽职调查 弹窗
+    @PostMapping("list5")
+    public List<Provider> list5(@RequestBody Map<String, Object> paramMap) {
+        SysUser user = (SysUser) httpSession.getAttribute("user");
         /*
         一般项目-三类：供方简表+供方评分
         一般项目-其他方：供方评分
         重大项目-三类：供方简表+尽职调查+供方评分
-        重大项目-其他方：供方评分
+        重大项目-其他方：尽职调查+供方评分
          */
         List<Provider> list = new ArrayList<>();
-        LambdaQueryWrapper<Provider> wrapper1 = new LambdaQueryWrapper<Provider>().in(Provider::getUsee, Arrays.asList("一般项目立项后(其他方)", "重大项目立项后(其他方)")).in(Provider::getResult, Arrays.asList("", "不合格"));
-        LambdaQueryWrapper<ProviderSimple> wrapper2 = new LambdaQueryWrapper<ProviderSimple>().eq(ProviderSimple::getUsee, "一般项目立项时(三类)").in(ProviderSimple::getResult, Arrays.asList("", "不合格"));
-        LambdaQueryWrapper<ProviderQuery> wrapper3 = new LambdaQueryWrapper<ProviderQuery>().in(ProviderQuery::getResult, Arrays.asList("", "不合格"));
+        LambdaQueryWrapper<Provider> wrapper1 = new LambdaQueryWrapper<Provider>().eq(Provider::getDeptId, user.getDeptId()).eq(Provider::getUsee, "重大项目立项后(其他方)").in(Provider::getResult, Arrays.asList("", "不合格"));
+        LambdaQueryWrapper<ProviderSimple> wrapper2 = new LambdaQueryWrapper<ProviderSimple>().eq(ProviderSimple::getDeptId, user.getDeptId()).eq(ProviderSimple::getUsee, "一般项目立项时(三类)").in(ProviderSimple::getResult, Arrays.asList("", "不合格"));
+
+        Object usee = paramMap.get("usee");
+        Object name = paramMap.get("name");
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper1.like(Provider::getName, name);
+            wrapper2.like(ProviderSimple::getName, name);
+        }
+        if (ObjectUtil.isNotEmpty(usee)) {
+            wrapper1.like(Provider::getUsee, usee);
+        }
+
+        List<Provider> list1 = providerService.list(wrapper1);
+        List<ProviderSimple> list2 = providerSimpleService.list(wrapper2);
+
+
+        List<Integer> idList = new ArrayList<>();
+        if (ObjectUtil.isNotEmpty(list1)) {
+            list1.forEach(item -> idList.add(item.getId()));
+        }
+        if (ObjectUtil.isNotEmpty(list2)) {
+            list2.forEach(item -> idList.add(item.getProviderId()));
+        }
+        if (ObjectUtil.isNotEmpty(idList)) {
+            LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().in(Provider::getId, idList).orderByAsc(Provider::getId);
+            if (ObjectUtil.isNotEmpty(name)) {
+                wrapper.like(Provider::getName, name);
+            }
+            if (ObjectUtil.isNotEmpty(usee)) {
+                wrapper.like(Provider::getUsee, usee);
+            }
+            List<Provider> list12 = providerService.list(wrapper);
+            if (ObjectUtil.isNotEmpty(list12)) {
+                list.addAll(list12);
+            }
+        }
+
+        return list;
+    }
+
+    //供方评分 弹窗
+    @PostMapping("list3")
+    public List<Provider> list3(@RequestBody Map<String, Object> paramMap) {
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+        /*
+        一般项目-三类：供方简表+供方评分
+        一般项目-其他方：供方评分
+        重大项目-三类：供方简表+尽职调查+供方评分
+        重大项目-其他方：尽职调查+供方评分
+         */
+        List<Provider> list = new ArrayList<>();
+        LambdaQueryWrapper<Provider> wrapper1 = new LambdaQueryWrapper<Provider>().eq(Provider::getDeptId, user.getDeptId()).eq(Provider::getUsee, "一般项目立项后(其他方)").in(Provider::getResult, Arrays.asList("", "不合格"));
+        LambdaQueryWrapper<ProviderSimple> wrapper2 = new LambdaQueryWrapper<ProviderSimple>().eq(ProviderSimple::getDeptId, user.getDeptId()).eq(ProviderSimple::getUsee, "一般项目立项时(三类)").in(ProviderSimple::getResult, Arrays.asList("", "不合格"));
+        LambdaQueryWrapper<ProviderQuery> wrapper3 = new LambdaQueryWrapper<ProviderQuery>().eq(ProviderQuery::getDeptId, user.getDeptId()).in(ProviderQuery::getResult, Arrays.asList("", "不合格"));
         //
         List<ProcessInst> ll = processInstService.list(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getPath, "providerQueryPath").eq(ProcessInst::getProcessStatus, "完成").eq(ProcessInst::getBusinessHaveDisplay, "是"));
         if (ObjectUtil.isNotEmpty(ll)) {
@@ -236,6 +289,8 @@ public class ProviderController {
         provider.setDeptId(user.getDeptId());
         provider.setDeptName(user.getDeptName());
         provider.setCreateDatetime(LocalDateTime.now());
+        provider.setVersion(0);
+        provider.setHaveDisplay("是");
 
         return providerService.add(provider);
     }

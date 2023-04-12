@@ -146,15 +146,10 @@ public class UserTaskBean {
                 }
             } else if (path.equals("smallProjectPath")) {
                 //一般项目立项
-                //计划、法审
-                loginNameSet.add("于欣坤");
-                loginNameSet.add("祁瑛");
                 SmallProject smallProject = smallProjectService.getById(businessId);
-                if (smallProject.getHaveGiveMoney().equals("是")) {
-                    //财务
-                    String userNamee = smallProject.getUserNamee();
-                    loginNameSet.add(userNamee);
-                }
+                //财务
+                String userNamee = smallProject.getUserNamee();
+                loginNameSet.add(userNamee);
             } else if (path.equals("projectProtectPath")) {
                 //投标保证金(函)登记
                 ProjectProtect projectProtect = projectProtectService.getById(businessId);

@@ -13,6 +13,7 @@ import com.haiying.project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +42,10 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
     ProjectCodeService projectCodeService;
     @Autowired
     CustomerService customerService;
+    @Autowired
+    ProviderService providerService;
+    @Autowired
+    HttpSession httpSession;
 
 
     private void add(BigProject formValue) {
@@ -278,9 +283,18 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
                 this.updateById(formValue);
             }
         } else if (type.equals("check") || type.equals("reject")) {
+            //
+            SysUser user = (SysUser) httpSession.getAttribute("user");
             String haveEditForm = after.getHaveEditForm();
             if (haveEditForm.equals("是")) {
                 edit(formValue);
+            }
+            if (user.getDisplayName().equals("祁瑛")) {
+                if (ObjectUtil.isNotEmpty(formValue.getPowerCode())) {
+                    BigProject db = this.getById(formValue.getId());
+                    db.setPowerCode(formValue.getPowerCode());
+                    this.updateById(db);
+                }
             }
             //
             ProcessInst processInst = processInstService.getById(formValue.getProcessInstId());
@@ -290,9 +304,21 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
                 if (ObjectUtil.isEmpty(list)) {
                     throw new PageTipException("先审批 客户信用评级评分,客户名称=" + after.getFormValue().getCustomerName());
                 }
+                if (formValue.getProperty().equals("三类")) {
+                    List<Provider> listt = providerService.list(new LambdaQueryWrapper<Provider>().eq(Provider::getName, after.getFormValue().getProviderName()).eq(Provider::getResult, "合格"));
+                    if (ObjectUtil.isEmpty(listt)) {
+                        throw new PageTipException("先审批 供方信息,供方名称=" + after.getFormValue().getProviderName());
+                    }
+                }
             }
-            //
+
             boolean flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            if (user.getDisplayName().equals("郭琳")) {
+                ProcessInst processInstt = processInstService.getById(formValue.getProcessInstId());
+                if (processInstt.getDisplayProcessStep().contains("郭琳")) {
+                    flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+                }
+            }
             if (flag) {
                 ProjectCode code = projectCodeService.getOne(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getTaskCode, formValue.getTaskCode()));
                 code.setStatus("已使用");
