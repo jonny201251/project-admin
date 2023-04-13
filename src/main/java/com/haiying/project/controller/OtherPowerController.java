@@ -50,8 +50,7 @@ public class OtherPowerController {
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         IPage<OtherPower> page;
-        LambdaQueryWrapper<OtherPower> wrapper = new LambdaQueryWrapper<OtherPower>().eq(OtherPower::getDisplayName, user.getDisplayName()).eq(OtherPower::getHaveDisplay, "是").orderByDesc(OtherPower::getId);
-
+        LambdaQueryWrapper<OtherPower> wrapper = new LambdaQueryWrapper<OtherPower>().eq(OtherPower::getHaveDisplay, "是").orderByDesc(OtherPower::getId);
 
         Object displayNamee = paramMap.get("displayNamee");
         Object descc = paramMap.get("descc");
@@ -78,6 +77,9 @@ public class OtherPowerController {
             wrapper.like(OtherPower::getDeptName, deptName);
         }
 
+        if (!user.getDeptName().equals("纪监法审部")) {
+            wrapper.eq(OtherPower::getDisplayName, user.getDisplayName());
+        }
         page = otherPowerService.page(new Page<>(current, pageSize), wrapper);
         List<OtherPower> recordList = page.getRecords();
         if (ObjectUtil.isNotEmpty(recordList)) {

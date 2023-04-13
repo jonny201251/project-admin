@@ -65,7 +65,7 @@ public class CustomerController {
 
         SysUser user = (SysUser) httpSession.getAttribute("user");
         if (!user.getDisplayName().equals("宋思奇")) {
-            wrapper.and(qr->qr.isNull(Customer::getLoginName).or().eq(Customer::getDeptId, user.getDeptId()));
+            wrapper.and(qr -> qr.isNull(Customer::getLoginName).or().eq(Customer::getDeptId, user.getDeptId()));
         }
         return customerService.page(new Page<>(current, pageSize), wrapper);
     }
@@ -81,10 +81,10 @@ public class CustomerController {
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(Customer::getName, name);
         }
-/*        SysUser user = (SysUser) httpSession.getAttribute("user");
+        SysUser user = (SysUser) httpSession.getAttribute("user");
         if (!user.getDisplayName().equals("宋思奇")) {
-            wrapper.eq(Customer::getDisplayName, user.getDisplayName());
-        }*/
+            wrapper.eq(Customer::getDeptId, user.getDeptId());
+        }
         return customerService.page(new Page<>(current, pageSize), wrapper);
     }
 

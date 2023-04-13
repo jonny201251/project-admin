@@ -47,7 +47,7 @@ public class UserTaskBean {
     @Autowired
     ProjectProtectService projectProtectService;
     @Autowired
-    SmallBudgetRunService smallBudgetRunService;
+    BudgetProjecttService budgetProjecttService;
     @Autowired
     ProjectOutService projectOutService;
 
@@ -155,10 +155,10 @@ public class UserTaskBean {
                 ProjectProtect projectProtect = projectProtectService.getById(businessId);
                 String userNamee = projectProtect.getUserNamee();
                 loginNameSet.add(userNamee);
-            } else if (path.equals("smallBudgetRunPath") || path.equals("bigBudgetRunPath")) {
+            } else if (path.equals("budgetProjecttPath") || path.equals("bigBudgetProjecttPath")) {
                 //一般项目预算
-                SmallBudgetRun smallBudgetRun = smallBudgetRunService.getById(businessId);
-                String userNamee = smallBudgetRun.getUserNamee();
+                BudgetProjectt budgetProjectt = budgetProjecttService.getById(businessId);
+                String userNamee = budgetProjectt.getUserNamee();
                 loginNameSet.add(userNamee);
             } else if (path.equals("projectOutPath")) {
                 //项目收支的支出信息
