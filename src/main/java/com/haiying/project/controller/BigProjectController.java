@@ -125,7 +125,9 @@ public class BigProjectController {
         BigProject bigProject = bigProjectService.getById(id);
         List<SmallProtect> list = smallProtectService.list(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getProjectId, id));
         bigProject.setList(list);
-        bigProject.setIdTypeListTmp(Arrays.asList(bigProject.getIdType().split(",")));
+        if (ObjectUtil.isNotEmpty(bigProject.getIdType())) {
+            bigProject.setIdTypeListTmp(Arrays.asList(bigProject.getIdType().split(",")));
+        }
 
         //
         List<BigProjectTest2> test2List = bigProjectTest2Service.list();
