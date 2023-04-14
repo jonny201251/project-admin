@@ -66,7 +66,7 @@ public class CustomerScore1Controller {
 
 
         if (!user.getDisplayName().equals("宋思奇")) {
-            wrapper.eq(CustomerScore1::getDisplayName, user.getDisplayName());
+            wrapper.eq(CustomerScore1::getDeptId, user.getDeptId());
         }
         page = customerScore1Service.page(new Page<>(current, pageSize), wrapper);
         List<CustomerScore1> recordList = page.getRecords();

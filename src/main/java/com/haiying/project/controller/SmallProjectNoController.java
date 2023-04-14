@@ -61,7 +61,7 @@ public class SmallProjectNoController {
 
         SysUser user = (SysUser) httpSession.getAttribute("user");
         if (!user.getDeptName().equals("综合计划部")) {
-            wrapper.eq(SmallProjectNo::getLoginName, user.getLoginName());
+            wrapper.eq(SmallProjectNo::getDeptId, user.getDeptId());
         }
 
         return smallProjectNoService.page(new Page<>(current, pageSize), wrapper);

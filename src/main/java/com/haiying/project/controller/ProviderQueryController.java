@@ -62,7 +62,7 @@ public class ProviderQueryController {
         }
 
         if (!user.getDisplayName().equals("孙欢")) {
-            wrapper.eq(ProviderQuery::getDisplayName, user.getDisplayName());
+            wrapper.eq(ProviderQuery::getDeptId, user.getDeptId());
         }
 
         page = providerQueryService.page(new Page<>(current, pageSize), wrapper);

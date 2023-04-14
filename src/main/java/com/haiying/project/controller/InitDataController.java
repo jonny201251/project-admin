@@ -335,7 +335,7 @@ public class InitDataController {
         }
 
 
-        InputStream inputStream = new FileInputStream("d:/a/项目信息和预算.xls");
+        InputStream inputStream = new FileInputStream("d:/a/项目信息和预算2.xls");
         //
         ExcelReader excelReader = EasyExcel.read(inputStream).build();
         //
@@ -347,7 +347,30 @@ public class InitDataController {
         //获取数据
         List<ProjectExcel> list = listener.getData();
 
-
+        //
+        for (ProjectExcel tmp : list) {
+            if(tmp.getDeptName().equals("第三")){
+                tmp.setDeptName("天津第三事业部");
+            }else if(tmp.getDeptName().equals("第五")){
+                tmp.setDeptName("天津第五事业部");
+            }else if(tmp.getDeptName().equals("动力工程")){
+                tmp.setDeptName("动力工程事业部");
+            }else if(tmp.getDeptName().equals("国际工程")){
+                tmp.setDeptName("国际工程事业部");
+            }else if(tmp.getDeptName().equals("海南")){
+                tmp.setDeptName("海南事业部");
+            }else if(tmp.getDeptName().equals("机电")){
+                tmp.setDeptName("机电系统集成事业部");
+            }else if(tmp.getDeptName().equals("节能环保")){
+                tmp.setDeptName("节能环保事业部");
+            }else if(tmp.getDeptName().equals("系统运维")){
+                tmp.setDeptName("系统运维事业部");
+            }else if(tmp.getDeptName().equals("智慧产业")){
+                tmp.setDeptName("智慧产业事业部");
+            }else if(tmp.getDeptName().equals("市场")){
+                tmp.setDeptName("市场部");
+            }
+        }
         //设置部门、客户、供方
         for (ProjectExcel tmp : list) {
             if (deptMap.get(tmp.getDeptName()) == null) {

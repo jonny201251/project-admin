@@ -87,7 +87,7 @@ public class BigProjectController {
         }
 
         if (!user.getDeptName().equals("综合计划部")) {
-            wrapper.eq(BigProject::getDisplayName, user.getDisplayName());
+            wrapper.eq(BigProject::getDeptId, user.getDeptId());
         }
         page = bigProjectService.page(new Page<>(current, pageSize), wrapper);
         List<BigProject> recordList = page.getRecords();

@@ -75,7 +75,7 @@ public class ProjectProtectController {
         }
 
         if (!user.getDeptName().equals("综合计划部")) {
-            wrapper.eq(ProjectProtect::getDisplayName, user.getDisplayName());
+            wrapper.eq(ProjectProtect::getDeptId, user.getDeptId());
         }
 
         page = projectProtectService.page(new Page<>(current, pageSize), wrapper);

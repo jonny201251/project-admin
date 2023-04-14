@@ -66,7 +66,7 @@ public class ProviderScore1Controller {
         }
 
         if (!user.getDisplayName().equals("孙欢")) {
-            wrapper.eq(ProviderScore1::getDisplayName, user.getDisplayName());
+            wrapper.eq(ProviderScore1::getDeptId, user.getDeptId());
         }
         page = providerScore1Service.page(new Page<>(current, pageSize), wrapper);
         List<ProviderScore1> recordList = page.getRecords();

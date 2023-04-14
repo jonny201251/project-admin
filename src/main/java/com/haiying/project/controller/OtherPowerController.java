@@ -78,7 +78,7 @@ public class OtherPowerController {
         }
 
         if (!user.getDeptName().equals("纪监法审部")) {
-            wrapper.eq(OtherPower::getDisplayName, user.getDisplayName());
+            wrapper.eq(OtherPower::getDeptId, user.getDeptId());
         }
         page = otherPowerService.page(new Page<>(current, pageSize), wrapper);
         List<OtherPower> recordList = page.getRecords();

@@ -57,7 +57,7 @@ public class ProviderSimpleController {
         //数据权限
         SysUser user = (SysUser) httpSession.getAttribute("user");
         if (!user.getDisplayName().equals("孙欢")) {
-            wrapper.eq(ProviderSimple::getDisplayName, user.getDisplayName());
+            wrapper.eq(ProviderSimple::getDeptId, user.getDeptId());
         }
         return providerSimpleService.page(new Page<>(current, pageSize), wrapper);
     }

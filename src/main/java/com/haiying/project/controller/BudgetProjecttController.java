@@ -86,7 +86,7 @@ public class BudgetProjecttController {
             wrapper.like(BudgetProjectt::getDeptName, deptName);
         }
         if (!user.getDeptName().equals("综合计划部")) {
-            wrapper.eq(BudgetProjectt::getDisplayName, user.getDisplayName());
+            wrapper.eq(BudgetProjectt::getDeptId, user.getDeptId());
         }
 
         IPage<BudgetProjectt> page = budgetProjecttService.page(new Page<>(current, pageSize), wrapper);

@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.result.Wrapper;
-import com.haiying.project.model.entity.FormFile;
-import com.haiying.project.model.entity.ProcessInst;
-import com.haiying.project.model.entity.ProviderControl;
-import com.haiying.project.model.entity.SysUser;
+import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.model.vo.ProviderControlAfter;
 import com.haiying.project.service.FormFileService;
@@ -19,7 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -50,7 +50,11 @@ public class ProviderControlController {
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         IPage<ProviderControl> page;
-        LambdaQueryWrapper<ProviderControl> wrapper = new LambdaQueryWrapper<ProviderControl>().eq(ProviderControl::getDisplayName,user.getDisplayName()).eq(ProviderControl::getHaveDisplay, "是").orderByDesc(ProviderControl::getId);
+        LambdaQueryWrapper<ProviderControl> wrapper = new LambdaQueryWrapper<ProviderControl>().eq(ProviderControl::getHaveDisplay, "是").orderByDesc(ProviderControl::getId);
+        //数据权限
+        if (!user.getDisplayName().equals("孙欢")) {
+            wrapper.eq(ProviderControl::getDeptId, user.getDeptId());
+        }
         page = providerControlService.page(new Page<>(current, pageSize), wrapper);
         List<ProviderControl> recordList = page.getRecords();
         if (ObjectUtil.isNotEmpty(recordList)) {

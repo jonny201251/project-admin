@@ -87,7 +87,7 @@ public class SmallProjectController {
 
 
         if (!user.getDeptName().equals("综合计划部")) {
-            wrapper.eq(SmallProject::getDisplayName, user.getDisplayName());
+            wrapper.eq(SmallProject::getDeptId, user.getDeptId());
         }
         page = smallProjectService.page(new Page<>(current, pageSize), wrapper);
         List<SmallProject> recordList = page.getRecords();
