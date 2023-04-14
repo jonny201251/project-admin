@@ -3,9 +3,10 @@ package com.haiying.project.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -41,5 +42,8 @@ public class BudgetInn implements Serializable {
      */
     private Double money;
 
+    private String rate;
+
+    private String remark;
 
 }

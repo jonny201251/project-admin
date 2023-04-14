@@ -335,7 +335,7 @@ public class InitDataController {
         }
 
 
-        InputStream inputStream = new FileInputStream("d:/a/项目信息和预算2.xls");
+        InputStream inputStream = new FileInputStream("d:/a/项目信息和预算3.xls");
         //
         ExcelReader excelReader = EasyExcel.read(inputStream).build();
         //
@@ -349,25 +349,25 @@ public class InitDataController {
 
         //
         for (ProjectExcel tmp : list) {
-            if(tmp.getDeptName().equals("第三")){
+            if (tmp.getDeptName().equals("第三")) {
                 tmp.setDeptName("天津第三事业部");
-            }else if(tmp.getDeptName().equals("第五")){
+            } else if (tmp.getDeptName().equals("第五")) {
                 tmp.setDeptName("天津第五事业部");
-            }else if(tmp.getDeptName().equals("动力工程")){
+            } else if (tmp.getDeptName().equals("动力工程")) {
                 tmp.setDeptName("动力工程事业部");
-            }else if(tmp.getDeptName().equals("国际工程")){
+            } else if (tmp.getDeptName().equals("国际工程")) {
                 tmp.setDeptName("国际工程事业部");
-            }else if(tmp.getDeptName().equals("海南")){
+            } else if (tmp.getDeptName().equals("海南")) {
                 tmp.setDeptName("海南事业部");
-            }else if(tmp.getDeptName().equals("机电")){
+            } else if (tmp.getDeptName().equals("机电")) {
                 tmp.setDeptName("机电系统集成事业部");
-            }else if(tmp.getDeptName().equals("节能环保")){
+            } else if (tmp.getDeptName().equals("节能环保")) {
                 tmp.setDeptName("节能环保事业部");
-            }else if(tmp.getDeptName().equals("系统运维")){
+            } else if (tmp.getDeptName().equals("系统运维")) {
                 tmp.setDeptName("系统运维事业部");
-            }else if(tmp.getDeptName().equals("智慧产业")){
+            } else if (tmp.getDeptName().equals("智慧产业")) {
                 tmp.setDeptName("智慧产业事业部");
-            }else if(tmp.getDeptName().equals("市场")){
+            } else if (tmp.getDeptName().equals("市场")) {
                 tmp.setDeptName("市场部");
             }
         }
@@ -748,6 +748,49 @@ public class InitDataController {
         budgetOutService.saveBatch(ll);
 
         budgetProjecttService.updateBatchById(l);
+
+        return true;
+    }
+
+
+    @GetMapping("project2")
+    public boolean project2() {
+        List<BudgetInn> inList = new ArrayList<>();
+        List<BudgetProjectt> list = budgetProjecttService.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getProcessInstId, 0).ne(BudgetProjectt::getDeptName, "节能环保事业部"));
+        for (BudgetProjectt tmp : list) {
+            if (ObjectUtil.isEmpty(tmp.getContractMoney())) {
+                System.out.println(tmp.getTaskCode());
+            } else {
+                BudgetInn in = new BudgetInn();
+                in.setBudgetId(tmp.getId());
+                in.setProjectId(tmp.getProjectId());
+                in.setProjectType(tmp.getProjectType());
+                in.setInType("项目收入");
+                in.setMoney(tmp.getContractMoney());
+
+                inList.add(in);
+            }
+        }
+        budgetInnService.saveBatch(inList);
+        return true;
+    }
+
+    @GetMapping("project3")
+    public boolean project3() {
+        List<BudgetProjectt> list = budgetProjecttService.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getProcessInstId, 0));
+        for (BudgetProjectt tmp : list) {
+            List<BudgetOut> list1 = budgetOutService.list(new LambdaQueryWrapper<BudgetOut>().eq(BudgetOut::getBudgetId, tmp.getId()));
+            if (ObjectUtil.isNotEmpty(list1)) {
+                Double sum = 0.0d;
+                for (BudgetOut out : list1) {
+                    sum += ofNullable(out.getMoney()).orElse(0.0);
+                }
+//                System.out.println(tmp.getTaskCode() + "," + sum + "," + tmp.getTotalCost());
+                if (!sum.equals(tmp.getTotalCost())) {
+                    System.out.println(tmp.getId() +","+tmp.getTaskCode()+ "," + sum + "," + tmp.getTotalCost());
+                }
+            }
+        }
 
         return true;
     }
