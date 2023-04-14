@@ -118,6 +118,7 @@ public class BudgetProjecttController {
         if (ObjectUtil.isNotEmpty(recordList)) {
             recordList.forEach(record -> record.setProcessInst(processInst2Map.get(record.getProcessInstId())));
         }
+
         return page;
     }
 
