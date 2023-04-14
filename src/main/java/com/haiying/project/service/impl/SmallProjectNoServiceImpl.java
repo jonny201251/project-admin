@@ -25,6 +25,9 @@ public class SmallProjectNoServiceImpl extends ServiceImpl<SmallProjectNoMapper,
 
     @Override
     public boolean add(SmallProjectNo smallProjectNo) {
+        if (!smallProjectNo.getProjectRate().endsWith("%")) {
+            smallProjectNo.setProjectRate(smallProjectNo.getProjectRate() + "%");
+        }
         this.save(smallProjectNo);
 
         ProjectCode code = projectCodeService.getOne(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getTaskCode, smallProjectNo.getTaskCode()));

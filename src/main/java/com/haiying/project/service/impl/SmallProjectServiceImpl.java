@@ -56,6 +56,9 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
 
         formValue.setHaveDisplay("是");
         formValue.setVersion(0);
+        if (!formValue.getProjectRate().endsWith("%")) {
+            formValue.setProjectRate(formValue.getProjectRate() + "%");
+        }
         //
         formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
         formValue.setWorkDate(String.join("至", formValue.getWorkDateTmp()));
@@ -85,6 +88,9 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
     private void edit(SmallProject formValue) {
         formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
         formValue.setWorkDate(String.join("至", formValue.getWorkDateTmp()));
+        if (!formValue.getProjectRate().endsWith("%")) {
+            formValue.setProjectRate(formValue.getProjectRate() + "%");
+        }
         this.updateById(formValue);
         smallProtectService.remove(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getProjectId, formValue.getId()));
         List<SmallProtect> list = formValue.getList();

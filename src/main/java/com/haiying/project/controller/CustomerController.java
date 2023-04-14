@@ -148,6 +148,9 @@ public class CustomerController {
 
     @PostMapping("edit")
     public boolean edit(@RequestBody Customer customer) {
+        if(ObjectUtil.isNotEmpty(customer.getResult())){
+            throw new PageTipException("暂时不让编辑");
+        }
         return customerService.edit(customer);
     }
 }

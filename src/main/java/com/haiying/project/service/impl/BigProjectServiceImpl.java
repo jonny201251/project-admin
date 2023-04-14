@@ -57,6 +57,9 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
 
         formValue.setHaveDisplay("是");
         formValue.setVersion(0);
+        if (!formValue.getProjectRate().endsWith("%")) {
+            formValue.setProjectRate(formValue.getProjectRate() + "%");
+        }
         //
         formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
         this.save(formValue);
@@ -111,6 +114,9 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
 
     private void edit(BigProject formValue) {
         formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
+        if (!formValue.getProjectRate().endsWith("%")) {
+            formValue.setProjectRate(formValue.getProjectRate() + "%");
+        }
         this.updateById(formValue);
 
         smallProtectService.remove(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getProjectId, formValue.getId()));

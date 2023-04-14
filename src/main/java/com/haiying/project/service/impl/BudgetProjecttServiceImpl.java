@@ -10,6 +10,7 @@ import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.BudgetProjecttAfter;
 import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.service.*;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,8 +71,26 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
             throw new PageTipException("预计毛利率低于立项时的毛利率");
         }
 
+        //合同金额>=预计收入累计
+        if (formValue.getContractMoney() < formValue.getInSum()) {
+            throw new PageTipException("合同金额 必须 大于等于 预计收入累计");
+        }
+
         formValue.setHaveDisplay("是");
         formValue.setVersion(0);
+        if (!formValue.getProtectRate().endsWith("%")) {
+            formValue.setProtectRate(formValue.getProtectRate() + "%");
+        }
+        List<String> rateList = new ArrayList<>();
+        String[] arr = formValue.getInvoiceRate().split(",|，");
+        for (String str : arr) {
+            if (!str.endsWith("%")) {
+                rateList.add(str + "%");
+            } else {
+                rateList.add(str);
+            }
+        }
+        formValue.setInvoiceRate(Strings.join(rateList, '，'));
         this.save(formValue);
         //
         List<BudgetProtect> protectList = formValue.getProtectList();
@@ -131,6 +150,24 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
         if (page < build) {
             throw new PageTipException("预计毛利率低于立项时的毛利率");
         }
+        //合同金额>=预计收入累计
+        if (formValue.getContractMoney() < formValue.getInSum()) {
+            throw new PageTipException("合同金额 必须 大于等于 预计收入累计");
+        }
+
+        if (!formValue.getProtectRate().endsWith("%")) {
+            formValue.setProtectRate(formValue.getProtectRate() + "%");
+        }
+        List<String> rateList = new ArrayList<>();
+        String[] arr = formValue.getInvoiceRate().split(",|，");
+        for (String str : arr) {
+            if (!str.endsWith("%")) {
+                rateList.add(str + "%");
+            } else {
+                rateList.add(str);
+            }
+        }
+        formValue.setInvoiceRate(Strings.join(rateList, '，'));
 
         this.updateById(formValue);
         //

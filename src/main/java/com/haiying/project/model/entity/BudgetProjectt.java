@@ -167,5 +167,8 @@ public class BudgetProjectt implements Serializable {
     //排他网关
     private String haveThree;
 
+    //预计收入累计
+    @TableField(exist = false)
+    private Double inSum;
 
 }
