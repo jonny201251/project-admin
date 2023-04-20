@@ -335,7 +335,7 @@ public class InitDataController {
         }
 
 
-        InputStream inputStream = new FileInputStream("d:/a/项目信息和预算3.xls");
+        InputStream inputStream = new FileInputStream("d:/a/项目信息和预算4.xls");
         //
         ExcelReader excelReader = EasyExcel.read(inputStream).build();
         //
@@ -749,6 +749,22 @@ public class InitDataController {
 
         budgetProjecttService.updateBatchById(l);
 
+        List<BudgetInn> inList = new ArrayList<>();
+
+        for (BudgetProjectt tmp : l) {
+            BudgetInn in = new BudgetInn();
+            in.setBudgetId(tmp.getId());
+            in.setProjectId(tmp.getProjectId());
+            in.setProjectType(tmp.getProjectType());
+            in.setInType("项目收入");
+            in.setMoney(tmp.getContractMoney());
+
+            inList.add(in);
+        }
+
+
+        budgetInnService.saveBatch(inList);
+
         return true;
     }
 
@@ -787,10 +803,16 @@ public class InitDataController {
                 }
 //                System.out.println(tmp.getTaskCode() + "," + sum + "," + tmp.getTotalCost());
                 if (!sum.equals(tmp.getTotalCost())) {
-                    System.out.println(tmp.getId() +","+tmp.getTaskCode()+ "," + sum + "," + tmp.getTotalCost());
+                    System.out.println(tmp.getId() + "," + tmp.getTaskCode() + "," + sum + "," + tmp.getTotalCost());
                 }
             }
         }
+
+        return true;
+    }
+
+    @GetMapping("process")
+    public boolean process() {
 
         return true;
     }

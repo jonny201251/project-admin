@@ -50,7 +50,7 @@ public class BudgetProjecttController {
     public IPage<BudgetProjectt> list(@RequestBody Map<String, Object> paramMap) {
         SysUser user = (SysUser) httpSession.getAttribute("user");
 
-        LambdaQueryWrapper<BudgetProjectt> wrapper = new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getHaveDisplay, "是");
+        LambdaQueryWrapper<BudgetProjectt> wrapper = new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getHaveDisplay, "是").orderByDesc(BudgetProjectt::getId);
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object projectType = paramMap.get("projectType");
