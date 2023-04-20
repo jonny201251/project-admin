@@ -50,6 +50,8 @@ public class InitDataController {
     BudgetInnService budgetInnService;
     @Autowired
     BudgetOutService budgetOutService;
+    @Autowired
+    ProcessInstService processInstService;
 
 
     @GetMapping("provider")
@@ -813,6 +815,74 @@ public class InitDataController {
 
     @GetMapping("process")
     public boolean process() {
+        List<ProcessInst> instList1 = new ArrayList<>();
+        List<ProcessInst> instList2 = new ArrayList<>();
+        List<ProcessInst> instList3 = new ArrayList<>();
+
+        List<SmallProject> list1 = smallProjectService.list(new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getProcessInstId, 0));
+        List<BigProject> list2 = bigProjectService.list(new LambdaQueryWrapper<BigProject>().eq(BigProject::getProcessInstId, 0));
+        List<BudgetProjectt> list3 = budgetProjecttService.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getProcessInstId, 0));
+
+        for (SmallProject tmp : list1) {
+            ProcessInst p = new ProcessInst();
+            p.setProcessDesignId(70);
+            p.setProcessName("一般项目立项");
+            p.setBusinessName(tmp.getName());
+            p.setBusinessId(tmp.getId());
+            p.setBusinessHaveDisplay("是");
+            p.setBusinessVersion(0);
+            p.setProcessStatus("完成");
+            p.setDeptId(tmp.getDeptId());
+            p.setDeptName(tmp.getDeptName());
+            p.setPath("smallProjectPath");
+
+            processInstService.save(p);
+            tmp.setProcessInstId(p.getId());
+        }
+        smallProjectService.updateBatchById(list1);
+
+
+        for (BigProject tmp : list2) {
+            ProcessInst p = new ProcessInst();
+            p.setProcessDesignId(69);
+            p.setProcessName("重大项目评估");
+            p.setBusinessName(tmp.getName());
+            p.setBusinessId(tmp.getId());
+            p.setBusinessHaveDisplay("是");
+            p.setBusinessVersion(0);
+            p.setProcessStatus("完成");
+            p.setDeptId(tmp.getDeptId());
+            p.setDeptName(tmp.getDeptName());
+            p.setPath("bigProjectPath");
+
+            processInstService.save(p);
+            tmp.setProcessInstId(p.getId());
+        }
+        bigProjectService.updateBatchById(list2);
+
+        for (BudgetProjectt tmp : list3) {
+            ProcessInst p = new ProcessInst();
+            p.setBusinessName(tmp.getName());
+            p.setBusinessId(tmp.getId());
+            p.setBusinessHaveDisplay("是");
+            p.setBusinessVersion(0);
+            p.setProcessStatus("完成");
+            p.setDeptId(tmp.getDeptId());
+            p.setDeptName(tmp.getDeptName());
+            if (tmp.getProjectType().equals("重大项目")) {
+                p.setProcessDesignId(48);
+                p.setProcessName("重大项目预算");
+            } else {
+                p.setProcessDesignId(47);
+                p.setProcessName("一般项目预算");
+            }
+            p.setPath("budgetProjecttPath");
+
+            processInstService.save(p);
+            tmp.setProcessInstId(p.getId());
+        }
+        budgetProjecttService.updateBatchById(list3);
+
 
         return true;
     }

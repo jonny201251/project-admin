@@ -72,6 +72,11 @@ public class SmallProjectNoController {
         return smallProjectNoService.add(smallProjectNo);
     }
 
+    @PostMapping("edit")
+    public boolean edit(@RequestBody SmallProjectNo smallProjectNo) {
+        return smallProjectNoService.updateById(smallProjectNo);
+    }
+
     @GetMapping("get")
     public SmallProjectNo get(String id) {
         return smallProjectNoService.getById(id);
