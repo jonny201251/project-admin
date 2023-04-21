@@ -49,7 +49,6 @@ public class ProjectCodeController {
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object type = paramMap.get("type");
-        Object name = paramMap.get("name");
         if (ObjectUtil.isNotEmpty(type)) {
             wrapper.like(ProjectCode::getBusinessType, type);
         }
@@ -75,6 +74,10 @@ public class ProjectCodeController {
             wrapper.like(ProjectCode::getDeptName, deptName);
         }
 
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+        if (!user.getDeptName().equals("综合计划部")) {
+            wrapper.eq(ProjectCode::getDeptId, user.getDeptId());
+        }
         return projectCodeService.page(new Page<>(current, pageSize), wrapper);
     }
 

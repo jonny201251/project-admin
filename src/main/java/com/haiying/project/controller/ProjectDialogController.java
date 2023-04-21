@@ -77,13 +77,19 @@ public class ProjectDialogController {
                     }
                 }
             } else if (projectType.equals("一般项目非")) {
-                LambdaQueryWrapper<SmallProjectNo> wrapper = new LambdaQueryWrapper<SmallProjectNo>().eq(SmallProjectNo::getDeptId, user.getDeptId()).like(SmallProjectNo::getName, name);
+                LambdaQueryWrapper<SmallProjectNo> wrapper = new LambdaQueryWrapper<SmallProjectNo>().like(SmallProjectNo::getName, name);
+                if (!user.getDeptName().equals("综合计划部")) {
+                    wrapper.eq(SmallProjectNo::getDeptId, user.getDeptId());
+                }
                 IPage<SmallProjectNo> page = smallProjectNoService.page(new Page<>(current, pageSize), wrapper);
                 if (ObjectUtil.isNotEmpty(page.getRecords())) {
                     responseResult = ResponseResult.success(page);
                 }
             } else if (projectType.equals("重大项目")) {
-                LambdaQueryWrapper<BigProject> wrapper = new LambdaQueryWrapper<BigProject>().eq(BigProject::getHaveDisplay, "是").eq(BigProject::getDeptId, user.getDeptId()).like(BigProject::getName, name);
+                LambdaQueryWrapper<BigProject> wrapper = new LambdaQueryWrapper<BigProject>().eq(BigProject::getHaveDisplay, "是").like(BigProject::getName, name);
+                if (!user.getDeptName().equals("综合计划部")) {
+                    wrapper.eq(BigProject::getDeptId, user.getDeptId());
+                }
                 if (ObjectUtil.isNotEmpty(taskCode)) {
                     wrapper.like(BigProject::getTaskCode, taskCode);
                 }
