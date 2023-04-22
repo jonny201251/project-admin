@@ -61,7 +61,7 @@ public class ProcessInstController {
     public List<String> getRunTaskList(String processInstId) {
         List<String> list = new ArrayList<>();
         ProcessInst processInst = processInstService.getById(processInstId);
-        if (processInst != null) {
+        if (processInst != null && ObjectUtil.isNotEmpty(processInst.getActProcessInstanceId())) {
             List<Task> runTaskList = workFlowBean.getRunTaskList(processInst.getActProcessInstanceId());
             if (ObjectUtil.isNotEmpty(runTaskList)) {
                 list = runTaskList.stream().map(Task::getTaskDefinitionKey).collect(Collectors.toList());

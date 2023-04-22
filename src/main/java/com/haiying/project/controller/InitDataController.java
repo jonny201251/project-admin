@@ -8,10 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.common.utils.ExcelListener;
 import com.haiying.project.model.entity.*;
-import com.haiying.project.model.excel.CodeExcel;
-import com.haiying.project.model.excel.CustomerExcel;
-import com.haiying.project.model.excel.ProjectExcel;
-import com.haiying.project.model.excel.ProviderExcel;
+import com.haiying.project.model.excel.*;
 import com.haiying.project.service.*;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -886,4 +883,33 @@ public class InitDataController {
 
         return true;
     }
+
+
+    @GetMapping("user")
+    public boolean user() throws Exception {
+        InputStream inputStream = new FileInputStream("g:/人员名单.xls");
+        //
+        ExcelReader excelReader = EasyExcel.read(inputStream).build();
+        //
+        ExcelListener<UserExcel> listener = new ExcelListener<>();
+        //获取sheet对象
+        ReadSheet sheet0 = EasyExcel.readSheet(0).head(UserExcel.class).registerReadListener(listener).build();
+        //读取数据
+        excelReader.read(sheet0);
+        //获取数据
+        List<UserExcel> list = listener.getData();
+
+        List<String> ll = new ArrayList<>();
+        Set<String> ss = new LinkedHashSet<>();
+        for (UserExcel tmp : list) {
+//            System.out.println(PinyinUtil.getPinyin(tmp.getName()).replaceAll("\\s+", ""));
+            ss.add(tmp.getDeptName().trim());
+        }
+
+        for (String s : ss) {
+            System.out.println(s);
+        }
+        return true;
+    }
+
 }
