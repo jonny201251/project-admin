@@ -11,6 +11,7 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -69,6 +70,8 @@ public class ProjectProtect implements Serializable {
     @TableField(exist = false)
     private ProcessInst processInst;
 
+    @TableField(exist = false)
+    private List<String> userNameeList;
     private String userNamee;
 
     private String remark;

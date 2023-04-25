@@ -35,10 +35,12 @@ public class ProjectProtectServiceImpl extends ServiceImpl<ProjectProtectMapper,
     BigProjectService bigProjectService;
 
     private void add(ProjectProtect formValue) {
+        formValue.setUserNamee(String.join(",", formValue.getUserNameeList()));
         this.save(formValue);
     }
 
     private void edit(ProjectProtect formValue) {
+        formValue.setUserNamee(String.join(",", formValue.getUserNameeList()));
         this.updateById(formValue);
     }
 

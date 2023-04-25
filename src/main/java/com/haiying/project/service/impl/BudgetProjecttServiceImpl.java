@@ -332,7 +332,13 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
                 this.updateById(tmp);
             }
             //
-            buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            ProcessInst processInst = processInstService.getById(formValue.getProcessInstId());
+            String[] tmp = processInst.getLoginProcessStep().split(",");
+            if (user.getDeptName().equals("供电中心") && tmp.length > 1 && buttonName.contains("同意")) {
+                buttonHandleBean.checkUpOne(formValue.getProcessInstId(), formValue, buttonName, comment);
+            } else {
+                buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            }
         } else if (type.equals("recall")) {
             buttonHandleBean.recall(formValue.getProcessInstId(), buttonName);
         } else if (type.equals("delete")) {

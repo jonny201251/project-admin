@@ -317,8 +317,15 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
                     }
                 }
             }
-
-            boolean flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            //
+            boolean flag = false;
+            String[] tmp = processInst.getLoginProcessStep().split(",");
+            if (user.getDeptName().equals("供电中心") && tmp.length > 1 && buttonName.contains("同意")) {
+                buttonHandleBean.checkUpOne(formValue.getProcessInstId(), formValue, buttonName, comment);
+            } else {
+                flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            }
+            //
             if (user.getDisplayName().equals("郭琳")) {
                 ProcessInst processInstt = processInstService.getById(formValue.getProcessInstId());
                 if (processInstt.getDisplayProcessStep().contains("郭琳")) {

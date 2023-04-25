@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -90,7 +91,9 @@ public class ProjectProtectController {
 
     @GetMapping("get")
     public ProjectProtect get(Integer id) {
-        return projectProtectService.getById(id);
+        ProjectProtect projectProtect = projectProtectService.getById(id);
+        projectProtect.setUserNameeList(Arrays.asList(projectProtect.getUserNamee().split(",")));
+        return projectProtect;
     }
 
     @PostMapping("btnHandle")

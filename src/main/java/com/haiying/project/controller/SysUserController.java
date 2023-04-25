@@ -74,6 +74,10 @@ public class SysUserController {
 
     @PostMapping("add")
     public boolean add(@RequestBody SysUser sysUser) {
+        SysUser user = sysUserService.getById(sysUser.getLoginName());
+        if (user != null) {
+            throw new PageTipException(user.getLoginName() + "--已经存在");
+        }
         sysUser.setPassword(SecureUtil.md5("1"));
         return sysUserService.save(sysUser);
     }

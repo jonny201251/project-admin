@@ -54,6 +54,13 @@ public class UserTaskBean {
     public Set<String> getLoginNameList(ProcessDesignTask processDesignTask, Integer businessId, String actProcessInstanceId) {
         Set<String> loginNameSet = new TreeSet<>();
 
+        Integer processDesignId = processDesignTask.getProcessDesignId();
+        Set<Integer> processDesignIdSet = new HashSet<>();
+        processDesignIdSet.add(69);
+        processDesignIdSet.add(70);
+        processDesignIdSet.add(47);
+        processDesignIdSet.add(48);
+
         String type = processDesignTask.getType();
         if (type.equals("角色") || type.equals("用户")) {
             String[] idArr = processDesignTask.getTypeIds().split(",");
@@ -79,6 +86,10 @@ public class UserTaskBean {
                         List<SysUser> leaderList = sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getDeptId, currentUser.getDeptId()).eq(SysUser::getPosition, "部门正职领导"));
                         if (ObjectUtil.isNotEmpty(leaderList)) {
                             leaderList.forEach(user -> loginNameSet.add(user.getLoginName()));
+                        }
+                        //供电中心
+                        if (currentUser.getDeptName().equals("供电中心") && processDesignIdSet.contains(processDesignId)) {
+                            loginNameSet.add("黄少芳");
                         }
                     } else if (sysRole.getName().equals("公司主管领导")) {
                         //申请部门的deptId
@@ -153,8 +164,9 @@ public class UserTaskBean {
             } else if (path.equals("projectProtectPath")) {
                 //投标保证金(函)登记
                 ProjectProtect projectProtect = projectProtectService.getById(businessId);
-                String userNamee = projectProtect.getUserNamee();
-                loginNameSet.add(userNamee);
+                String str = projectProtect.getUserNamee();
+                String[] tmp = str.split(",");
+                loginNameSet.addAll(Arrays.asList(tmp));
             } else if (path.equals("budgetProjecttPath") || path.equals("bigBudgetProjecttPath")) {
                 //一般项目预算
                 BudgetProjectt budgetProjectt = budgetProjecttService.getById(businessId);
