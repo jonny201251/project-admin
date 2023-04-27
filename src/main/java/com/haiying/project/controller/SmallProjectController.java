@@ -85,10 +85,14 @@ public class SmallProjectController {
             wrapper.like(SmallProject::getDeptName, deptName);
         }
 
-
-        if (!user.getDeptName().equals("综合计划部")) {
-            wrapper.eq(SmallProject::getDeptId, user.getDeptId());
+        if (user.getLoginName().equals("祁瑛")) {
+            wrapper.eq(SmallProject::getHavePower, "是");
+        } else {
+            if (!user.getDeptName().equals("综合计划部")) {
+                wrapper.eq(SmallProject::getDeptId, user.getDeptId());
+            }
         }
+
         page = smallProjectService.page(new Page<>(current, pageSize), wrapper);
         List<SmallProject> recordList = page.getRecords();
         if (ObjectUtil.isNotEmpty(recordList)) {
