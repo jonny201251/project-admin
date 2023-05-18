@@ -49,12 +49,7 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
     @Autowired
     BigProjectService bigProjectService;
 
-    private void add(BudgetProjectt formValue) {
-        //判断是否重复添加
-        List<BudgetProjectt> ll = this.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getHaveDisplay, "是").eq(BudgetProjectt::getTaskCode, formValue.getTaskCode()));
-        if (ObjectUtil.isNotEmpty(ll)) {
-            throw new PageTipException("任务号   已存在");
-        }
+    private void validate(BudgetProjectt formValue) {
         //页面的毛利率>立项时的毛利率
         double page = Double.parseDouble(formValue.getProjectRate().replaceAll("%", ""));
         double build;
@@ -66,6 +61,9 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
         } else if (formValue.getProjectType().equals("一般项目非")) {
             tmp = smallProjectNoService.getById(formValue.getProjectId()).getProjectRate();
         }
+        if (ObjectUtil.isEmpty(tmp)) {
+            throw new PageTipException("立项时的项目毛利率为空，联系管理员补全");
+        }
         build = Double.parseDouble(tmp.replaceAll("%", ""));
         if (page < build) {
             throw new PageTipException("预计毛利率低于立项时的毛利率");
@@ -76,12 +74,13 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
             throw new PageTipException("合同金额 必须 大于等于 预计收入累计");
         }
 
-        formValue.setHaveDisplay("是");
-        formValue.setVersion(0);
         if (!formValue.getProtectRate().endsWith("%")) {
             formValue.setProtectRate(formValue.getProtectRate() + "%");
         }
         List<String> rateList = new ArrayList<>();
+        if (ObjectUtil.isEmpty(formValue.getInvoiceRate())) {
+            throw new PageTipException("预计收入.税率 不能为空");
+        }
         String[] arr = formValue.getInvoiceRate().split(",|，");
         for (String str : arr) {
             if (!str.endsWith("%")) {
@@ -91,6 +90,19 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
             }
         }
         formValue.setInvoiceRate(Strings.join(rateList, '，'));
+    }
+
+    private void add(BudgetProjectt formValue) {
+        //判断是否重复添加
+        List<BudgetProjectt> ll = this.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getHaveDisplay, "是").eq(BudgetProjectt::getTaskCode, formValue.getTaskCode()));
+        if (ObjectUtil.isNotEmpty(ll)) {
+            throw new PageTipException("任务号   已存在");
+        }
+        formValue.setHaveDisplay("是");
+        formValue.setVersion(0);
+        //
+        validate(formValue);
+
         this.save(formValue);
         //
         List<BudgetProtect> protectList = formValue.getProtectList();
@@ -135,39 +147,8 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
     }
 
     private void edit(BudgetProjectt formValue) {
-        //页面的毛利率>立项时的毛利率
-        double page = Double.parseDouble(formValue.getProjectRate().replaceAll("%", ""));
-        double build;
-        String tmp = "";
-        if (formValue.getProjectType().equals("一般项目")) {
-            tmp = smallProjectService.getById(formValue.getProjectId()).getProjectRate();
-        } else if (formValue.getProjectType().equals("重大项目")) {
-            tmp = bigProjectService.getById(formValue.getProjectId()).getProjectRate();
-        } else if (formValue.getProjectType().equals("一般项目非")) {
-            tmp = smallProjectNoService.getById(formValue.getProjectId()).getProjectRate();
-        }
-        build = Double.parseDouble(tmp.replaceAll("%", ""));
-        if (page < build) {
-            throw new PageTipException("预计毛利率低于立项时的毛利率");
-        }
-        //合同金额>=预计收入累计
-        if (formValue.getContractMoney() < formValue.getInSum()) {
-            throw new PageTipException("合同金额 必须 大于等于 预计收入累计");
-        }
-
-        if (!formValue.getProtectRate().endsWith("%")) {
-            formValue.setProtectRate(formValue.getProtectRate() + "%");
-        }
-        List<String> rateList = new ArrayList<>();
-        String[] arr = formValue.getInvoiceRate().split(",|，");
-        for (String str : arr) {
-            if (!str.endsWith("%")) {
-                rateList.add(str + "%");
-            } else {
-                rateList.add(str);
-            }
-        }
-        formValue.setInvoiceRate(Strings.join(rateList, '，'));
+        //
+        validate(formValue);
 
         this.updateById(formValue);
         //
@@ -231,6 +212,9 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
     public boolean change(BudgetProjectt current) {
         BudgetProjectt before = this.getById(current.getId());
         before.setHaveDisplay("否");
+        //
+        validate(current);
+
         this.updateById(before);
         //
         current.setId(null);
@@ -249,13 +233,16 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
         //
         List<BudgetProtect> protectList = current.getProtectList();
         protectList.forEach(item -> {
+            item.setId(null);
             item.setBudgetId(current.getId());
             item.setProjectId(current.getProjectId());
             item.setProjectType(current.getProjectType());
         });
+        budgetProtectService.saveBatch(protectList);
         //
         List<BudgetInn> innList = current.getInnList();
         innList.forEach(item -> {
+            item.setId(null);
             item.setBudgetId(current.getId());
             item.setProjectId(current.getProjectId());
             item.setProjectType(current.getProjectType());
@@ -264,6 +251,7 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
         //
         List<BudgetOut> outList = current.getOutList();
         outList.forEach(item -> {
+            item.setId(null);
             item.setBudgetId(current.getId());
             item.setProjectId(current.getProjectId());
             item.setProjectType(current.getProjectType());
@@ -334,7 +322,7 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
             //
             ProcessInst processInst = processInstService.getById(formValue.getProcessInstId());
             String[] tmp = processInst.getLoginProcessStep().split(",");
-            if (user.getDeptName().equals("供电中心") && tmp.length > 1 && buttonName.contains("同意")) {
+            if (tmp.length > 1 && (buttonName.contains("同意") || buttonName.contains("提交业务主管领导"))) {
                 buttonHandleBean.checkUpOne(formValue.getProcessInstId(), formValue, buttonName, comment);
             } else {
                 buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);

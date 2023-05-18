@@ -73,7 +73,7 @@ public class UserTaskBean {
                 List<SysRoleUser> roleUserList = sysRoleUserService.list(new LambdaQueryWrapper<SysRoleUser>().in(SysRoleUser::getRoleId, idList));
                 if (ObjectUtil.isNotEmpty(roleUserList)) {
                     List<Integer> userIdList = roleUserList.stream().map(SysRoleUser::getUserId).collect(Collectors.toList());
-                    List<SysUser> userList = sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getId, userIdList));
+                    List<SysUser> userList = sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getId, userIdList).orderByAsc(SysUser::getId));
                     userList.forEach(user -> loginNameSet.add(user.getLoginName()));
                 }
                 //第二种情况
@@ -106,7 +106,7 @@ public class UserTaskBean {
                     }
                 }
             } else {
-                List<SysUser> userList = sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getId, idList));
+                List<SysUser> userList = sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getId, idList).orderByAsc(SysUser::getId));
                 userList.forEach(user -> loginNameSet.add(user.getLoginName()));
             }
         } else {

@@ -103,11 +103,12 @@ public class BudgetProjecttController {
 
     @PostMapping("viewHistory")
     public IPage<BudgetProjectt> historyList(@RequestBody Map<String, Object> paramMap) {
+        String path = (String) paramMap.get("path");
         Integer businessBaseId = (Integer) paramMap.get("businessBaseId");
-        List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().like(ProcessInst::getPath, "BudgetRunPath").eq(ProcessInst::getBusinessBaseId, businessBaseId));
+        List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().like(ProcessInst::getPath, path).eq(ProcessInst::getBusinessBaseId, businessBaseId));
         List<Integer> beforeIdList = processInstList.stream().map(ProcessInst::getBusinessBeforeId).collect(Collectors.toList());
 
-        List<ProcessInst> processInstList2 = processInstService.list(new LambdaQueryWrapper<ProcessInst>().like(ProcessInst::getPath, "BudgetRunPath").in(ProcessInst::getBusinessId, beforeIdList));
+        List<ProcessInst> processInstList2 = processInstService.list(new LambdaQueryWrapper<ProcessInst>().like(ProcessInst::getPath, path).in(ProcessInst::getBusinessId, beforeIdList));
         Map<Integer, ProcessInst> processInst2Map = processInstList2.stream().collect(Collectors.toMap(ProcessInst::getId, v -> v));
 
         IPage<BudgetProjectt> page;
