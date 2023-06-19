@@ -85,7 +85,7 @@ public class BudgetProjecttController {
         if (ObjectUtil.isNotEmpty(deptName)) {
             wrapper.like(BudgetProjectt::getDeptName, deptName);
         }
-        if (!user.getDeptName().equals("综合计划部")) {
+        if (!(user.getDeptName().equals("综合计划部") || user.getDeptName().equals("财务部"))) {
             wrapper.eq(BudgetProjectt::getDeptId, user.getDeptId());
         }
 

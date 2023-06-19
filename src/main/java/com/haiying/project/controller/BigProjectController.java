@@ -89,7 +89,7 @@ public class BigProjectController {
         if (user.getLoginName().equals("祁瑛")) {
             wrapper.eq(BigProject::getHavePower, "是");
         } else {
-            if (!user.getDeptName().equals("综合计划部")) {
+            if (!(user.getDeptName().equals("综合计划部") || user.getDeptName().equals("财务部"))) {
                 wrapper.eq(BigProject::getDeptId, user.getDeptId());
             }
         }

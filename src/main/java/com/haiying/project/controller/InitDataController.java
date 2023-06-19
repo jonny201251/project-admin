@@ -50,6 +50,97 @@ public class InitDataController {
     @Autowired
     ProcessInstService processInstService;
 
+    @Autowired
+    ProjectProtectService projectProtectService;
+
+    @GetMapping("a1")
+    public boolean a1(String ids) {
+        //保证金
+        List<Integer> idList = new ArrayList<>();
+
+        String[] arr = ids.split(",");
+        for (String id : arr) {
+            idList.add(Integer.parseInt(id));
+        }
+        List<ProjectProtect> list = projectProtectService.list(new LambdaQueryWrapper<ProjectProtect>().in(ProjectProtect::getId, idList));
+
+        //
+        List<ProcessInst> list2 = new ArrayList<>();
+        for (ProjectProtect tmp : list) {
+            ProcessInst p=new ProcessInst();
+            p.setProcessDesignId(58);
+            p.setProcessName("投标保证金(函)登记");
+            p.setBusinessName(tmp.getName());
+            p.setBusinessId(tmp.getId());
+            p.setBusinessHaveDisplay("是");
+            p.setBusinessVersion(0);
+            p.setProcessStatus("完成");
+            p.setDeptId(tmp.getDeptId());
+            p.setDeptName(tmp.getDeptName());
+            p.setPath("projectProtectPath");
+
+            list2.add(p);
+
+        }
+        processInstService.saveBatch(list2);
+        //
+        Map<Integer, Integer> map = new HashMap<>();
+        for (ProcessInst tmp : list2) {
+            map.put(tmp.getBusinessId(), tmp.getId());
+        }
+        //
+        for (ProjectProtect tmp : list) {
+            tmp.setProcessInstId(map.get(tmp.getId()));
+        }
+
+        projectProtectService.updateBatchById(list);
+        return true;
+    }
+
+    @GetMapping("a2")
+    public boolean a2(String ids) {
+        //保证金
+        List<Integer> idList = new ArrayList<>();
+
+        String[] arr = ids.split(",");
+        for (String id : arr) {
+            idList.add(Integer.parseInt(id));
+        }
+        List<BudgetProjectt> list = budgetProjecttService.list(new LambdaQueryWrapper<BudgetProjectt>().in(BudgetProjectt::getId, idList));
+
+        //
+        List<ProcessInst> list2 = new ArrayList<>();
+        for (BudgetProjectt tmp : list) {
+            ProcessInst p=new ProcessInst();
+            p.setProcessDesignId(47);
+            p.setProcessName("一般项目预算");
+            p.setBusinessName(tmp.getName());
+            p.setBusinessId(tmp.getId());
+            p.setBusinessHaveDisplay("是");
+            p.setBusinessVersion(0);
+            p.setProcessStatus("完成");
+            p.setDeptId(tmp.getDeptId());
+            p.setDeptName(tmp.getDeptName());
+            p.setPath("budgetProjecttPath");
+
+            list2.add(p);
+
+        }
+        processInstService.saveBatch(list2);
+        //
+        Map<Integer, Integer> map = new HashMap<>();
+        for (ProcessInst tmp : list2) {
+            map.put(tmp.getBusinessId(), tmp.getId());
+        }
+        //
+        for (BudgetProjectt tmp : list) {
+            tmp.setProcessInstId(map.get(tmp.getId()));
+        }
+
+        budgetProjecttService.updateBatchById(list);
+        return true;
+    }
+
 
     @GetMapping("provider")
     public boolean provider() throws Exception {

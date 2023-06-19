@@ -40,6 +40,11 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         excludeList.add("/smallBudgetMoney/out");
         excludeList.add("/smallBudgetMoney/inModify");
         excludeList.add("/smallBudgetMoney/outModify");
+        //
+        excludeList.add("/*Report/*");
+        excludeList.add("/jmreport/*");
+//        excludeList.add("/otherPowerReport/get");
+//        excludeList.add("/processInstNodeReport/get");
 
 
         registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/**").excludePathPatterns(excludeList);

@@ -75,7 +75,7 @@ public class ProjectProtectController {
             wrapper.like(ProjectProtect::getDeptName, deptName);
         }
 
-        if (!user.getDeptName().equals("综合计划部")) {
+        if (!(user.getDeptName().equals("综合计划部") || user.getDeptName().equals("财务部"))) {
             wrapper.eq(ProjectProtect::getDeptId, user.getDeptId());
         }
 
