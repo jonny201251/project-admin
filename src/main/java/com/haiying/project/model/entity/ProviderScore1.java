@@ -84,4 +84,9 @@ public class ProviderScore1 implements Serializable {
 
     @TableField(exist = false)
     private ProcessInst processInst;
+
+    private String contractName;
+
+    //专业审查部门
+    private String userNamee;
 }

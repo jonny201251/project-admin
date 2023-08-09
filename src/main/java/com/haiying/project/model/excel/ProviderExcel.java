@@ -13,6 +13,7 @@ public class ProviderExcel {
     private String score;
     @ExcelProperty("部门")
     private String deptName;
+
     private Integer deptId;
     @ExcelProperty("备注")
     private String remark;

@@ -87,5 +87,7 @@ public class ProjectCode implements Serializable {
 
     @TableField(exist = false)
     private String likeValue;
+    //一个任务号是否有多个预算表
+    private String haveMoreBudget;
 
 }

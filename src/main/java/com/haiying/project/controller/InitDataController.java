@@ -5,6 +5,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.haiying.project.bean.WorkFlowBean;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.common.utils.ExcelListener;
 import com.haiying.project.model.entity.*;
@@ -53,6 +54,17 @@ public class InitDataController {
     @Autowired
     ProjectProtectService projectProtectService;
 
+    @Autowired
+    WorkFlowBean workFlowBean;
+
+    //60276
+    @GetMapping("d")
+    public boolean d(String id) {
+        workFlowBean.deleteProcessInstance(id);
+        return true;
+    }
+
+
     @GetMapping("a1")
     public boolean a1(String ids) {
         //保证金
@@ -67,7 +79,7 @@ public class InitDataController {
         //
         List<ProcessInst> list2 = new ArrayList<>();
         for (ProjectProtect tmp : list) {
-            ProcessInst p=new ProcessInst();
+            ProcessInst p = new ProcessInst();
             p.setProcessDesignId(58);
             p.setProcessName("投标保证金(函)登记");
             p.setBusinessName(tmp.getName());
@@ -111,7 +123,7 @@ public class InitDataController {
         //
         List<ProcessInst> list2 = new ArrayList<>();
         for (BudgetProjectt tmp : list) {
-            ProcessInst p=new ProcessInst();
+            ProcessInst p = new ProcessInst();
             p.setProcessDesignId(47);
             p.setProcessName("一般项目预算");
             p.setBusinessName(tmp.getName());
@@ -151,7 +163,7 @@ public class InitDataController {
         }
 
 
-        InputStream inputStream = new FileInputStream("d:/a/供方.xlsx");
+        InputStream inputStream = new FileInputStream("d:/a/供方2.xls");
         //
         ExcelReader excelReader = EasyExcel.read(inputStream).build();
         //
@@ -217,20 +229,68 @@ public class InitDataController {
             }
         }
 
-        List<Provider> ll = new ArrayList<>();
-        for (ProviderExcel tmp : list) {
-            Provider p = new Provider();
-            p.setName(tmp.getName());
-            p.setDeptName(tmp.getDeptName());
-            p.setDeptId(tmp.getDeptId());
-            if (ObjectUtil.isEmpty(tmp.getRemark())) {
-                p.setRemark(tmp.getPs() + "," + tmp.getScore() + "分");
-            }
+        List<Provider> list1 = new ArrayList<>();
+        List<Provider> list2 = new ArrayList<>();
 
-            ll.add(p);
+        List<Provider> ll = providerService.list();
+        Map<String, Provider> mm = new HashMap<>();
+        for (Provider provider : ll) {
+            Provider provider1 = mm.get(provider.getName());
+            if (provider1 == null) {
+                mm.put(provider.getName(), provider);
+            } else {
+                System.out.println(provider.getName());
+            }
         }
 
-        providerService.saveBatch(ll);
+        for (ProviderExcel tmp : list) {
+            Provider p1 = new Provider();
+            Provider p2 = mm.get(tmp.getName());
+            if (p2 != null) {
+                if (ObjectUtil.isNotEmpty(tmp.getScore())) {
+                    int score = Integer.parseInt(tmp.getScore());
+                    p2.setScore(score);
+                    if (score >= 40) {
+                        p2.setResult("优良");
+                    } else if (score >= 30) {
+                        p2.setResult("合格");
+                    } else {
+                        p2.setResult("不合格");
+                    }
+                }
+                list2.add(p2);
+            } else {
+                if (ObjectUtil.isNotEmpty(tmp.getScore())) {
+                    int score = Integer.parseInt(tmp.getScore());
+                    p1.setScore(score);
+                    if (score >= 40) {
+                        p1.setResult("优良");
+                    } else if (score >= 30) {
+                        p1.setResult("合格");
+                    } else {
+                        p1.setResult("不合格");
+                    }
+                } else {
+                    p1.setResult("合格");
+                }
+                p1.setName(tmp.getName());
+                p1.setDeptName(tmp.getDeptName());
+                p1.setDeptId(tmp.getDeptId());
+                if (ObjectUtil.isEmpty(tmp.getRemark())) {
+                    p1.setRemark(tmp.getPs() + "," + tmp.getRemark());
+                }
+
+                list1.add(p1);
+            }
+
+
+        }
+        System.out.println(list.size());
+        System.out.println(list1.size());
+        System.out.println(list2.size());
+
+        providerService.saveBatch(list1);
+        providerService.updateBatchById(list2);
 
         return true;
     }

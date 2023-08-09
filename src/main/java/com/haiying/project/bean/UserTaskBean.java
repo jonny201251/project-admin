@@ -119,6 +119,12 @@ public class UserTaskBean {
                 String str = providerQuery.getUserNamee();
                 String[] tmp = str.split(",");
                 loginNameSet.addAll(Arrays.asList(tmp));
+            } else if (path.equals("providerScorePath")) {
+                //供方评分
+                ProviderScore1 score1 = providerScore1Service.getById(businessId);
+                String str = score1.getUserNamee();
+                String[] tmp = str.split(",");
+                loginNameSet.addAll(Arrays.asList(tmp));
             } else if (path.equals("providerControlPath")) {
                 //供方动态监控
                 ProviderControl providerControl = providerControlService.getById(businessId);
@@ -131,7 +137,7 @@ public class UserTaskBean {
                 Object fieldValue = ReflectUtil.getFieldValue(outContract, processDesignTask.getJavaVarName());
                 String deptName = (String) fieldValue;
                 if (deptName.equals("机电系统集成事业部") || deptName.equals("市场部") || deptName.equals("海南事业部")) {
-                    loginNameSet.add("王灿");
+                    loginNameSet.add("李海燕");
                 } else {
                     loginNameSet.add("乔丹月");
                 }

@@ -86,7 +86,7 @@ public class ProjectCodeController {
     @PostMapping("list2")
     public IPage<ProjectCode> list2(@RequestBody Map<String, Object> paramMap) {
         SysUser user = (SysUser) httpSession.getAttribute("user");
-        LambdaQueryWrapper<ProjectCode> wrapper = new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getStatus,"未使用").eq(ProjectCode::getDeptId,user.getDeptId());
+        LambdaQueryWrapper<ProjectCode> wrapper = new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getStatus, "未使用").eq(ProjectCode::getDeptId, user.getDeptId());
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object projectName = paramMap.get("projectName");
@@ -102,19 +102,20 @@ public class ProjectCodeController {
         ResponseResult responseResult = ResponseResult.success(true);
 
         List<ProjectCode> resultList = new ArrayList<>();
-        //判断是否有相似度高的项目名称
-        Integer year = Integer.parseInt(DateUtil.format(DateUtil.date(), "yyyy"));
-        List<ProjectCode> list = projectCodeService.list(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getYear, year));
-        if (ObjectUtil.isNotEmpty(list)) {
-            for (ProjectCode db : list) {
-                double d = TextSimilarity.similar(db.getProjectName(), page.getProjectName().trim());
-                if (d >= 0.8) {
-                    db.setLikeValue((d * 100) + "%");
-                    resultList.add(db);
+        if (ObjectUtil.isEmpty(page.getLikeValue())) {
+            //判断是否有相似度高的项目名称
+            Integer year = Integer.parseInt(DateUtil.format(DateUtil.date(), "yyyy"));
+            List<ProjectCode> list = projectCodeService.list(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getYear, year));
+            if (ObjectUtil.isNotEmpty(list)) {
+                for (ProjectCode db : list) {
+                    double d = TextSimilarity.similar(db.getProjectName(), page.getProjectName().trim());
+                    if (d >= 0.8) {
+                        db.setLikeValue((d * 100) + "%");
+                        resultList.add(db);
+                    }
                 }
             }
         }
-
         if (ObjectUtil.isNotEmpty(resultList)) {
             responseResult.setData(pageBean.get(1, 100, resultList.size(), resultList));
         } else {

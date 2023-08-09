@@ -53,9 +53,13 @@ public class ProviderQueryController {
         LambdaQueryWrapper<ProviderQuery> wrapper = new LambdaQueryWrapper<ProviderQuery>().eq(ProviderQuery::getHaveDisplay, "是").orderByDesc(ProviderQuery::getId);
 
         Object usee = paramMap.get("usee");
+        Object type = paramMap.get("type");
         Object name = paramMap.get("name");
         if (ObjectUtil.isNotEmpty(usee)) {
             wrapper.like(ProviderQuery::getUsee, usee);
+        }
+        if (ObjectUtil.isNotEmpty(type)) {
+            wrapper.like(ProviderQuery::getType, type);
         }
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(ProviderQuery::getName, name);

@@ -16,6 +16,9 @@ public class ExceptionHandle {
     //前端提示异常
     @ExceptionHandler(PageTipException.class)
     public ResponseResult pageTipException(HttpServletRequest request, Exception e) {
+        if (e.getMessage().contains("客户信用评级评分")) {
+            return ResponseResult.fail(e.getMessage());
+        }
         return ResponseResult.fail(e.getMessage().length() > 50 ? "后台代码错误，联系管理员(张强)" : e.getMessage());
     }
 

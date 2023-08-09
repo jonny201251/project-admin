@@ -39,6 +39,7 @@ public class Provider implements Serializable {
 
     //供方用途
     private String usee;
+    private String type;
     /**
      * 供方名称
      */
@@ -80,6 +81,7 @@ public class Provider implements Serializable {
     private LocalDateTime createDatetime;
 
     private String result;
+    private Integer score;
 
     @TableField(exist = false)
     private List<FileVO> fileList;

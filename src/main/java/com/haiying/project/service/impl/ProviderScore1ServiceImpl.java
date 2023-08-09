@@ -41,9 +41,21 @@ public class ProviderScore1ServiceImpl extends ServiceImpl<ProviderScore1Mapper,
 
     private void add(ProviderScore1 formValue) {
         //判断是否重复添加
-        List<ProviderScore1> ll = this.list(new LambdaQueryWrapper<ProviderScore1>().eq(ProviderScore1::getProviderName, formValue.getProviderName()).eq(ProviderScore1::getUsee, formValue.getUsee()));
+        LambdaQueryWrapper<ProviderScore1> wrapper = new LambdaQueryWrapper<ProviderScore1>().eq(ProviderScore1::getProviderName, formValue.getProviderName()).eq(ProviderScore1::getUsee, formValue.getUsee());
+        String type = formValue.getType();
+        String usee = formValue.getUsee();
+        if (ObjectUtil.isNotEmpty(type)) {
+            wrapper.eq(ProviderScore1::getType, type);
+        }
+        List<ProviderScore1> ll = this.list(wrapper);
         if (ObjectUtil.isNotEmpty(ll)) {
             throw new PageTipException("供方用途和供方名称   已存在");
+        }
+        //
+        if (usee.equals("民用产业项目") || usee.equals("公司管理部门")) {
+            formValue.setUserNamee("祁瑛,孙欢");
+        } else if (usee.equals("自筹资金项目、技改项目")) {
+            formValue.setUserNamee("祁瑛,黄少芳");
         }
 
         formValue.setHaveDisplay("是");
@@ -141,10 +153,9 @@ public class ProviderScore1ServiceImpl extends ServiceImpl<ProviderScore1Mapper,
             providerScore2Service.saveBatch(list2);
         }
 
-        //
-        if (!formValue.getType().equals("民用产业项目")) {
+/*        if (!formValue.getType().equals("民用产业项目")) {
             path = path.replaceAll("Path1", "Path2");
-        }
+        }*/
 
         if (type.equals("add")) {
             if (buttonName.equals("草稿")) {
@@ -171,10 +182,19 @@ public class ProviderScore1ServiceImpl extends ServiceImpl<ProviderScore1Mapper,
             if (haveEditForm.equals("是")) {
                 edit(formValue);
             }
-            boolean flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            boolean flag = false;
+            //
+            ProcessInst processInst = processInstService.getById(formValue.getProcessInstId());
+            String[] tmp = processInst.getLoginProcessStep().split(",");
+            if (tmp.length > 1 && buttonName.contains("同意")) {
+                buttonHandleBean.checkUpOne(formValue.getProcessInstId(), formValue, buttonName, comment);
+            } else {
+                flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            }
             if (flag) {
                 Provider provider = providerService.getById(formValue.getProviderId());
                 provider.setResult(formValue.getResult());
+                provider.setScore(formValue.getEndScore());
                 providerService.updateById(provider);
             }
         } else if (type.equals("recall")) {
