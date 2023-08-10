@@ -41,7 +41,7 @@ public class ProviderQueryServiceImpl extends ServiceImpl<ProviderQueryMapper, P
         //判断是否重复添加
         List<ProviderQuery> ll = this.list(new LambdaQueryWrapper<ProviderQuery>().eq(ProviderQuery::getName, formValue.getName()).eq(ProviderQuery::getUsee, formValue.getUsee()));
         if (ObjectUtil.isNotEmpty(ll)) {
-            throw new PageTipException("供方用途和供方名称   已存在");
+            throw new PageTipException("项目类别和供方名称   已存在");
         }
 
         formValue.setUserNamee(String.join(",", formValue.getUserNameeList()));

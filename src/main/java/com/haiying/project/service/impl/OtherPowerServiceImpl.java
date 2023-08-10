@@ -8,6 +8,7 @@ import com.haiying.project.bean.ButtonHandleBean;
 import com.haiying.project.mapper.OtherPowerMapper;
 import com.haiying.project.model.entity.FormFile;
 import com.haiying.project.model.entity.OtherPower;
+import com.haiying.project.model.entity.ProcessInst;
 import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.model.vo.OtherPowerAfter;
 import com.haiying.project.service.FormFileService;
@@ -158,7 +159,14 @@ public class OtherPowerServiceImpl extends ServiceImpl<OtherPowerMapper, OtherPo
             if (haveEditForm.equals("是")) {
                 edit(formValue);
             }
-            buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, after.getComment());
+            //
+            ProcessInst processInst = processInstService.getById(formValue.getProcessInstId());
+            String[] tmp = processInst.getLoginProcessStep().split(",");
+            if (tmp.length > 1 && buttonName.contains("同意")) {
+                buttonHandleBean.checkUpOne(formValue.getProcessInstId(), formValue, buttonName, after.getComment());
+            } else {
+                buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, after.getComment());
+            }
         } else if (type.equals("recall")) {
             buttonHandleBean.recall(formValue.getProcessInstId(), buttonName);
         } else if (type.equals("delete")) {
