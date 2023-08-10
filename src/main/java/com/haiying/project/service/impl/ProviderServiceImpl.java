@@ -3,6 +3,7 @@ package com.haiying.project.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.mapper.ProviderMapper;
 import com.haiying.project.model.entity.FormFile;
 import com.haiying.project.model.entity.Provider;
@@ -51,6 +52,9 @@ public class ProviderServiceImpl extends ServiceImpl<ProviderMapper, Provider> i
 
     @Override
     public boolean edit(Provider provider) {
+        if (ObjectUtil.isNotEmpty(provider.getResult())) {
+            throw new PageTipException("供方不能编辑");
+        }
         this.updateById(provider);
         formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "Provider").eq(FormFile::getBusinessId, provider.getId()));
         //文件
