@@ -101,6 +101,8 @@ public class ProviderQuery implements Serializable {
 
     private String result;
 
+    private Integer score;
+
     private Integer processInstId;
 
     @TableField(exist = false)

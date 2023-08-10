@@ -8,10 +8,7 @@ import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.mapper.ProviderScore1Mapper;
 import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.ProviderScore1After;
-import com.haiying.project.service.ProcessInstService;
-import com.haiying.project.service.ProviderScore1Service;
-import com.haiying.project.service.ProviderScore2Service;
-import com.haiying.project.service.ProviderService;
+import com.haiying.project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +35,8 @@ public class ProviderScore1ServiceImpl extends ServiceImpl<ProviderScore1Mapper,
     HttpSession httpSession;
     @Autowired
     ProviderService providerService;
+    @Autowired
+    ProviderQueryService providerQueryService;
 
     private void add(ProviderScore1 formValue) {
         //判断是否重复添加
@@ -196,6 +195,13 @@ public class ProviderScore1ServiceImpl extends ServiceImpl<ProviderScore1Mapper,
                 provider.setResult(formValue.getResult());
                 provider.setScore(formValue.getEndScore());
                 providerService.updateById(provider);
+                //
+                if ("重大项目".equals(provider.getType())) {
+                    ProviderQuery providerQuery = providerQueryService.getById(formValue.getProviderId());
+                    providerQuery.setResult(formValue.getResult());
+                    providerQuery.setScore(formValue.getEndScore());
+                    providerQueryService.updateById(providerQuery);
+                }
             }
         } else if (type.equals("recall")) {
             buttonHandleBean.recall(formValue.getProcessInstId(), buttonName);
