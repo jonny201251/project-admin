@@ -62,4 +62,28 @@ public class ProjectCodeServiceImpl extends ServiceImpl<ProjectCodeMapper, Proje
         projectCodeCountService.updateById(projectCodeCount);
         return true;
     }
+
+    @Override
+    public boolean edit(ProjectCode projectCode) {
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+        String year = DateUtil.format(DateUtil.date(), "yyyy");
+        String simpleYear = DateUtil.format(DateUtil.date(), "yy");
+
+        ProjectCodeCount projectCodeCount = projectCodeCountService.getOne(new LambdaQueryWrapper<ProjectCodeCount>().eq(ProjectCodeCount::getYear, year).eq(ProjectCodeCount::getDeptId, user.getDeptId()));
+
+        projectCode.setDeptType(projectCodeCount.getDeptType());
+        projectCode.setBusinessType(String.join(",", projectCode.getBusinessTypeTmp()));
+        //任务号
+        String strCount = projectCode.getTaskCode().substring(9);
+
+        String taskCode = projectCodeCount.getDeptType()
+                + projectCode.getProjectProperty()
+                + projectCode.getCustomerProperty()
+                + projectCode.getProviderProperty() + String.join("", projectCode.getBusinessTypeTmp())
+                + simpleYear + strCount;
+        projectCode.setTaskCode(taskCode);
+
+        this.updateById(projectCode);
+        return true;
+    }
 }

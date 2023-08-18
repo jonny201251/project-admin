@@ -26,8 +26,7 @@ public class Test {
         System.out.println(228000+6840+13680+29640);
         System.out.println(200000+6600+13200+28600);
 
-        //
-        String index="020009521053-013";
-        System.out.println(Integer.parseInt(index)+1);
+
+        System.out.println("013121323001".substring(9));
     }
 }

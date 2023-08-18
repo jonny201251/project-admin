@@ -14,4 +14,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface ProjectCodeService extends IService<ProjectCode> {
 
     boolean add(ProjectCode projectCode);
+
+    boolean edit(ProjectCode projectCode);
 }

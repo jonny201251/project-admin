@@ -97,6 +97,7 @@ public class ProjectCodeController {
         return projectCodeService.page(new Page<>(current, pageSize), wrapper);
     }
 
+
     @PostMapping("add")
     public ResponseResult add(@RequestBody ProjectCode page) {
         ResponseResult responseResult = ResponseResult.success(true);
@@ -123,6 +124,12 @@ public class ProjectCodeController {
         }
 
         return responseResult;
+    }
+
+    @Wrapper
+    @PostMapping("edit")
+    public boolean edit(@RequestBody ProjectCode projectCode) {
+        return projectCodeService.edit(projectCode);
     }
 
     @Wrapper
