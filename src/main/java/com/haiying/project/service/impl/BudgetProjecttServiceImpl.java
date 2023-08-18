@@ -48,6 +48,8 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
     SmallProjectNoService smallProjectNoService;
     @Autowired
     BigProjectService bigProjectService;
+    @Autowired
+    ProjectCodeService projectCodeService;
 
     private void validate(BudgetProjectt formValue) {
         //页面的毛利率>立项时的毛利率
@@ -92,7 +94,36 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
         formValue.setInvoiceRate(Strings.join(rateList, '，'));
     }
 
+    //任务号
+    public void taskCode(BudgetProjectt formValue) {
+        ProjectCode code = projectCodeService.getOne(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getTaskCode, formValue.getTaskCode()));
+        if (code == null) {
+            throw new PageTipException("项目备案里没有任务号，联系管理员(张强)");
+        }
+        if (code.getHaveMoreBudget().equals("是")) {
+            LambdaQueryWrapper<BudgetProjectt> wrapper = new LambdaQueryWrapper<BudgetProjectt>().likeRight(BudgetProjectt::getTaskCode, formValue.getTaskCode()).orderByDesc(BudgetProjectt::getId);
+            List<BudgetProjectt> list = this.list(wrapper);
+            if (list.size() > 0) {
+                BudgetProjectt tmp = list.get(0);
+                String taskCode = tmp.getTaskCode();
+                String[] arr = taskCode.split("-");
+                String index = (Integer.parseInt(arr[1]) + 1) + "";
+                if (index.length() == 1) {
+                    formValue.setTaskCode(formValue.getTaskCode() + "-00" + index);
+                } else if (index.length() == 2) {
+                    formValue.setTaskCode(formValue.getTaskCode() + "-0" + index);
+                } else {
+                    formValue.setTaskCode(formValue.getTaskCode() + "-" + index);
+                }
+            } else {
+                formValue.setTaskCode(formValue.getTaskCode() + "-001");
+            }
+        }
+    }
+
     private void add(BudgetProjectt formValue) {
+        //任务号
+        taskCode(formValue);
         //判断是否重复添加
         List<BudgetProjectt> ll = this.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getHaveDisplay, "是").eq(BudgetProjectt::getTaskCode, formValue.getTaskCode()));
         if (ObjectUtil.isNotEmpty(ll)) {

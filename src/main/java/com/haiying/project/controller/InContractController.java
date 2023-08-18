@@ -129,7 +129,7 @@ public class InContractController {
         }
 
         if (!user.getDeptName().equals("综合计划部")) {
-            wrapper.eq(InContract::getDisplayName, user.getDisplayName());
+            wrapper.eq(InContract::getDeptId, user.getDeptId());
         }
 
         return inContractService.page(new Page<>(current, pageSize), wrapper);
