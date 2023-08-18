@@ -18,7 +18,7 @@ import java.util.List;
  * </p>
  *
  * @author 作者
- * @since 2023-08-10
+ * @since 2023-08-18
  */
 @Getter
 @Setter
@@ -76,16 +76,15 @@ public class Price3 implements Serializable {
 
     private Integer processInstId;
 
+    //流程-归口管理部门
+    private String userNamee;
+
+    @TableField(exist = false)
+    private List<Price33> list;
+
     @TableField(exist = false)
     private ProcessInst processInst;
 
     @TableField(exist = false)
     private List<FileVO> fileList;
-
-    @TableField(exist = false)
-    private List<Price33> list;
-
-    //归口管理部门
-    private String userNamee;
-
 }

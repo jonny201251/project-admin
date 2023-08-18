@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author 作者
- * @since 2023-08-10
+ * @since 2023-08-18
  */
 @Mapper
 public interface Price33Mapper extends BaseMapper<Price33> {

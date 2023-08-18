@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author 作者
- * @since 2023-08-10
+ * @since 2023-08-18
  */
 public interface Price11Service extends IService<Price11> {
 

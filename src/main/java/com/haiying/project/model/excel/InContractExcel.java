@@ -33,9 +33,11 @@ public class InContractExcel {
     @ExcelProperty("用印类别")
     @ColumnWidth(15)
     private String printType;
+
     @ExcelProperty("承办部门")
     @ColumnWidth(15)
     private String deptName;
+
     @ExcelProperty("用印日期")
     @ColumnWidth(15)
     private String printDate;

@@ -2,9 +2,10 @@ package com.haiying.project.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -12,7 +13,7 @@ import lombok.Setter;
  * </p>
  *
  * @author 作者
- * @since 2023-08-10
+ * @since 2023-08-18
  */
 @Getter
 @Setter

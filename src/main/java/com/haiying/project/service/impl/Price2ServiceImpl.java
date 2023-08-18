@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * </p>
  *
  * @author 作者
- * @since 2023-08-10
+ * @since 2023-08-18
  */
 @Service
 public class Price2ServiceImpl extends ServiceImpl<Price2Mapper, Price2> implements Price2Service {

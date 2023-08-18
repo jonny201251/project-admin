@@ -9,17 +9,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.utils.ExcelListener;
 import com.haiying.project.mapper.InContractMapper;
-import com.haiying.project.model.entity.BudgetProject;
-import com.haiying.project.model.entity.FormFile;
-import com.haiying.project.model.entity.InContract;
-import com.haiying.project.model.entity.SmallBudgetOut;
+import com.haiying.project.model.entity.*;
 import com.haiying.project.model.excel.InContractExcel;
 import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.model.vo.InOutVO;
-import com.haiying.project.service.BudgetProjectService;
-import com.haiying.project.service.FormFileService;
-import com.haiying.project.service.InContractService;
-import com.haiying.project.service.SmallBudgetOutService;
+import com.haiying.project.service.*;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +22,9 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +43,8 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
     BudgetProjectService budgetProjectService;
     @Autowired
     SmallBudgetOutService smallBudgetOutService;
+    @Autowired
+    SysDeptService sysDeptService;
 
 
     private LocalDate getDate(String str) {
@@ -77,9 +75,15 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
         //获取数据
         List<InContractExcel> list = listener.getData();
 
+        //
+        List<SysDept> deptList = sysDeptService.list();
+        Map<String, SysDept> deptMap = new HashMap<>();
+        for (SysDept dept : deptList) {
+            deptMap.put(dept.getName(), dept);
+        }
+
         if (ObjectUtil.isNotEmpty(list)) {
             List<InContract> resultList = new ArrayList<>();
-
             for (InContractExcel tmp : list) {
                 InContract obj = new InContract();
                 obj.setName(tmp.getContractName());
@@ -94,7 +98,6 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
                 obj.setContractType(tmp.getContractType());
                 obj.setContractLevel(tmp.getContractLevel());
                 obj.setPrintType(tmp.getPrintType());
-                obj.setDeptName(tmp.getDeptName());
                 obj.setPrintDate(getDate(tmp.getPrintDate()));
                 obj.setDisplayName(tmp.getDisplayName());
                 obj.setLocation(tmp.getLocation());
@@ -103,13 +106,62 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
                 obj.setExpectDate(getDate(tmp.getExpectDate()));
                 obj.setDocumentDate(getDate(tmp.getDocumentDate()));
                 obj.setRemark(tmp.getRemark());
-
+                //设置部门
+                String deptName = tmp.getDeptName();
+                if ("第五事业部".equals(deptName)) {
+                    SysDept sysDept = deptMap.get("天津第五事业部");
+                    if (sysDept != null) {
+                        obj.setDeptId(sysDept.getId());
+                        obj.setDeptName(sysDept.getName());
+                    }
+                } else if ("系统运维".equals(deptName)) {
+                    SysDept sysDept = deptMap.get("系统运维事业部");
+                    if (sysDept != null) {
+                        obj.setDeptId(sysDept.getId());
+                        obj.setDeptName(sysDept.getName());
+                    }
+                } else if ("动力工程".equals(deptName)) {
+                    SysDept sysDept = deptMap.get("动力工程事业部");
+                    if (sysDept != null) {
+                        obj.setDeptId(sysDept.getId());
+                        obj.setDeptName(sysDept.getName());
+                    }
+                } else if ("动力运营事业部".equals(deptName)) {
+                    SysDept sysDept = deptMap.get("经营调度中心");
+                    if (sysDept != null) {
+                        obj.setDeptId(sysDept.getId());
+                        obj.setDeptName(sysDept.getName());
+                    }
+                } else if ("资产与信息化".equals(deptName)) {
+                    SysDept sysDept = deptMap.get("资产与信息化部");
+                    if (sysDept != null) {
+                        obj.setDeptId(sysDept.getId());
+                        obj.setDeptName(sysDept.getName());
+                    }
+                } else if ("节能环保".equals(deptName)) {
+                    SysDept sysDept = deptMap.get("节能环保事业部");
+                    if (sysDept != null) {
+                        obj.setDeptId(sysDept.getId());
+                        obj.setDeptName(sysDept.getName());
+                    }
+                } else if ("国际工程".equals(deptName)) {
+                    SysDept sysDept = deptMap.get("国际工程事业部");
+                    if (sysDept != null) {
+                        obj.setDeptId(sysDept.getId());
+                        obj.setDeptName(sysDept.getName());
+                    }
+                } else {
+                    SysDept sysDept = deptMap.get(deptName);
+                    if (sysDept != null) {
+                        obj.setDeptId(sysDept.getId());
+                        obj.setDeptName(sysDept.getName());
+                    }
+                }
                 resultList.add(obj);
-
-                //先删除，后插入
-                this.remove(new LambdaQueryWrapper<InContract>().in(InContract::getTaskCode, resultList.stream().map(InContract::getTaskCode).collect(Collectors.toList())));
-                this.saveBatch(resultList);
             }
+            //先删除，后插入
+            this.remove(new LambdaQueryWrapper<InContract>().in(InContract::getTaskCode, resultList.stream().map(InContract::getTaskCode).collect(Collectors.toList())));
+            this.saveBatch(resultList);
         }
         return true;
     }
