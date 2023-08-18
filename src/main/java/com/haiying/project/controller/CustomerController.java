@@ -47,7 +47,7 @@ public class CustomerController {
 
     @PostMapping("list")
     public IPage<Customer> list(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<Customer>().orderByDesc(Customer::getId).in(Customer::getResult, Arrays.asList("优秀", "良好", "一般"));
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");
@@ -65,7 +65,7 @@ public class CustomerController {
 
         SysUser user = (SysUser) httpSession.getAttribute("user");
         if (!user.getDisplayName().equals("宋思奇")) {
-            wrapper.and(qr -> qr.isNull(Customer::getLoginName).or().eq(Customer::getDeptId, user.getDeptId()));
+            wrapper.eq(Customer::getDeptId, user.getDeptId());
         }
         return customerService.page(new Page<>(current, pageSize), wrapper);
     }

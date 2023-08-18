@@ -48,7 +48,7 @@ public class ProviderController {
 
     @PostMapping("list")
     public IPage<Provider> list(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().orderByDesc(Provider::getId).in(Provider::getResult, Arrays.asList("优良", "合格"));
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object usee = paramMap.get("usee");
@@ -71,7 +71,8 @@ public class ProviderController {
 
         SysUser user = (SysUser) httpSession.getAttribute("user");
         if (!user.getDisplayName().equals("孙欢")) {
-            wrapper.and(qr -> qr.isNull(Provider::getLoginName).or().eq(Provider::getDeptId, user.getDeptId()));
+//            wrapper.and(qr -> qr.isNull(Provider::getLoginName).or().eq(Provider::getDeptId, user.getDeptId()));
+            wrapper.eq(Provider::getDeptId, user.getDeptId());
         }
         return providerService.page(new Page<>(current, pageSize), wrapper);
     }
