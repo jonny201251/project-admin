@@ -46,8 +46,8 @@
     </appender>
 
     <root level="ERROR">
-<!--        <appender-ref ref="consoleApp"/>-->
-<!--        <appender-ref ref="fileInfoApp"/>-->
+        <appender-ref ref="consoleApp"/>
+        <appender-ref ref="fileInfoApp"/>
         <appender-ref ref="fileErrorApp"/>
     </root>
 </configuration>

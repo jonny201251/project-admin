@@ -230,8 +230,8 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
                 if (ObjectUtil.isEmpty(list)) {
                     throw new PageTipException("先审批 客户信用评级评分,客户名称=" + after.getFormValue().getCustomerName());
                 }
-                if (formValue.getProperty().equals("三类")) {
-                    List<Provider> listt = providerService.list(new LambdaQueryWrapper<Provider>().eq(Provider::getName, after.getFormValue().getProviderName()).eq(Provider::getResult, "合格"));
+                if (ObjectUtil.isNotEmpty(formValue.getProviderName())) {
+                    List<Provider> listt = providerService.list(new LambdaQueryWrapper<Provider>().eq(Provider::getName, after.getFormValue().getProviderName()).in(Provider::getResult, Arrays.asList("优良", "合格")));
                     if (ObjectUtil.isEmpty(listt)) {
                         throw new PageTipException("先审批 供方信息,供方名称=" + after.getFormValue().getProviderName());
                     }
