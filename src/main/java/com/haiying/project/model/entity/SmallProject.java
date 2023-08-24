@@ -209,5 +209,12 @@ public class SmallProject implements Serializable {
     private String havePower;
     private String powerDesc;
     private String powerCode;
+    private String timeLimit;
+    @TableField(exist = false)
+    private List<String> timeLimitTmp;
+
+    private String projectUser1;
+    private String projectUser2;
+    private String haveMerge;
 
 }

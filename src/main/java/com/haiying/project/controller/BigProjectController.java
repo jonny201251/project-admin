@@ -127,6 +127,9 @@ public class BigProjectController {
     @GetMapping("get")
     public BigProject get(Integer id) {
         BigProject bigProject = bigProjectService.getById(id);
+        if (ObjectUtil.isNotEmpty(bigProject.getTimeLimit())) {
+            bigProject.setTimeLimitTmp(Arrays.asList(bigProject.getTimeLimit().split("至")));
+        }
         List<SmallProtect> list = smallProtectService.list(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getProjectId, id));
         bigProject.setList(list);
         if (ObjectUtil.isNotEmpty(bigProject.getIdType())) {

@@ -62,6 +62,9 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
         }
         //
         formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
+        if (ObjectUtil.isNotEmpty(formValue.getTimeLimitTmp())) {
+            formValue.setTimeLimit(String.join("至", formValue.getTimeLimitTmp()));
+        }
         this.save(formValue);
         List<SmallProtect> list = formValue.getList();
         list.forEach(item -> {
@@ -114,6 +117,9 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
 
     private void edit(BigProject formValue) {
         formValue.setIdType(String.join(",", formValue.getIdTypeListTmp()));
+        if (ObjectUtil.isNotEmpty(formValue.getTimeLimitTmp())) {
+            formValue.setTimeLimit(String.join("至", formValue.getTimeLimitTmp()));
+        }
         if (!formValue.getProjectRate().endsWith("%")) {
             formValue.setProjectRate(formValue.getProjectRate() + "%");
         }
