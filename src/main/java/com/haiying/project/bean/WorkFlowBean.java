@@ -9,7 +9,6 @@ import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.utils.SpringUtil;
 import com.haiying.project.model.entity.ProcessDesign;
 import com.haiying.project.model.entity.ProcessDesignEdge;
-import com.haiying.project.model.entity.ProcessInstNode;
 import com.haiying.project.model.entity.SysUser;
 import com.haiying.project.service.ProcessDesignEdgeService;
 import com.haiying.project.service.ProcessDesignService;
@@ -170,23 +169,23 @@ public class WorkFlowBean {
             List<String> displayList = new ArrayList<>();
             List<String> loginList = new ArrayList<>();
             //历史处理节点
-            List<ProcessInstNode> nodeList = processInstNodeService.list(new LambdaQueryWrapper<ProcessInstNode>().eq(ProcessInstNode::getProcessInstId, processInstId));
-            Map<String, ProcessInstNode> nodeMap = nodeList.stream().collect(Collectors.toMap(ProcessInstNode::getTaskKey, v -> v, (key1, key2) -> key2));
+//            List<ProcessInstNode> nodeList = processInstNodeService.list(new LambdaQueryWrapper<ProcessInstNode>().eq(ProcessInstNode::getProcessInstId, processInstId));
+//            Map<String, ProcessInstNode> nodeMap = nodeList.stream().collect(Collectors.toMap(ProcessInstNode::getTaskKey, v -> v, (key1, key2) -> key2));
             //获取当前活动任务
             List<Task> runTaskList = getRunTaskList(actProcessInstanceId);
             for (Task task : runTaskList) {
-                ProcessInstNode processInstNode = nodeMap.get(task.getTaskDefinitionKey());
+//                ProcessInstNode processInstNode = nodeMap.get(task.getTaskDefinitionKey());
                 //
-                if (!task.getName().equals("尽职调查部门") && processInstNode != null) {
-                    //存在历史节点，使用历史处理人
-                    displayList.add(processInstNode.getTaskName() + "[" + processInstNode.getDisplayName() + "]");
-                    loginList.add(processInstNode.getLoginName());
-                } else {
+//                if (!task.getName().equals("尽职调查部门") && processInstNode != null) {
+//                    //存在历史节点，使用历史处理人
+//                    displayList.add(processInstNode.getTaskName() + "[" + processInstNode.getDisplayName() + "]");
+//                    loginList.add(processInstNode.getLoginName());
+//                } else {
                     //获取处理人
                     Set<String> loginNameSet = userTaskBean.getLoginNameList(processDesignId, task.getTaskDefinitionKey(), actProcessInstanceId);
                     displayList.add(task.getName() + "[" + String.join(",", loginNameSet) + "]");
                     loginList.add(String.join(",", loginNameSet));
-                }
+//                }
             }
             resultMap.put("displayProcessStep", String.join(",", displayList));
             resultMap.put("loginProcessStep", String.join(",", loginList));

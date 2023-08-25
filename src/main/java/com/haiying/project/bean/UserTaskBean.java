@@ -69,34 +69,25 @@ public class UserTaskBean {
                 idList.add(Integer.parseInt(str));
             }
             if (type.equals("角色")) {
-                //第一种情况
-                List<SysRoleUser> roleUserList = sysRoleUserService.list(new LambdaQueryWrapper<SysRoleUser>().in(SysRoleUser::getRoleId, idList));
-                if (ObjectUtil.isNotEmpty(roleUserList)) {
-                    List<Integer> userIdList = roleUserList.stream().map(SysRoleUser::getUserId).collect(Collectors.toList());
-                    List<SysUser> userList = sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getId, userIdList).orderByAsc(SysUser::getId));
-                    userList.forEach(user -> loginNameSet.add(user.getLoginName()));
+                SysUser loginUser = (SysUser) httpSession.getAttribute("user");
+                ProcessInst processInst = processInstService.getOne(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getActProcessInstanceId, actProcessInstanceId));
+                if (processInst != null) {
+                    loginUser = sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getLoginName, processInst.getLoginName()));
                 }
-                //第二种情况
-                SysUser currentUser = (SysUser) httpSession.getAttribute("user");
                 List<SysRole> roleList = sysRoleService.list(new LambdaQueryWrapper<SysRole>().in(SysRole::getId, idList));
                 for (SysRole sysRole : roleList) {
                     if (sysRole.getName().equals("当前用户")) {
-                        loginNameSet.add(currentUser.getLoginName());
+                        loginNameSet.add(loginUser.getLoginName());
                     } else if (sysRole.getName().equals("部门领导")) {
-                        List<SysUser> leaderList = sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getDeptId, currentUser.getDeptId()).eq(SysUser::getPosition, "部门正职领导"));
+                        List<SysUser> leaderList = sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getDeptId, loginUser.getDeptId()).eq(SysUser::getPosition, "部门正职领导"));
                         if (ObjectUtil.isNotEmpty(leaderList)) {
                             leaderList.forEach(user -> loginNameSet.add(user.getLoginName()));
                         }
                         //供电中心
-                        if (currentUser.getDeptName().equals("供电中心") && processDesignIdSet.contains(processDesignId)) {
+                        if (loginUser.getDeptName().equals("供电中心") && processDesignIdSet.contains(processDesignId)) {
                             loginNameSet.add("黄少芳");
                         }
                     } else if (sysRole.getName().equals("公司主管领导")) {
-                        //申请部门的deptId
-                        ProcessInst processInst = processInstService.getOne(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getProcessDesignId, processDesignTask.getProcessDesignId()).eq(ProcessInst::getActProcessInstanceId, actProcessInstanceId));
-                        if (processInst == null) {
-                            throw new PageTipException("需要处理人");
-                        }
                         List<String> leader2List = chargeDeptLeaderService
                                 .list(new LambdaQueryWrapper<ChargeDeptLeader>().in(ChargeDeptLeader::getDeptId, processInst.getDeptId()))
                                 .stream().map(ChargeDeptLeader::getLoginName).collect(Collectors.toList());
@@ -162,11 +153,17 @@ public class UserTaskBean {
                     loginNameSet.add(userNamee);
                 }
             } else if (path.equals("smallProjectPath")) {
+                loginNameSet.add("于欣坤");
+                loginNameSet.add("祁瑛");
                 //一般项目立项
                 SmallProject smallProject = smallProjectService.getById(businessId);
                 //财务
                 String userNamee = smallProject.getUserNamee();
                 loginNameSet.add(userNamee);
+            } else if (path.equals("bigProjectPath")) {
+                loginNameSet.add("于欣坤");
+                loginNameSet.add("祁瑛");
+                loginNameSet.add("马聪聪");
             } else if (path.equals("projectProtectPath")) {
                 //投标保证金(函)登记
                 ProjectProtect projectProtect = projectProtectService.getById(businessId);

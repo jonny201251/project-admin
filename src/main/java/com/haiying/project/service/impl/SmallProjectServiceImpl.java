@@ -245,13 +245,6 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
             } else {
                 flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
             }
-            //
-            if (user.getDisplayName().equals("郭琳")) {
-                ProcessInst processInstt = processInstService.getById(formValue.getProcessInstId());
-                if (processInstt.getDisplayProcessStep().contains("郭琳")) {
-                    flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
-                }
-            }
             if (flag) {
                 ProjectCode code = projectCodeService.getOne(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getTaskCode, formValue.getTaskCode()));
                 code.setStatus("已使用");

@@ -130,10 +130,10 @@ public class ButtonHandleBean {
         //
         ProcessInst processInst = new ProcessInst();
         processInst.setProcessDesignId(processDesign.getId());
-        if(path.equals("budgetProjecttPath")){
+        if (path.equals("budgetProjecttPath")) {
             processInst.setProcessName(processDesign.getName());
-        }else{
-            processInst.setProcessName(processDesign.getName()+"-变更");
+        } else {
+            processInst.setProcessName(processDesign.getName() + "-变更");
         }
         processInst.setBusinessName(businessName);
         processInst.setBusinessId(businessId);
@@ -225,6 +225,12 @@ public class ButtonHandleBean {
         processInstNodeService.save(processInstNode);
     }
 
+    //获取申请人
+    public String getStartUserName(Integer processInstId) {
+        List<ProcessInstNode> list = processInstNodeService.list(new LambdaQueryWrapper<ProcessInstNode>().eq(ProcessInstNode::getProcessInstId, processInstId));
+        return list.get(0).getLoginName();
+    }
+
     //一个节点一个人处理
     public boolean checkReject(Integer processInstId, Object formValue, String buttonName, String comment) {
         SysUser user = (SysUser) httpSession.getAttribute("user");
@@ -255,9 +261,9 @@ public class ButtonHandleBean {
             String btnName = buttonName.substring(buttonName.lastIndexOf("_") + 1);
             if (btnName.equals("退回") || btnName.equals("退回申请人")) {
                 processInst.setProcessStatus(btnName);
-                Map<String, String> stepMap = workFlowBean.getPrcocessStep(processInst.getProcessDesignId(), processInst.getId(), actProcessInstanceId);
-                processInst.setDisplayProcessStep(stepMap.get("displayProcessStep"));
-                processInst.setLoginProcessStep(stepMap.get("loginProcessStep"));
+                String loginName = getStartUserName(processInst.getId());
+                processInst.setDisplayProcessStep("申请部门[" + loginName + "]");
+                processInst.setLoginProcessStep(loginName);
             } else {
                 processInst.setProcessStatus("审批中");
                 Map<String, String> stepMap = workFlowBean.getPrcocessStep(processInst.getProcessDesignId(), processInst.getId(), actProcessInstanceId);
@@ -301,9 +307,9 @@ public class ButtonHandleBean {
         String firstTaskKey = jumpTask.getTargetTaskKey();
         workFlowBean.jump1(task, firstTaskKey);
         //
-        Map<String, String> stepMap = workFlowBean.getPrcocessStep(processInst.getProcessDesignId(), processInst.getId(), processInst.getActProcessInstanceId());
-        processInst.setDisplayProcessStep(stepMap.get("displayProcessStep"));
-        processInst.setLoginProcessStep(stepMap.get("loginProcessStep"));
+        String loginName = getStartUserName(processInst.getId());
+        processInst.setDisplayProcessStep("申请部门[" + loginName + "]");
+        processInst.setLoginProcessStep(loginName);
         processInst.setProcessStatus(buttonName);
         processInstService.updateById(processInst);
         ProcessInstNode processInstNode = new ProcessInstNode();

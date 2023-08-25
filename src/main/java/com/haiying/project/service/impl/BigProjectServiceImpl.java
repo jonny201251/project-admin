@@ -298,7 +298,7 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
             //
             SysUser user = (SysUser) httpSession.getAttribute("user");
             String haveEditForm = after.getHaveEditForm();
-            if (haveEditForm.equals("是")) {
+            if (haveEditForm.equals("是") || user.getDisplayName().equals("于欣坤")) {
                 edit(formValue);
             }
             if (user.getDisplayName().equals("祁瑛")) {
@@ -330,13 +330,6 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
                 buttonHandleBean.checkUpOne(formValue.getProcessInstId(), formValue, buttonName, comment);
             } else {
                 flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
-            }
-            //
-            if (user.getDisplayName().equals("郭琳")) {
-                ProcessInst processInstt = processInstService.getById(formValue.getProcessInstId());
-                if (processInstt.getDisplayProcessStep().contains("郭琳")) {
-                    flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
-                }
             }
             if (flag) {
                 ProjectCode code = projectCodeService.getOne(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getTaskCode, formValue.getTaskCode()));

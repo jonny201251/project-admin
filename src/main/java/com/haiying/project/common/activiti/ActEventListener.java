@@ -6,8 +6,6 @@ import com.haiying.project.bean.UserTaskBean;
 import com.haiying.project.bean.WorkFlowBean;
 import com.haiying.project.common.utils.SpringUtil;
 import com.haiying.project.model.entity.ProcessDesignTask;
-import com.haiying.project.model.entity.ProcessInst;
-import com.haiying.project.model.entity.ProcessInstNode;
 import com.haiying.project.service.ProcessDesignTaskService;
 import com.haiying.project.service.ProcessInstNodeService;
 import com.haiying.project.service.ProcessInstService;
@@ -21,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
 import java.util.Set;
 
 //设置任务的处理人
@@ -56,26 +53,27 @@ public class ActEventListener implements ActivitiEventListener {
             ProcessDesignTaskService processDesignTaskService = SpringUtil.getBean(ProcessDesignTaskService.class);
             UserTaskBean userTaskBean = SpringUtil.getBean(UserTaskBean.class);
             //历史节点
-            ProcessInstNode processInstNode = null;
-            ProcessInst processInst = processInstService.getOne(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getProcessDesignId, processDesignId).eq(ProcessInst::getActProcessInstanceId, actProcessInstanceId));
-            if (processInst != null) {
-                List<ProcessInstNode> nodeList = processInstNodeService.list(new LambdaQueryWrapper<ProcessInstNode>().eq(ProcessInstNode::getProcessInstId, processInst.getId()).eq(ProcessInstNode::getTaskKey, taskKey));
-                if (ObjectUtil.isNotEmpty(nodeList)) {
-                    processInstNode = nodeList.get(0);
-                }
-            }
+//            ProcessInstNode processInstNode = null;
+//            ProcessInst processInst = processInstService.getOne(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getProcessDesignId, processDesignId).eq(ProcessInst::getActProcessInstanceId, actProcessInstanceId));
+//            if (processInst != null) {
+//                List<ProcessInstNode> nodeList = processInstNodeService.list(new LambdaQueryWrapper<ProcessInstNode>().eq(ProcessInstNode::getProcessInstId, processInst.getId()).eq(ProcessInstNode::getTaskKey, taskKey));
+//                if (ObjectUtil.isNotEmpty(nodeList)) {
+//                    processInstNode = nodeList.get(0);
+//                }
+//            }
             //
-            if (processInstNode != null) {
-                taskEntity.addCandidateUser(processInstNode.getLoginName());
-            } else {
+//            if (processInstNode != null) {
+//                taskEntity.addCandidateUser(processInstNode.getLoginName());
+//            } else {
                 ProcessDesignTask processDesignTask = processDesignTaskService.getOne(new LambdaQueryWrapper<ProcessDesignTask>().eq(ProcessDesignTask::getProcessDesignId, processDesignId).eq(ProcessDesignTask::getTaskKey, taskKey));
                 Set<String> loginNameSet = userTaskBean.getLoginNameList(processDesignTask, businessId, actProcessInstanceId);
+            System.out.println();
                 if (ObjectUtil.isNotEmpty(loginNameSet)) {
                     taskEntity.addCandidateUsers(loginNameSet);
                 } else {
                     log.error(processDesignTask.getTaskName() + "-没有处理人");
                 }
-            }
+//            }
         }
     }
 
