@@ -240,7 +240,7 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
             //
             boolean flag = false;
             String[] tmp = processInst.getLoginProcessStep().split(",");
-            if (user.getDeptName().equals("供电中心") && tmp.length > 1 && buttonName.contains("同意")) {
+            if (tmp.length > 1 && buttonName.contains("同意")) {
                 buttonHandleBean.checkUpOne(formValue.getProcessInstId(), formValue, buttonName, comment);
             } else {
                 flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
