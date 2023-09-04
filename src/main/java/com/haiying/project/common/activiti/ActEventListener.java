@@ -67,7 +67,6 @@ public class ActEventListener implements ActivitiEventListener {
 //            } else {
                 ProcessDesignTask processDesignTask = processDesignTaskService.getOne(new LambdaQueryWrapper<ProcessDesignTask>().eq(ProcessDesignTask::getProcessDesignId, processDesignId).eq(ProcessDesignTask::getTaskKey, taskKey));
                 Set<String> loginNameSet = userTaskBean.getLoginNameList(processDesignTask, businessId, actProcessInstanceId);
-            System.out.println();
                 if (ObjectUtil.isNotEmpty(loginNameSet)) {
                     taskEntity.addCandidateUsers(loginNameSet);
                 } else {

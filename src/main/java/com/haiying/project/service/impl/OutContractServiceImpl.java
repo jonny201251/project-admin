@@ -12,6 +12,8 @@ import com.haiying.project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +37,36 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
     BudgetProjectService budgetProjectService;
     @Autowired
     SmallBudgetOutService smallBudgetOutService;
+    @Autowired
+    ContractMoneyService contractMoneyService;
+    @Autowired
+    HttpSession httpSession;
+
+
+    //收款合同金额
+    public void contractMoney(OutContract page, OutContract db) {
+        if (!page.getContractMoney().equals(db.getContractMoney())) {
+            ContractMoney tmp = new ContractMoney();
+            tmp.setType("付款合同");
+            tmp.setContractCode(db.getContractCode());
+            tmp.setContractMoney(db.getContractMoney());
+            tmp.setCreateDatetime(LocalDateTime.now());
+
+            SysUser user = (SysUser) httpSession.getAttribute("user");
+            tmp.setLoginName(user.getLoginName());
+            tmp.setDisplayName(user.getDisplayName());
+            tmp.setDeptId(user.getDeptId());
+            tmp.setDeptName(user.getDeptName());
+
+            contractMoneyService.save(tmp);
+        }
+    }
 
     @Override
     public boolean edit(OutContract outContract) {
         validate(outContract);
+
+        contractMoney(outContract, this.getById(outContract.getId()));
 
         this.updateById(outContract);
         formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "OutContract").eq(FormFile::getBusinessId, outContract.getId()));

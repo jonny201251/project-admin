@@ -3,9 +3,10 @@ package com.haiying.project.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -35,9 +36,13 @@ public class FormFile implements Serializable {
      */
     private Integer businessId;
 
+    //用于 合同签订情况--收款合同，付款合同
+    private String taskCode;
+
     private String name;
 
     private String url;
+
 
 
 }

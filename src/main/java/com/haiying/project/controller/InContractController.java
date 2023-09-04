@@ -27,6 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -143,16 +144,24 @@ public class InContractController {
     @GetMapping("get")
     public InContract get(String id) {
         InContract inContract = inContractService.getById(id);
-        List<FileVO> fileList = new ArrayList<>();
-        List<FormFile> formFileList = formFileService.list(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "InContract").eq(FormFile::getBusinessId, id));
-        for (FormFile formFile : formFileList) {
-            FileVO fileVO = new FileVO();
-            fileVO.setName(formFile.getName());
-            fileVO.setUrl(formFile.getUrl());
-            fileVO.setStatus("done");
-            fileList.add(fileVO);
+
+        if (ObjectUtil.isNotEmpty(inContract.getRuntime())) {
+            inContract.setRuntimeTmp(Arrays.asList(inContract.getRuntime().split("至")));
         }
-        inContract.setFileList(fileList);
+
+        List<FileVO> fileList = new ArrayList<>();
+        List<FormFile> formFileList = formFileService.list(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "InContract").eq(FormFile::getTaskCode, inContract.getTaskCode()));
+        if (ObjectUtil.isNotEmpty(formFileList)) {
+            for (FormFile formFile : formFileList) {
+                FileVO fileVO = new FileVO();
+                fileVO.setName(formFile.getName());
+                fileVO.setUrl(formFile.getUrl());
+                fileVO.setStatus("done");
+                fileList.add(fileVO);
+            }
+            inContract.setFileList(fileList);
+        }
+
         return inContract;
     }
 

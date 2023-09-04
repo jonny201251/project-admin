@@ -111,4 +111,18 @@ public class InContract implements Serializable {
 
     @TableField(exist = false)
     private List<FileVO> fileList;
+
+    //项目类别
+    private String projectTypee;
+    //生效日期
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate validDate;
+    //结束时间
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDatee;
+    //履行时间
+    @TableField(exist = false)
+    private List<String> runtimeTmp;
+    private String runtime;
+
 }

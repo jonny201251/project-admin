@@ -6,13 +6,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.haiying.project.bean.PageBean;
 import com.haiying.project.common.result.ResponseResult;
-import com.haiying.project.model.entity.BudgetProject;
+import com.haiying.project.model.entity.BudgetProjectt;
 import com.haiying.project.model.entity.ProcessInst;
-import com.haiying.project.model.entity.SmallBudgetOut;
+import com.haiying.project.model.entity.BudgetOut;
 import com.haiying.project.model.entity.SysUser;
-import com.haiying.project.service.BudgetProjectService;
+import com.haiying.project.service.BudgetProjecttService;
 import com.haiying.project.service.ProcessInstService;
-import com.haiying.project.service.SmallBudgetOutService;
+import com.haiying.project.service.BudgetOutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,11 +34,11 @@ public class BudgetDialogController {
     @Autowired
     ProcessInstService processInstService;
     @Autowired
-    BudgetProjectService budgetProjectService;
+    BudgetProjecttService budgetProjecttService;
     @Autowired
     PageBean pageBean;
     @Autowired
-    SmallBudgetOutService smallBudgetOutService;
+    BudgetOutService budgetOutService;
 
     //项目预算
     @PostMapping("list")
@@ -51,23 +51,23 @@ public class BudgetDialogController {
         Object name = paramMap.get("name");
         Object taskCode = paramMap.get("taskCode");
 
-        LambdaQueryWrapper<BudgetProject> wrapper = new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getHaveDisplay, "是");
+        LambdaQueryWrapper<BudgetProjectt> wrapper = new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getHaveDisplay, "是");
         if (!user.getDeptName().equals("综合计划部")) {
-            wrapper.eq(BudgetProject::getDeptId, user.getDeptId());
+            wrapper.eq(BudgetProjectt::getDeptId, user.getDeptId());
         }
         if (ObjectUtil.isNotEmpty(name)) {
-            wrapper.like(BudgetProject::getName, name);
+            wrapper.like(BudgetProjectt::getName, name);
         }
         if (ObjectUtil.isNotEmpty(taskCode)) {
-            wrapper.like(BudgetProject::getTaskCode, taskCode);
+            wrapper.like(BudgetProjectt::getTaskCode, taskCode);
         }
-        List<BudgetProject> list = budgetProjectService.list(wrapper);
+        List<BudgetProjectt> list = budgetProjecttService.list(wrapper);
         if (ObjectUtil.isNotEmpty(list)) {
-            List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getBusinessHaveDisplay, "是").eq(ProcessInst::getProcessStatus, "完成").like(ProcessInst::getPath, "BudgetRunPath").in(ProcessInst::getBusinessId, list.stream().map(BudgetProject::getId).collect(Collectors.toList())));
+            List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getBusinessHaveDisplay, "是").eq(ProcessInst::getProcessStatus, "完成").like(ProcessInst::getPath, "budgetProjecttPath").in(ProcessInst::getBusinessId, list.stream().map(BudgetProjectt::getId).collect(Collectors.toList())));
             if (ObjectUtil.isNotEmpty(processInstList)) {
                 Map<Integer, ProcessInst> processInstMap = processInstList.stream().collect(Collectors.toMap(ProcessInst::getBusinessId, v -> v));
-                List<BudgetProject> listt = new ArrayList<>();
-                for (BudgetProject tmp : list) {
+                List<BudgetProjectt> listt = new ArrayList<>();
+                for (BudgetProjectt tmp : list) {
                     if (processInstMap.get(tmp.getId()) != null) {
                         listt.add(tmp);
                     }
@@ -92,7 +92,7 @@ public class BudgetDialogController {
         Object taskCode = paramMap.get("taskCode");
         Object costType = paramMap.get("costType");
 
-        QueryWrapper<SmallBudgetOut> wrapper = new QueryWrapper<SmallBudgetOut>().eq("have_display", "是");
+        QueryWrapper<BudgetOut> wrapper = new QueryWrapper<BudgetOut>().eq("have_display", "是");
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq("dept_id", user.getDeptId());
         }
@@ -106,13 +106,13 @@ public class BudgetDialogController {
             wrapper.like("cost_type", costType);
         }
         wrapper.select("distinct budget_id,project_id,name,task_code,wbs,cost_type,cost_rate,display_name,dept_name");
-        List<SmallBudgetOut> list = smallBudgetOutService.list(wrapper);
+        List<BudgetOut> list = budgetOutService.list(wrapper);
         if (ObjectUtil.isNotEmpty(list)) {
-            List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getBusinessHaveDisplay, "是").eq(ProcessInst::getProcessStatus, "完成").like(ProcessInst::getPath, "BudgetRunPath").in(ProcessInst::getBusinessId, list.stream().map(SmallBudgetOut::getBudgetId).collect(Collectors.toList())));
+            List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getBusinessHaveDisplay, "是").eq(ProcessInst::getProcessStatus, "完成").like(ProcessInst::getPath, "BudgetRunPath").in(ProcessInst::getBusinessId, list.stream().map(BudgetOut::getBudgetId).collect(Collectors.toList())));
             if (ObjectUtil.isNotEmpty(processInstList)) {
                 Map<Integer, ProcessInst> processInstMap = processInstList.stream().collect(Collectors.toMap(ProcessInst::getBusinessId, v -> v));
-                List<SmallBudgetOut> listt = new ArrayList<>();
-                for (SmallBudgetOut tmp : list) {
+                List<BudgetOut> listt = new ArrayList<>();
+                for (BudgetOut tmp : list) {
                     if (processInstMap.get(tmp.getBudgetId()) != null) {
                         listt.add(tmp);
                     }

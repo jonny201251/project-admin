@@ -15,11 +15,14 @@ import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.model.vo.InOutVO;
 import com.haiying.project.service.*;
 import lombok.SneakyThrows;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,11 +43,15 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
     @Autowired
     FormFileService formFileService;
     @Autowired
-    BudgetProjectService budgetProjectService;
+    BudgetProjecttService budgetProjecttService;
     @Autowired
     SmallBudgetOutService smallBudgetOutService;
     @Autowired
     SysDeptService sysDeptService;
+    @Autowired
+    ContractMoneyService contractMoneyService;
+    @Autowired
+    HttpSession httpSession;
 
 
     private LocalDate getDate(String str) {
@@ -81,31 +88,98 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
         for (SysDept dept : deptList) {
             deptMap.put(dept.getName(), dept);
         }
+        //
+        List<BudgetProjectt> budgetList = budgetProjecttService.list();
+        Map<String, String> budgetMap = new HashMap<>();
+        for (BudgetProjectt budget : budgetList) {
+            budgetMap.put(budget.getTaskCode().split("-")[0], budget.getProjectType());
+        }
+        //
+        List<InContract> inList = this.list();
+        Map<String, InContract> inMap = new HashMap<>();
+        for (InContract in : inList) {
+            inMap.put(in.getContractCode(), in);
+        }
 
         if (ObjectUtil.isNotEmpty(list)) {
             List<InContract> resultList = new ArrayList<>();
             for (InContractExcel tmp : list) {
-                InContract obj = new InContract();
-                obj.setName(tmp.getContractName());
-                obj.setLoginName(tmp.getDisplayName());
+                String taskCode = tmp.getTaskCode();
+                if (taskCode != null) {
+                    taskCode = taskCode.trim();
+                }
 
-                obj.setContractCode(tmp.getContractCode());
-                obj.setContractName(tmp.getContractName());
-                obj.setCustomerName(tmp.getCustomerName());
-                obj.setContractMoney(tmp.getContractMoney());
-                obj.setTaskCode(tmp.getTaskCode());
-                obj.setProperty(tmp.getProperty());
-                obj.setContractType(tmp.getContractType());
-                obj.setContractLevel(tmp.getContractLevel());
-                obj.setPrintType(tmp.getPrintType());
-                obj.setPrintDate(getDate(tmp.getPrintDate()));
-                obj.setDisplayName(tmp.getDisplayName());
-                obj.setLocation(tmp.getLocation());
-                obj.setStartDate(getDate(tmp.getStartDate()));
-                obj.setEndDate(getDate(tmp.getEndDate()));
-                obj.setExpectDate(getDate(tmp.getExpectDate()));
-                obj.setDocumentDate(getDate(tmp.getDocumentDate()));
-                obj.setRemark(tmp.getRemark());
+                InContract obj = new InContract();
+                //
+                InContract db = inMap.get(tmp.getContractCode());
+                if (db != null) {
+                    BeanUtils.copyProperties(db, obj);
+                }
+                //
+                obj.setProjectType(budgetMap.get(taskCode));
+                if(ObjectUtil.isNotEmpty(taskCode)){
+                    obj.setProjectTypee("民用产业");
+                }else{
+                    obj.setProjectTypee("非民用产业");
+                }
+
+                if (ObjectUtil.isNotEmpty(tmp.getContractName())) {
+                    obj.setName(tmp.getContractName());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getDisplayName())) {
+                    obj.setLoginName(tmp.getDisplayName());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getContractCode())) {
+                    obj.setContractCode(tmp.getContractCode());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getContractName())) {
+                    obj.setContractName(tmp.getContractName());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getCustomerName())) {
+                    obj.setCustomerName(tmp.getCustomerName());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getContractMoney())) {
+                    obj.setContractMoney(tmp.getContractMoney());
+                }
+                if (ObjectUtil.isNotEmpty(taskCode)) {
+                    obj.setTaskCode(taskCode);
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getProperty())) {
+                    obj.setProperty(tmp.getProperty());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getContractType())) {
+                    obj.setContractType(tmp.getContractType());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getContractLevel())) {
+                    obj.setContractLevel(tmp.getContractLevel());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getPrintType())) {
+                    obj.setPrintType(tmp.getPrintType());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getPrintDate())) {
+                    obj.setPrintDate(getDate(tmp.getPrintDate()));
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getDisplayName())) {
+                    obj.setDisplayName(tmp.getDisplayName());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getLocation())) {
+                    obj.setLocation(tmp.getLocation());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getStartDate())) {
+                    obj.setStartDate(getDate(tmp.getStartDate()));
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getEndDate())) {
+                    obj.setEndDate(getDate(tmp.getEndDate()));
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getExpectDate())) {
+                    obj.setExpectDate(getDate(tmp.getExpectDate()));
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getDocumentDate())) {
+                    obj.setDocumentDate(getDate(tmp.getDocumentDate()));
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getRemark())) {
+                    obj.setRemark(tmp.getRemark());
+                }
                 //设置部门
                 String deptName = tmp.getDeptName();
                 if ("第五事业部".equals(deptName)) {
@@ -166,10 +240,35 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
         return true;
     }
 
+    //收款合同金额
+    public void contractMoney(InContract page, InContract db) {
+        if (!page.getContractMoney().equals(db.getContractMoney())) {
+            ContractMoney tmp = new ContractMoney();
+            tmp.setType("收款合同");
+            tmp.setContractCode(db.getContractCode());
+            tmp.setContractMoney(db.getContractMoney());
+            tmp.setCreateDatetime(LocalDateTime.now());
+
+            SysUser user = (SysUser) httpSession.getAttribute("user");
+            tmp.setLoginName(user.getLoginName());
+            tmp.setDisplayName(user.getDisplayName());
+            tmp.setDeptId(user.getDeptId());
+            tmp.setDeptName(user.getDeptName());
+
+            contractMoneyService.save(tmp);
+        }
+    }
+
     @Override
     public boolean edit(InContract inContract) {
+        contractMoney(inContract, this.getById(inContract.getId()));
+
+        if (ObjectUtil.isNotEmpty(inContract.getRuntimeTmp())) {
+            inContract.setRuntime(String.join("至", inContract.getRuntimeTmp()));
+        }
+
         this.updateById(inContract);
-        formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "InContract").eq(FormFile::getBusinessId, inContract.getId()));
+        formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "InContract").eq(FormFile::getTaskCode, inContract.getTaskCode()));
         //文件
         List<FormFile> list = new ArrayList<>();
         List<FileVO> fileList = inContract.getFileList();
@@ -177,7 +276,7 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
             for (FileVO fileVO : fileList) {
                 FormFile formFile = new FormFile();
                 formFile.setType("InContract");
-                formFile.setBusinessId(inContract.getId());
+                formFile.setTaskCode(inContract.getTaskCode());
                 formFile.setName(fileVO.getName());
                 formFile.setUrl(fileVO.getUrl());
                 list.add(formFile);
@@ -194,6 +293,11 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
         if (ObjectUtil.isNotEmpty(ll)) {
             throw new PageTipException("任务号   已存在");
         }
+
+        if (ObjectUtil.isNotEmpty(inContract.getRuntimeTmp())) {
+            inContract.setRuntime(String.join("至", inContract.getRuntimeTmp()));
+        }
+
         this.save(inContract);
         //文件
         List<FormFile> list = new ArrayList<>();
@@ -202,7 +306,7 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
             for (FileVO fileVO : fileList) {
                 FormFile formFile = new FormFile();
                 formFile.setType("InContract");
-                formFile.setBusinessId(inContract.getId());
+                formFile.setTaskCode(inContract.getTaskCode());
                 formFile.setName(fileVO.getName());
                 formFile.setUrl(fileVO.getUrl());
                 list.add(formFile);
@@ -219,13 +323,13 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
         inContract.setWbs(inOutVO.getWbs());
         this.updateById(inContract);
 
-        List<BudgetProject> list1 = budgetProjectService.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getTaskCode, inOutVO.getTaskCode()));
+        List<BudgetProjectt> list1 = budgetProjecttService.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getTaskCode, inOutVO.getTaskCode()));
         if (ObjectUtil.isNotEmpty(list1)) {
             list1.forEach(item -> {
                 item.setWbs(inOutVO.getWbs());
                 item.setContractCode(inOutVO.getContractCode());
             });
-            budgetProjectService.updateBatchById(list1);
+            budgetProjecttService.updateBatchById(list1);
         }
         List<SmallBudgetOut> list2 = smallBudgetOutService.list(new LambdaQueryWrapper<SmallBudgetOut>().eq(SmallBudgetOut::getTaskCode, inOutVO.getTaskCode()));
         if (ObjectUtil.isNotEmpty(list2)) {

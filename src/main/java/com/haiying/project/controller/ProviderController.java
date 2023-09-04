@@ -2,18 +2,27 @@ package com.haiying.project.controller;
 
 
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.support.ExcelTypeEnum;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.model.entity.*;
+import com.haiying.project.model.excel.ProviderrExcel;
 import com.haiying.project.model.vo.FileVO;
 import com.haiying.project.service.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +57,7 @@ public class ProviderController {
 
     @PostMapping("list")
     public IPage<Provider> list(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().orderByDesc(Provider::getId).in(Provider::getResult, Arrays.asList("","优良", "合格"));
+        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().orderByDesc(Provider::getId).in(Provider::getResult, Arrays.asList("", "优良", "合格"));
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object usee = paramMap.get("usee");
@@ -285,5 +294,29 @@ public class ProviderController {
     @PostMapping("edit")
     public boolean edit(@RequestBody Provider provider) {
         return providerService.edit(provider);
+    }
+
+    @GetMapping("export")
+    public void download(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding("utf-8");
+        String fileName = URLEncoder.encode("供方名录", "UTF-8");
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xls");
+        //
+        ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).useDefaultStyle(false).excelType(ExcelTypeEnum.XLS).build();
+        List<ProviderrExcel> dataList = new ArrayList<>();
+        WriteSheet sheet = EasyExcel.writerSheet(0, "供方").head(ProviderrExcel.class).build();
+        //
+        LambdaQueryWrapper<Provider> wrapper = new LambdaQueryWrapper<Provider>().in(Provider::getResult, Arrays.asList("优良", "合格")).orderByDesc(Provider::getId);
+        List<Provider> list = providerService.list(wrapper);
+        for (Provider provider : list) {
+            ProviderrExcel providerrExcel=new ProviderrExcel();
+            BeanUtils.copyProperties(provider,providerrExcel);
+            dataList.add(providerrExcel);
+        }
+
+        excelWriter.write(dataList, sheet);
+        //
+        excelWriter.finish();
     }
 }
