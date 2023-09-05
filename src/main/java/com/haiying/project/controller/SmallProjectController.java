@@ -156,4 +156,14 @@ public class SmallProjectController {
     public boolean btnHandle(@RequestBody SmallProjectAfter after) {
         return smallProjectService.btnHandle(after);
     }
+
+    @PostMapping("edit")
+    public boolean edit(@RequestBody SmallProject page) {
+        SmallProject db = smallProjectService.getById(page.getId());
+        if (ObjectUtil.isNotEmpty(page.getPowerCode())) {
+            db.setPowerCode(page.getPowerCode());
+            smallProjectService.updateById(db);
+        }
+        return true;
+    }
 }

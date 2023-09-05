@@ -183,4 +183,14 @@ public class BigProjectController {
         return bigProjectService.btnHandle(after);
     }
 
+    @PostMapping("edit")
+    public boolean edit(@RequestBody BigProject page) {
+        BigProject db = bigProjectService.getById(page.getId());
+        if (ObjectUtil.isNotEmpty(page.getPowerCode())) {
+            db.setPowerCode(page.getPowerCode());
+            bigProjectService.updateById(db);
+        }
+        return true;
+    }
+
 }
