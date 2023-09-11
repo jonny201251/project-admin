@@ -49,8 +49,8 @@ public class InOutContractController {
         LambdaQueryWrapper<OutContract> wrapper2=new LambdaQueryWrapper<OutContract>().and(qr->qr.isNull(OutContract::getContractCode).or().isNull(OutContract::getWbs));
 
         if (!user.getDeptName().equals("综合计划部")) {
-            wrapper1.eq(InContract::getDisplayName, user.getDisplayName());
-            wrapper2.eq(OutContract::getDisplayName, user.getDisplayName());
+            wrapper1.eq(InContract::getDeptId, user.getDeptId());
+            wrapper2.eq(OutContract::getDeptId, user.getDeptId());
         }
 
         Object name = paramMap.get("name");

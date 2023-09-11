@@ -79,8 +79,8 @@ public class OutContractController {
             wrapper.like(OutContract::getDeptName, deptName);
         }
 
-        if (!user.getDeptName().equals("综合计划部")) {
-            wrapper.eq(OutContract::getDisplayName, user.getDisplayName());
+        if (!(user.getDeptName().equals("综合计划部") || user.getDeptName().equals("财务部"))) {
+            wrapper.eq(OutContract::getDeptId, user.getDeptId());
         }
 
         return outContractService.page(new Page<>(current, pageSize), wrapper);

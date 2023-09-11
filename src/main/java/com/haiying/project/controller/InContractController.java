@@ -87,8 +87,8 @@ public class InContractController {
             wrapper.like(InContract::getDeptName, deptName);
         }
 
-        if (!user.getDeptName().equals("综合计划部")) {
-            wrapper.eq(InContract::getDisplayName, user.getDisplayName());
+        if (!(user.getDeptName().equals("综合计划部") || user.getDeptName().equals("财务部"))) {
+            wrapper.eq(InContract::getDeptId, user.getDeptId());
         }
 
         return inContractService.page(new Page<>(current, pageSize), wrapper);

@@ -117,9 +117,9 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
                 }
                 //
                 obj.setProjectType(budgetMap.get(taskCode));
-                if(ObjectUtil.isNotEmpty(taskCode)){
+                if (ObjectUtil.isNotEmpty(taskCode)) {
                     obj.setProjectTypee("民用产业");
-                }else{
+                } else {
                     obj.setProjectTypee("非民用产业");
                 }
 
@@ -319,26 +319,26 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
     @Override
     public boolean updateCode(InOutVO inOutVO) {
         InContract inContract = this.getById(inOutVO.getId());
-        inContract.setContractCode(inOutVO.getContractCode());
-        inContract.setWbs(inOutVO.getWbs());
+        if (ObjectUtil.isNotEmpty(inOutVO.getContractCode())) {
+            inContract.setContractCode(inOutVO.getContractCode());
+        }
+        if (ObjectUtil.isNotEmpty(inOutVO.getWbs())) {
+            inContract.setWbs(inOutVO.getWbs());
+        }
         this.updateById(inContract);
 
         List<BudgetProjectt> list1 = budgetProjecttService.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getTaskCode, inOutVO.getTaskCode()));
         if (ObjectUtil.isNotEmpty(list1)) {
-            list1.forEach(item -> {
-                item.setWbs(inOutVO.getWbs());
-                item.setContractCode(inOutVO.getContractCode());
-            });
+            for (BudgetProjectt tmp : list1) {
+                if (ObjectUtil.isNotEmpty(inOutVO.getContractCode())) {
+                    tmp.setContractCode(inOutVO.getContractCode());
+                }
+                if (ObjectUtil.isNotEmpty(inOutVO.getWbs())) {
+                    tmp.setWbs(inOutVO.getWbs());
+                }
+            }
             budgetProjecttService.updateBatchById(list1);
         }
-        List<SmallBudgetOut> list2 = smallBudgetOutService.list(new LambdaQueryWrapper<SmallBudgetOut>().eq(SmallBudgetOut::getTaskCode, inOutVO.getTaskCode()));
-        if (ObjectUtil.isNotEmpty(list2)) {
-            list2.forEach(item -> {
-                item.setWbs(inOutVO.getWbs());
-            });
-            smallBudgetOutService.updateBatchById(list2);
-        }
-
         return true;
     }
 }

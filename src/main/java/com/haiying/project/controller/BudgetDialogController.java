@@ -3,16 +3,14 @@ package com.haiying.project.controller;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.haiying.project.bean.PageBean;
 import com.haiying.project.common.result.ResponseResult;
-import com.haiying.project.model.entity.BudgetProjectt;
-import com.haiying.project.model.entity.ProcessInst;
-import com.haiying.project.model.entity.BudgetOut;
-import com.haiying.project.model.entity.SysUser;
-import com.haiying.project.service.BudgetProjecttService;
-import com.haiying.project.service.ProcessInstService;
+import com.haiying.project.model.entity.*;
+import com.haiying.project.model.vo.BudgetProjecttOutVO;
 import com.haiying.project.service.BudgetOutService;
+import com.haiying.project.service.BudgetProjecttService;
+import com.haiying.project.service.InContractService;
+import com.haiying.project.service.ProcessInstService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,6 +38,8 @@ public class BudgetDialogController {
     PageBean pageBean;
     @Autowired
     BudgetOutService budgetOutService;
+    @Autowired
+    InContractService inContractService;
 
     //项目预算
     @PostMapping("list")
@@ -80,7 +81,9 @@ public class BudgetDialogController {
         return responseResult;
     }
 
-    //成本类型
+
+    //付款合同-弹窗
+    //项目名称，任务号，WBS编号，成本类型
     @PostMapping("listCost")
     public ResponseResult listCost(@RequestBody Map<String, Object> paramMap) {
         ResponseResult responseResult = ResponseResult.success();
@@ -90,35 +93,59 @@ public class BudgetDialogController {
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");
         Object taskCode = paramMap.get("taskCode");
-        Object costType = paramMap.get("costType");
 
-        QueryWrapper<BudgetOut> wrapper = new QueryWrapper<BudgetOut>().eq("have_display", "是");
+        LambdaQueryWrapper<InContract> wrapper = new LambdaQueryWrapper<InContract>();
         if (!user.getDeptName().equals("综合计划部")) {
-            wrapper.eq("dept_id", user.getDeptId());
+            wrapper.eq(InContract::getDeptId, user.getDeptId());
         }
         if (ObjectUtil.isNotEmpty(name)) {
-            wrapper.like("name", name);
+            wrapper.like(InContract::getName, name);
         }
         if (ObjectUtil.isNotEmpty(taskCode)) {
-            wrapper.like("task_code", taskCode);
+            wrapper.like(InContract::getTaskCode, taskCode);
         }
-        if (ObjectUtil.isNotEmpty(costType)) {
-            wrapper.like("cost_type", costType);
-        }
-        wrapper.select("distinct budget_id,project_id,name,task_code,wbs,cost_type,cost_rate,display_name,dept_name");
-        List<BudgetOut> list = budgetOutService.list(wrapper);
+        List<InContract> list = inContractService.list(wrapper);
         if (ObjectUtil.isNotEmpty(list)) {
-            List<ProcessInst> processInstList = processInstService.list(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getBusinessHaveDisplay, "是").eq(ProcessInst::getProcessStatus, "完成").like(ProcessInst::getPath, "BudgetRunPath").in(ProcessInst::getBusinessId, list.stream().map(BudgetOut::getBudgetId).collect(Collectors.toList())));
-            if (ObjectUtil.isNotEmpty(processInstList)) {
-                Map<Integer, ProcessInst> processInstMap = processInstList.stream().collect(Collectors.toMap(ProcessInst::getBusinessId, v -> v));
-                List<BudgetOut> listt = new ArrayList<>();
-                for (BudgetOut tmp : list) {
-                    if (processInstMap.get(tmp.getBudgetId()) != null) {
-                        listt.add(tmp);
-                    }
+            List<String> taskCodeList = new ArrayList<>();
+            list.forEach(item -> taskCodeList.add(item.getTaskCode()));
+            //
+            LambdaQueryWrapper<BudgetProjectt> wrapper1 = new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getHaveDisplay, "是").in(BudgetProjectt::getTaskCode, taskCodeList);
+            List<BudgetProjectt> list1 = budgetProjecttService.list(wrapper1);
+            if (ObjectUtil.isNotEmpty(list1)) {
+                List<Integer> idList = new ArrayList<>();
+                Map<Integer, BudgetProjectt> map1 = new HashMap<>();
+                for (BudgetProjectt tmp : list1) {
+                    idList.add(tmp.getId());
+                    map1.put(tmp.getId(), tmp);
                 }
-                if (ObjectUtil.isNotEmpty(listt)) {
-                    responseResult = pageBean.get(current, pageSize, listt.size(), listt);
+                //
+                List<BudgetProjecttOutVO> dataList = new ArrayList<>();
+                LambdaQueryWrapper<BudgetOut> wrapper2 = new LambdaQueryWrapper<BudgetOut>().in(BudgetOut::getBudgetId, idList);
+                wrapper2.in(BudgetOut::getOutType, "材料及设备费", "劳务费", "技术服务费", "工程款");
+                List<BudgetOut> list2 = budgetOutService.list(wrapper2);
+                for (BudgetOut out : list2) {
+                    BudgetProjectt b = map1.get(out.getBudgetId());
+                    BudgetProjecttOutVO vo = new BudgetProjecttOutVO();
+                    vo.setBudgetId(b.getId());
+                    vo.setProjectType(b.getProjectType());
+                    vo.setName(b.getName());
+                    vo.setWbs(b.getWbs());
+                    vo.setTaskCode(b.getTaskCode());
+                    vo.setOutType(out.getOutType());
+                    vo.setRate(out.getRate());
+                    vo.setMoney(out.getMoney());
+                    vo.setOutId(out.getId());
+                    //
+                    vo.setLoginName(b.getDisplayName());
+                    vo.setDisplayName(b.getDisplayName());
+                    vo.setDeptId(b.getDeptId());
+                    vo.setDeptName(b.getDeptName());
+                    vo.setCreateDatetime(b.getCreateDatetime());
+
+                    dataList.add(vo);
+                }
+                if (ObjectUtil.isNotEmpty(dataList)) {
+                    responseResult = pageBean.get(current, pageSize, dataList.size(), dataList);
                 }
             }
         }

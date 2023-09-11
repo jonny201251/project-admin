@@ -34,9 +34,9 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
     @Autowired
     InContractService inContractService;
     @Autowired
-    BudgetProjectService budgetProjectService;
+    BudgetProjecttService budgetProjecttService;
     @Autowired
-    SmallBudgetOutService smallBudgetOutService;
+    BudgetOutService budgetOutService;
     @Autowired
     ContractMoneyService contractMoneyService;
     @Autowired
@@ -90,23 +90,20 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
     @Override
     public void updateCode(InOutVO inOutVO) {
         OutContract outcontract = this.getById(inOutVO.getId());
-        outcontract.setContractCode(inOutVO.getContractCode());
-        outcontract.setWbs(inOutVO.getWbs());
+        if (ObjectUtil.isNotEmpty(inOutVO.getContractCode())) {
+            outcontract.setContractCode(inOutVO.getContractCode());
+        }
+        if (ObjectUtil.isNotEmpty(inOutVO.getWbs())) {
+            outcontract.setWbs(inOutVO.getWbs());
+        }
         this.updateById(outcontract);
 
-        List<BudgetProject> list1 = budgetProjectService.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getTaskCode, inOutVO.getTaskCode()));
+        List<BudgetProjectt> list1 = budgetProjecttService.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getTaskCode, inOutVO.getTaskCode()));
         if (ObjectUtil.isNotEmpty(list1)) {
             list1.forEach(item -> {
                 item.setWbs(inOutVO.getWbs());
             });
-            budgetProjectService.updateBatchById(list1);
-        }
-        List<SmallBudgetOut> list2 = smallBudgetOutService.list(new LambdaQueryWrapper<SmallBudgetOut>().eq(SmallBudgetOut::getTaskCode, inOutVO.getTaskCode()));
-        if (ObjectUtil.isNotEmpty(list2)) {
-            list2.forEach(item -> {
-                item.setWbs(inOutVO.getWbs());
-            });
-            smallBudgetOutService.updateBatchById(list2);
+            budgetProjecttService.updateBatchById(list1);
         }
     }
 
@@ -120,15 +117,17 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
             throw new PageTipException("必须先有收款合同，才能进行付款合同");
         }
         //有、无合同的，跟 预算中的费用比较
-        LambdaQueryWrapper<SmallBudgetOut> wrapper = new LambdaQueryWrapper<SmallBudgetOut>().eq(SmallBudgetOut::getHaveDisplay, "是").eq(SmallBudgetOut::getTaskCode, outContract.getTaskCode()).eq(SmallBudgetOut::getCostType, outContract.getCostType());
+        LambdaQueryWrapper<BudgetProjectt> wrapper = new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getHaveDisplay, "是").eq(BudgetProjectt::getTaskCode, outContract.getTaskCode());
+        BudgetProjectt b = budgetProjecttService.getOne(wrapper);
+        LambdaQueryWrapper<BudgetOut> wrapper2=new LambdaQueryWrapper<>();
         if (ObjectUtil.isNotEmpty(outContract.getCostRate())) {
-            wrapper.eq(SmallBudgetOut::getCostRate, outContract.getCostRate());
+            wrapper2.eq(BudgetOut::getRate, outContract.getCostRate());
         }
-        List<SmallBudgetOut> ll2 = smallBudgetOutService.list(wrapper);
+        List<BudgetOut> ll2 = budgetOutService.list(wrapper2);
         if (ObjectUtil.isNotEmpty(ll2)) {
             double totalCost = 0.0;
-            for (SmallBudgetOut smallBudgetOut : ll2) {
-                totalCost += ofNullable(smallBudgetOut.getMoney()).orElse(0.0);
+            for (BudgetOut out : ll2) {
+                totalCost += ofNullable(out.getMoney()).orElse(0.0);
             }
             if (outContract.getContractMoney() > totalCost) {
                 throw new PageTipException("付款金额:" + outContract.getContractMoney() + " ,超出预算额:" + totalCost);
