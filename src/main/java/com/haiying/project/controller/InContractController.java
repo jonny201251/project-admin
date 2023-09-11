@@ -9,6 +9,7 @@ import com.alibaba.excel.write.metadata.WriteSheet;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.model.entity.FormFile;
 import com.haiying.project.model.entity.InContract;
@@ -144,6 +145,33 @@ public class InContractController {
     @GetMapping("get")
     public InContract get(String id) {
         InContract inContract = inContractService.getById(id);
+
+        if (ObjectUtil.isNotEmpty(inContract.getRuntime())) {
+            inContract.setRuntimeTmp(Arrays.asList(inContract.getRuntime().split("至")));
+        }
+
+        List<FileVO> fileList = new ArrayList<>();
+        List<FormFile> formFileList = formFileService.list(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "InContract").eq(FormFile::getTaskCode, inContract.getTaskCode()));
+        if (ObjectUtil.isNotEmpty(formFileList)) {
+            for (FormFile formFile : formFileList) {
+                FileVO fileVO = new FileVO();
+                fileVO.setName(formFile.getName());
+                fileVO.setUrl(formFile.getUrl());
+                fileVO.setStatus("done");
+                fileList.add(fileVO);
+            }
+            inContract.setFileList(fileList);
+        }
+
+        return inContract;
+    }
+
+    @GetMapping("get2")
+    public InContract get2(String taskCode) {
+        InContract inContract = inContractService.getOne(new LambdaQueryWrapper<InContract>().eq(InContract::getTaskCode, taskCode));
+        if (inContract == null) {
+            throw new PageTipException("暂无收款合同");
+        }
 
         if (ObjectUtil.isNotEmpty(inContract.getRuntime())) {
             inContract.setRuntimeTmp(Arrays.asList(inContract.getRuntime().split("至")));

@@ -160,6 +160,11 @@ public class UserTaskBean {
                 //财务
                 String userNamee = smallProject.getUserNamee();
                 loginNameSet.add(userNamee);
+                //是否垫资
+                String haveGiveMoney = smallProject.getHaveGiveMoney();
+                if ("是".equals(haveGiveMoney)) {
+                    loginNameSet.add("马聪聪");
+                }
             } else if (path.equals("bigProjectPath")) {
                 loginNameSet.add("于欣坤");
                 loginNameSet.add("祁瑛");
