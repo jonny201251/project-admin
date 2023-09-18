@@ -2,6 +2,7 @@ package com.haiying.project.service;
 
 import com.haiying.project.model.entity.Price3;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.haiying.project.model.vo.Price3After;
 
 /**
  * <p>
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface Price3Service extends IService<Price3> {
 
+    boolean btnHandle(Price3After after);
 }

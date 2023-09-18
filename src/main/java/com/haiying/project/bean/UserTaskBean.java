@@ -50,6 +50,12 @@ public class UserTaskBean {
     BudgetProjecttService budgetProjecttService;
     @Autowired
     ProjectOutService projectOutService;
+    @Autowired
+    Price1Service price1Service;
+    @Autowired
+    Price2Service price2Service;
+    @Autowired
+    Price3Service price3Service;
 
     public Set<String> getLoginNameList(ProcessDesignTask processDesignTask, Integer businessId, String actProcessInstanceId) {
         Set<String> loginNameSet = new TreeSet<>();
@@ -179,6 +185,18 @@ public class UserTaskBean {
                 //一般项目预算
                 BudgetProjectt budgetProjectt = budgetProjecttService.getById(businessId);
                 String userNamee = budgetProjectt.getUserNamee();
+                loginNameSet.add(userNamee);
+            } else if (path.equals("price1Path")) {
+                Price1 price1 = price1Service.getById(businessId);
+                String userNamee = price1.getUserNamee();
+                loginNameSet.add(userNamee);
+            } else if (path.equals("price2Path")) {
+                Price2 price2 = price2Service.getById(businessId);
+                String userNamee = price2.getUserNamee();
+                loginNameSet.add(userNamee);
+            } else if (path.equals("price3Path")) {
+                Price3 price3 = price3Service.getById(businessId);
+                String userNamee = price3.getUserNamee();
                 loginNameSet.add(userNamee);
             } else if (path.equals("projectOutPath")) {
                 //项目收支的支出信息

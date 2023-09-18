@@ -114,20 +114,11 @@ public class InContractController {
         if (ObjectUtil.isNotEmpty(taskCode)) {
             wrapper.like(InContract::getTaskCode, taskCode);
         }
-        if (ObjectUtil.isNotEmpty(wbs)) {
-            wrapper.like(InContract::getWbs, wbs);
-        }
         if (ObjectUtil.isNotEmpty(contractCode)) {
             wrapper.like(InContract::getContractCode, contractCode);
         }
         if (ObjectUtil.isNotEmpty(contractName)) {
             wrapper.like(InContract::getContractName, contractName);
-        }
-        if (ObjectUtil.isNotEmpty(displayName)) {
-            wrapper.like(InContract::getDisplayName, displayName);
-        }
-        if (ObjectUtil.isNotEmpty(deptName)) {
-            wrapper.like(InContract::getDeptName, deptName);
         }
 
         if (!user.getDeptName().equals("综合计划部")) {
