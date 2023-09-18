@@ -74,7 +74,7 @@ public class Price2 implements Serializable {
     /**
      * 符合条款
      */
-    private String limit;
+    private String limitt;
 
     /**
      * 发票种类

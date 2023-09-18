@@ -78,6 +78,8 @@ public class Price3 implements Serializable {
 
     //流程-归口管理部门
     private String userNamee;
+    //合同估价
+    private Double contractPrice;
 
     @TableField(exist = false)
     private List<Price33> list;
