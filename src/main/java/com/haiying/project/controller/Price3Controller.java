@@ -55,20 +55,20 @@ public class Price3Controller {
         LambdaQueryWrapper<Price3> wrapper = new LambdaQueryWrapper<Price3>().orderByDesc(Price3::getId);
 
         Object projectName = paramMap.get("projectName");
-        Object displayName = paramMap.get("displayName");
-        Object deptName = paramMap.get("deptName");
+        Object taskCode = paramMap.get("taskCode");
+        Object inContractName = paramMap.get("inContractName");
+        Object inContractCode = paramMap.get("inContractCode");
         if (ObjectUtil.isNotEmpty(projectName)) {
             wrapper.like(Price3::getProjectName, projectName);
         }
-        if (ObjectUtil.isNotEmpty(displayName)) {
-            wrapper.like(Price3::getDisplayName, displayName);
+        if (ObjectUtil.isNotEmpty(taskCode)) {
+            wrapper.like(Price3::getTaskCode, taskCode);
         }
-        if (ObjectUtil.isNotEmpty(deptName)) {
-            wrapper.like(Price3::getDeptName, deptName);
+        if (ObjectUtil.isNotEmpty(inContractName)) {
+            wrapper.like(Price3::getInContractName, inContractName);
         }
-
-        if (!(user.getDeptName().equals("综合计划部") || user.getDeptName().equals("财务部"))) {
-            wrapper.eq(Price3::getDeptId, user.getDeptId());
+        if (ObjectUtil.isNotEmpty(inContractCode)) {
+            wrapper.like(Price3::getInContractCode, inContractCode);
         }
 
 

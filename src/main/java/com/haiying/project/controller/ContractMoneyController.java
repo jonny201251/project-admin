@@ -33,14 +33,16 @@ public class ContractMoneyController {
 
     @PostMapping("list")
     public IPage<ContractMoney> list(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<ContractMoney> wrapper = new LambdaQueryWrapper<ContractMoney>().eq(ContractMoney::getType, "收款合同");
+        LambdaQueryWrapper<ContractMoney> wrapper = new LambdaQueryWrapper<ContractMoney>();
 
         Object contractCode = paramMap.get("contractCode");
+        Object type = paramMap.get("type");
         if (ObjectUtil.isNotEmpty(contractCode)) {
             wrapper.eq(ContractMoney::getContractCode, contractCode);
         } else {
             wrapper.eq(ContractMoney::getContractCode, "无");
         }
+        wrapper.eq(ContractMoney::getType, type);
 
         return contractMoneyService.page(new Page<>(1, 100), wrapper);
     }

@@ -43,7 +43,7 @@ public class OutContractServiceImpl extends ServiceImpl<OutContractMapper, OutCo
     HttpSession httpSession;
 
 
-    //收款合同金额
+    //付款合同金额
     public void contractMoney(OutContract page, OutContract db) {
         if (!page.getContractMoney().equals(db.getContractMoney())) {
             ContractMoney tmp = new ContractMoney();
