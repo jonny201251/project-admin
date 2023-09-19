@@ -68,4 +68,7 @@ public class SmallProjectNo implements Serializable {
     private String projectType;
 
     private String projectStatus;
+
+    //
+    private String projectLevel;
 }

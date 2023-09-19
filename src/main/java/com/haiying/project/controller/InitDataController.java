@@ -64,6 +64,13 @@ public class InitDataController {
         return true;
     }
 
+    //60276
+    @GetMapping("d2")
+    public boolean d2(String id) {
+        workFlowBean.deleteDeploy(id);
+        return true;
+    }
+
 
     @GetMapping("a1")
     public boolean a1(String ids) {

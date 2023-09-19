@@ -53,6 +53,7 @@ public class SmallProjectController {
         LambdaQueryWrapper<SmallProject> wrapper = new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getHaveDisplay, "是").orderByDesc(SmallProject::getId);
 
         Object name = paramMap.get("name");
+        Object projectLevel = paramMap.get("projectLevel");
         Object taskCode = paramMap.get("taskCode");
         Object projectStatus = paramMap.get("projectStatus");
         Object customerName = paramMap.get("customerName");
@@ -62,6 +63,9 @@ public class SmallProjectController {
         Object deptName = paramMap.get("deptName");
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(SmallProject::getName, name);
+        }
+        if (ObjectUtil.isNotEmpty(projectLevel)) {
+            wrapper.like(SmallProject::getProjectLevel, projectLevel);
         }
         if (ObjectUtil.isNotEmpty(taskCode)) {
             wrapper.like(SmallProject::getTaskCode, taskCode);

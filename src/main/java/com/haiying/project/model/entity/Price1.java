@@ -71,6 +71,8 @@ public class Price1 implements Serializable {
     //流程-归口管理部门
     private String userNamee;
 
+    private String projectLevel;
+
     @TableField(exist = false)
     private List<Price11> list;
 

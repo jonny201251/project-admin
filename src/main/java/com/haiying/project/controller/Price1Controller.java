@@ -55,11 +55,15 @@ public class Price1Controller {
         LambdaQueryWrapper<Price1> wrapper = new LambdaQueryWrapper<Price1>().orderByDesc(Price1::getId);
 
         Object projectName = paramMap.get("projectName");
+        Object projectLevel = paramMap.get("projectLevel");
         Object taskCode = paramMap.get("taskCode");
         Object inContractName = paramMap.get("inContractName");
         Object inContractCode = paramMap.get("inContractCode");
         if (ObjectUtil.isNotEmpty(projectName)) {
             wrapper.like(Price1::getProjectName, projectName);
+        }
+        if (ObjectUtil.isNotEmpty(projectLevel)) {
+            wrapper.like(Price1::getProjectLevel, projectLevel);
         }
         if (ObjectUtil.isNotEmpty(taskCode)) {
             wrapper.like(Price1::getTaskCode, taskCode);

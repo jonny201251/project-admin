@@ -113,6 +113,8 @@ public class Price2 implements Serializable {
     //流程-归口管理部门
     private String userNamee;
 
+    private String projectLevel;
+
     @TableField(exist = false)
     private ProcessInst processInst;
 

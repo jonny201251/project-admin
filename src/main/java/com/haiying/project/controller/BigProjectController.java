@@ -54,6 +54,7 @@ public class BigProjectController {
         LambdaQueryWrapper<BigProject> wrapper = new LambdaQueryWrapper<BigProject>().eq(BigProject::getHaveDisplay, "是").orderByDesc(BigProject::getId);
 
         Object name = paramMap.get("name");
+        Object projectLevel = paramMap.get("projectLevel");
         Object taskCode = paramMap.get("taskCode");
         Object projectStatus = paramMap.get("projectStatus");
         Object customerName = paramMap.get("customerName");
@@ -63,6 +64,9 @@ public class BigProjectController {
         Object deptName = paramMap.get("deptName");
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(BigProject::getName, name);
+        }
+        if (ObjectUtil.isNotEmpty(projectLevel)) {
+            wrapper.like(BigProject::getProjectLevel, projectLevel);
         }
         if (ObjectUtil.isNotEmpty(taskCode)) {
             wrapper.like(BigProject::getTaskCode, taskCode);

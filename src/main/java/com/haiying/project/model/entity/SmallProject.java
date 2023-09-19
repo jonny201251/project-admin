@@ -217,4 +217,8 @@ public class SmallProject implements Serializable {
     private String projectUser2;
     private String haveMerge;
 
+    //
+    private String projectLevel;
+    private String owerName;
+
 }

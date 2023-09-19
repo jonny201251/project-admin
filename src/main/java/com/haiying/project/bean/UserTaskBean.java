@@ -45,6 +45,8 @@ public class UserTaskBean {
     @Autowired
     SmallProjectService smallProjectService;
     @Autowired
+    BigProjectService bigProjectService;
+    @Autowired
     ProjectProtectService projectProtectService;
     @Autowired
     BudgetProjecttService budgetProjecttService;
@@ -171,10 +173,21 @@ public class UserTaskBean {
                 if ("是".equals(haveGiveMoney)) {
                     loginNameSet.add("马聪聪");
                 }
+                //项目密级
+                String projectLevel = smallProject.getProjectLevel();
+                if (!"非密".equals(projectLevel)) {
+                    loginNameSet.add("王媛媛");
+                }
             } else if (path.equals("bigProjectPath")) {
                 loginNameSet.add("于欣坤");
                 loginNameSet.add("祁瑛");
                 loginNameSet.add("马聪聪");
+                //项目密级
+                BigProject bigProject = bigProjectService.getById(businessId);
+                String projectLevel = bigProject.getProjectLevel();
+                if (!"非密".equals(projectLevel)) {
+                    loginNameSet.add("王媛媛");
+                }
             } else if (path.equals("projectProtectPath")) {
                 //投标保证金(函)登记
                 ProjectProtect projectProtect = projectProtectService.getById(businessId);
@@ -190,14 +203,29 @@ public class UserTaskBean {
                 Price1 price1 = price1Service.getById(businessId);
                 String userNamee = price1.getUserNamee();
                 loginNameSet.add(userNamee);
+                //项目密级
+                String projectLevel = price1.getProjectLevel();
+                if (!"非密".equals(projectLevel)) {
+                    loginNameSet.add("王媛媛");
+                }
             } else if (path.equals("price2Path")) {
                 Price2 price2 = price2Service.getById(businessId);
                 String userNamee = price2.getUserNamee();
                 loginNameSet.add(userNamee);
+                //项目密级
+                String projectLevel = price2.getProjectLevel();
+                if (!"非密".equals(projectLevel)) {
+                    loginNameSet.add("王媛媛");
+                }
             } else if (path.equals("price3Path")) {
                 Price3 price3 = price3Service.getById(businessId);
                 String userNamee = price3.getUserNamee();
                 loginNameSet.add(userNamee);
+                //项目密级
+                String projectLevel = price3.getProjectLevel();
+                if (!"非密".equals(projectLevel)) {
+                    loginNameSet.add("王媛媛");
+                }
             } else if (path.equals("projectOutPath")) {
                 //项目收支的支出信息
                 ProjectOut projectOut = projectOutService.getById(businessId);

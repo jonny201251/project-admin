@@ -151,4 +151,8 @@ public class BigProject implements Serializable {
     private String projectUser1;
     private String projectUser2;
     private String haveMerge;
+
+    //
+    private String projectLevel;
+    private String owerName;
 }

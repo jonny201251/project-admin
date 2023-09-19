@@ -39,12 +39,16 @@ public class SmallProjectNoController {
         Integer pageSize = (Integer) paramMap.get("pageSize");
 
         Object name = paramMap.get("name");
+        Object projectLevel = paramMap.get("projectLevel");
         Object taskCode = paramMap.get("taskCode");
         Object projectStatus = paramMap.get("projectStatus");
         Object displayName = paramMap.get("displayName");
         Object deptName = paramMap.get("deptName");
         if (ObjectUtil.isNotEmpty(name)) {
             wrapper.like(SmallProjectNo::getName, name);
+        }
+        if (ObjectUtil.isNotEmpty(projectLevel)) {
+            wrapper.like(SmallProjectNo::getProjectLevel, projectLevel);
         }
         if (ObjectUtil.isNotEmpty(taskCode)) {
             wrapper.like(SmallProjectNo::getTaskCode, taskCode);

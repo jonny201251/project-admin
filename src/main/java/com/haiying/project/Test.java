@@ -30,5 +30,8 @@ public class Test {
         System.out.println("013121323001".substring(9));
 
         System.out.println("020009521053-002".split("-")[0]);
+
+        System.out.println(!"非密".equals("非密"));
+        System.out.println(!"非密".equals("内部"));
     }
 }
