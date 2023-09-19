@@ -203,6 +203,8 @@ public class UserTaskBean {
                 Price1 price1 = price1Service.getById(businessId);
                 String userNamee = price1.getUserNamee();
                 loginNameSet.add(userNamee);
+                //
+                loginNameSet.add("孙欢");
                 //项目密级
                 String projectLevel = price1.getProjectLevel();
                 if (!"非密".equals(projectLevel)) {
@@ -212,6 +214,8 @@ public class UserTaskBean {
                 Price2 price2 = price2Service.getById(businessId);
                 String userNamee = price2.getUserNamee();
                 loginNameSet.add(userNamee);
+                //
+                loginNameSet.add("孙欢");
                 //项目密级
                 String projectLevel = price2.getProjectLevel();
                 if (!"非密".equals(projectLevel)) {
@@ -221,6 +225,8 @@ public class UserTaskBean {
                 Price3 price3 = price3Service.getById(businessId);
                 String userNamee = price3.getUserNamee();
                 loginNameSet.add(userNamee);
+                //
+                loginNameSet.add("孙欢");
                 //项目密级
                 String projectLevel = price3.getProjectLevel();
                 if (!"非密".equals(projectLevel)) {
