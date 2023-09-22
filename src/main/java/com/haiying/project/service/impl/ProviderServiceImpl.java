@@ -31,6 +31,9 @@ public class ProviderServiceImpl extends ServiceImpl<ProviderMapper, Provider> i
 
     @Override
     public boolean add(Provider provider) {
+        if (!provider.getUsee().equals("民用产业项目")) {
+            provider.setType(null);
+        }
         this.save(provider);
         //文件
         List<FileVO> fileList = provider.getFileList();
@@ -52,6 +55,9 @@ public class ProviderServiceImpl extends ServiceImpl<ProviderMapper, Provider> i
 
     @Override
     public boolean edit(Provider provider) {
+        if (!provider.getUsee().equals("民用产业项目")) {
+            provider.setType(null);
+        }
         if (ObjectUtil.isNotEmpty(provider.getResult())) {
             throw new PageTipException("供方不能编辑");
         }

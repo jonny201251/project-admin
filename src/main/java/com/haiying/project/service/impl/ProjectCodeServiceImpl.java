@@ -50,7 +50,7 @@ public class ProjectCodeServiceImpl extends ServiceImpl<ProjectCodeMapper, Proje
             strCount = "0" + strCount;
         }
         String taskCode = projectCodeCount.getDeptType()
-                + projectCode.getProjectProperty()
+                + "1"
                 + projectCode.getCustomerProperty()
                 + projectCode.getProviderProperty() + String.join("", projectCode.getBusinessTypeTmp())
                 + simpleYear + strCount;
@@ -77,7 +77,7 @@ public class ProjectCodeServiceImpl extends ServiceImpl<ProjectCodeMapper, Proje
         String strCount = projectCode.getTaskCode().substring(9);
 
         String taskCode = projectCodeCount.getDeptType()
-                + projectCode.getProjectProperty()
+                + "1"
                 + projectCode.getCustomerProperty()
                 + projectCode.getProviderProperty() + String.join("", projectCode.getBusinessTypeTmp())
                 + simpleYear + strCount;
