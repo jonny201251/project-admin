@@ -6,10 +6,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haiying.project.bean.ButtonHandleBean;
 import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.mapper.ProjectOutMapper;
+import com.haiying.project.model.entity.BudgetOut;
 import com.haiying.project.model.entity.OutContract;
 import com.haiying.project.model.entity.ProjectInOutCount;
 import com.haiying.project.model.entity.ProjectOut;
-import com.haiying.project.model.entity.SmallBudgetOut;
 import com.haiying.project.model.vo.ProjectOutAfter;
 import com.haiying.project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class ProjectOutServiceImpl extends ServiceImpl<ProjectOutMapper, Project
     @Autowired
     ProjectInOutCountService projectInOutCountService;
     @Autowired
-    SmallBudgetOutService smallBudgetOutService;
+    BudgetOutService budgetOutService;
     @Autowired
     OutContractService outContractService;
 
@@ -45,10 +45,10 @@ public class ProjectOutServiceImpl extends ServiceImpl<ProjectOutMapper, Project
         //有合同的，跟 合同签署情况->付款合同
         //无合同的，跟 预算中的费用比较
         if (projectOut.getHaveContract().equals("无")) {
-            List<SmallBudgetOut> ll = smallBudgetOutService.list(new LambdaQueryWrapper<SmallBudgetOut>().eq(SmallBudgetOut::getHaveDisplay, "是").eq(SmallBudgetOut::getTaskCode, projectOut.getTaskCode()).eq(SmallBudgetOut::getCostType, projectOut.getCostType()));
+            List<BudgetOut> ll = budgetOutService.list(new LambdaQueryWrapper<BudgetOut>().eq(BudgetOut::getBudgetId, projectOut.getBudgetId()).eq(BudgetOut::getOutType, projectOut.getCostType()));
             double totalCost = 0.0;
-            for (SmallBudgetOut smallBudgetOut : ll) {
-                totalCost += ofNullable(smallBudgetOut.getMoney()).orElse(0.0);
+            for (BudgetOut budgetOut : ll) {
+                totalCost += ofNullable(budgetOut.getMoney()).orElse(0.0);
             }
             if (ObjectUtil.isNotEmpty(projectOut.getMoney1())) {
                 if (projectOut.getMoney1() > totalCost) {
@@ -81,7 +81,6 @@ public class ProjectOutServiceImpl extends ServiceImpl<ProjectOutMapper, Project
 
     public boolean add(ProjectOut formValue) {
         validate(formValue);
-
 
         ProjectInOutCount count = projectInOutCountService.getById(1);
         formValue.setSort(Double.valueOf(count.getCount()));

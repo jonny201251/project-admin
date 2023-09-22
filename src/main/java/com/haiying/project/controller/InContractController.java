@@ -128,6 +128,41 @@ public class InContractController {
         return inContractService.page(new Page<>(current, pageSize), wrapper);
     }
 
+    @PostMapping("dialog3")
+    public IPage<InContract> dialog3(@RequestBody Map<String, Object> paramMap) {
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+        LambdaQueryWrapper<InContract> wrapper = new LambdaQueryWrapper<InContract>().eq(InContract::getProjectTypee, "民用产业");
+        Integer current = (Integer) paramMap.get("current");
+        Integer pageSize = (Integer) paramMap.get("pageSize");
+
+        Object name = paramMap.get("name");
+        Object taskCode = paramMap.get("taskCode");
+        Object wbs = paramMap.get("wbs");
+        Object contractCode = paramMap.get("contractCode");
+        Object contractName = paramMap.get("contractName");
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like(InContract::getName, name);
+        }
+        if (ObjectUtil.isNotEmpty(taskCode)) {
+            wrapper.like(InContract::getTaskCode, taskCode);
+        }
+        if (ObjectUtil.isNotEmpty(wbs)) {
+            wrapper.like(InContract::getWbs, wbs);
+        }
+        if (ObjectUtil.isNotEmpty(contractCode)) {
+            wrapper.like(InContract::getContractCode, contractCode);
+        }
+        if (ObjectUtil.isNotEmpty(contractName)) {
+            wrapper.like(InContract::getContractName, contractName);
+        }
+
+        if (!user.getDeptName().equals("综合计划部")) {
+            wrapper.eq(InContract::getDeptId, user.getDeptId());
+        }
+
+        return inContractService.page(new Page<>(current, pageSize), wrapper);
+    }
+
     @PostMapping("add")
     public boolean add(@RequestBody InContract inContract) {
         return inContractService.add(inContract);
