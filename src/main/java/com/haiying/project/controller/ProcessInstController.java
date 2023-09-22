@@ -80,8 +80,8 @@ public class ProcessInstController {
         List<Integer> idList = new ArrayList<>();
 
         ResponseResult responseResult = ResponseResult.success();
-        LambdaQueryWrapper<SmallProject> wrapper1 = new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getHavePower, "是").isNull(SmallProject::getPowerCode);
-        LambdaQueryWrapper<BigProject> wrapper2 = new LambdaQueryWrapper<BigProject>().eq(BigProject::getHavePower, "是").isNull(BigProject::getPowerCode);
+        LambdaQueryWrapper<SmallProject> wrapper1 = new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getHaveDisplay, "是").eq(SmallProject::getHavePower, "是").isNull(SmallProject::getPowerCode);
+        LambdaQueryWrapper<BigProject> wrapper2 = new LambdaQueryWrapper<BigProject>().eq(BigProject::getHaveDisplay, "是").eq(BigProject::getHavePower, "是").isNull(BigProject::getPowerCode);
         List<SmallProject> list1 = smallProjectService.list(wrapper1);
         List<BigProject> list2 = bigProjectService.list(wrapper2);
         if (ObjectUtil.isNotEmpty(list1)) {
