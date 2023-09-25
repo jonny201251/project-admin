@@ -38,7 +38,7 @@ public class ProjectInOutController {
     @Autowired
     ProjectIoService projectIoService;
     @Autowired
-    BudgetProjectService budgetProjectService;
+    BudgetProjecttService budgetProjecttService;
     @Autowired
     InContractService inContractService;
 
@@ -62,9 +62,9 @@ public class ProjectInOutController {
     public synchronized Map<String, List<ProjectInOutVO>> getInOut1(Integer projectId) {
         ProjectInOutVO projectInOutVO = new ProjectInOutVO();
         List<ProjectIn> inList = projectInService.list(new LambdaQueryWrapper<ProjectIn>().eq(ProjectIn::getProjectId, projectId));
-        List<BudgetProject> budgetList = budgetProjectService.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getProjectId, projectId));
+        List<BudgetProjectt> budgetList = budgetProjecttService.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getProjectId, projectId));
         ProjectIn projectIn = inList.get(0);
-        BudgetProject budget = budgetList.get(0);
+        BudgetProjectt budget = budgetList.get(0);
         //
         projectInOutVO.setName(projectIn.getName());
         projectInOutVO.setTaskCode(projectIn.getTaskCode());

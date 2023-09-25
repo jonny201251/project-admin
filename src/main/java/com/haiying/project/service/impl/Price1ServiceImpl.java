@@ -4,7 +4,6 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haiying.project.bean.ButtonHandleBean;
-import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.mapper.Price1Mapper;
 import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.FileVO;
@@ -43,12 +42,6 @@ public class Price1ServiceImpl extends ServiceImpl<Price1Mapper, Price1> impleme
 
 
     private void add(Price1 formValue) {
-        //判断是否重复添加
-        List<Price1> ll = this.list(new LambdaQueryWrapper<Price1>().eq(Price1::getTaskCode, formValue.getTaskCode()));
-        if (ObjectUtil.isNotEmpty(ll)) {
-            throw new PageTipException("任务号   已存在");
-        }
-
         this.save(formValue);
         List<Price11> list = formValue.getList();
         list.forEach(item -> {
