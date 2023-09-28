@@ -90,9 +90,9 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
         }
         //
         List<BudgetProjectt> budgetList = budgetProjecttService.list();
-        Map<String, String> budgetMap = new HashMap<>();
+        Map<String, BudgetProjectt> budgetMap = new HashMap<>();
         for (BudgetProjectt budget : budgetList) {
-            budgetMap.put(budget.getTaskCode().split("-")[0], budget.getProjectType());
+            budgetMap.put(budget.getTaskCode().split("-")[0], budget);
         }
         //
         List<InContract> inList = this.list();
@@ -115,8 +115,7 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
                 if (db != null) {
                     BeanUtils.copyProperties(db, obj);
                 }
-                //
-                obj.setProjectType(budgetMap.get(taskCode));
+
                 if (ObjectUtil.isNotEmpty(taskCode)) {
                     obj.setProjectTypee("民用产业");
                 } else {
@@ -231,6 +230,16 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
                         obj.setDeptName(sysDept.getName());
                     }
                 }
+
+
+                //
+                BudgetProjectt budget = budgetMap.get(taskCode);
+                if (budget != null) {
+                    obj.setProjectType(budget.getProjectType());
+                    obj.setProjectId(budget.getProjectId());
+                    obj.setBudgetId(budget.getId());
+                }
+
                 resultList.add(obj);
             }
             //先删除，后插入

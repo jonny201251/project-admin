@@ -56,6 +56,8 @@ public class ProjectProtect implements Serializable {
 
     private String inName;
 
+    private String code;
+
     private String displayName;
 
     private String loginName;
