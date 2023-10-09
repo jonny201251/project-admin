@@ -335,7 +335,7 @@ public class ButtonHandleBean {
             Integer version = processInst.getBusinessVersion();
             if (ObjectUtil.isNotEmpty(version) && version > 0) {
                 //回退到上一个版本
-                ProcessInst before = processInstService.getOne(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getPath, processInst.getPath()).eq(ProcessInst::getProcessDesignId, processInst.getProcessDesignId()).eq(ProcessInst::getBusinessId, processInst.getBusinessBeforeId()));
+                ProcessInst before = processInstService.getOne(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getPath, processInst.getPath()).eq(ProcessInst::getBusinessId, processInst.getBusinessBeforeId()));
                 before.setBusinessHaveDisplay("是");
                 processInstService.updateById(before);
             }

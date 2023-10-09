@@ -11,6 +11,7 @@ import com.haiying.project.common.utils.ExcelListener;
 import com.haiying.project.model.entity.*;
 import com.haiying.project.model.excel.*;
 import com.haiying.project.service.*;
+import org.activiti.engine.task.Task;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,6 +57,14 @@ public class InitDataController {
 
     @Autowired
     WorkFlowBean workFlowBean;
+
+    //重新设置候选人
+    @GetMapping("d3")
+    public boolean d3(String actProcessInstanceId, String oldNames, String newNames) {
+        Task task = workFlowBean.getRunTaskList(actProcessInstanceId).get(0);
+        workFlowBean.setCandidates(task,oldNames,newNames);
+        return true;
+    }
 
     //60276
     @GetMapping("d")

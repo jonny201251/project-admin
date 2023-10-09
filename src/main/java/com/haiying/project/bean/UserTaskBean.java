@@ -195,10 +195,21 @@ public class UserTaskBean {
                 String[] tmp = str.split(",");
                 loginNameSet.addAll(Arrays.asList(tmp));
             } else if (path.equals("budgetProjecttPath") || path.equals("bigBudgetProjecttPath")) {
-                //一般项目预算
+                //项目预算
                 BudgetProjectt budgetProjectt = budgetProjecttService.getById(businessId);
-                String userNamee = budgetProjectt.getUserNamee();
-                loginNameSet.add(userNamee);
+                String taskName = processDesignTask.getTaskName();
+                if ("财务部".equals(taskName)) {
+                    String userNamee = budgetProjectt.getUserNamee();
+                    loginNameSet.add(userNamee);
+                } else {
+                    String deptName = budgetProjectt.getDeptName();
+                    if (deptName.equals("机电系统集成事业部") || deptName.equals("市场部") || deptName.equals("海南事业部")) {
+                        loginNameSet.add("李海燕");
+                    } else {
+                        loginNameSet.add("乔丹月");
+                    }
+                    loginNameSet.add("于欣坤");
+                }
             } else if (path.equals("price1Path")) {
                 Price1 price1 = price1Service.getById(businessId);
                 String userNamee = price1.getUserNamee();

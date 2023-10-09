@@ -98,6 +98,19 @@ public class WorkFlowBean {
         return taskService.createTaskQuery().processInstanceId(actProcessInstanceId).active().list();
     }
 
+    //重新设置候选人
+    public void setCandidates(Task task, String oldNames, String newNames) {
+        String[] arr1 = oldNames.split(",");
+        for (String name : arr1) {
+            taskService.deleteCandidateUser(task.getId(), name);
+        }
+        String[] arr2 = newNames.split(",");
+        for (String name : arr2) {
+            taskService.addCandidateUser(task.getId(), name);
+        }
+
+    }
+
     public Task getMyRunTask(String actProcessInstanceId) {
         SysUser user = (SysUser) httpSession.getAttribute("user");
         List<Task> list = taskService.createTaskQuery().processInstanceId(actProcessInstanceId).taskCandidateOrAssigned(user.getLoginName()).active().list();
@@ -181,10 +194,10 @@ public class WorkFlowBean {
 //                    displayList.add(processInstNode.getTaskName() + "[" + processInstNode.getDisplayName() + "]");
 //                    loginList.add(processInstNode.getLoginName());
 //                } else {
-                    //获取处理人
-                    Set<String> loginNameSet = userTaskBean.getLoginNameList(processDesignId, task.getTaskDefinitionKey(), actProcessInstanceId);
-                    displayList.add(task.getName() + "[" + String.join(",", loginNameSet) + "]");
-                    loginList.add(String.join(",", loginNameSet));
+                //获取处理人
+                Set<String> loginNameSet = userTaskBean.getLoginNameList(processDesignId, task.getTaskDefinitionKey(), actProcessInstanceId);
+                displayList.add(task.getName() + "[" + String.join(",", loginNameSet) + "]");
+                loginList.add(String.join(",", loginNameSet));
 //                }
             }
             resultMap.put("displayProcessStep", String.join(",", displayList));
