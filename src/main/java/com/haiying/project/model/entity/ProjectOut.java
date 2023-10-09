@@ -116,16 +116,13 @@ public class ProjectOut implements Serializable {
 
     private String deptName;
 
-
     private Integer processInstId;
     @TableField(exist = false)
     private ProcessInst processInst;
-
     //财务部
     @TableField(exist = false)
     private List<String> userNameeList;
     private String userNamee;
-
 
     private String code;
 }
