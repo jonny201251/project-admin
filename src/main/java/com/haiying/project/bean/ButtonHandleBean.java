@@ -130,7 +130,7 @@ public class ButtonHandleBean {
         //
         ProcessInst processInst = new ProcessInst();
         processInst.setProcessDesignId(processDesign.getId());
-        if (path.equals("budgetProjecttPath")) {
+        if (path.contains("udgetProjecttPath")) {
             processInst.setProcessName(processDesign.getName());
         } else {
             processInst.setProcessName(processDesign.getName() + "-变更");
