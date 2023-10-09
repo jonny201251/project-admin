@@ -47,8 +47,6 @@ public class OtherPower implements Serializable {
 
     private String deptName;
 
-    @TableField(exist = false)
-    private List<String> displayNameeTmp;
     /**
      * 被授权人
      */

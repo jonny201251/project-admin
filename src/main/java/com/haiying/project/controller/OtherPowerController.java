@@ -94,7 +94,6 @@ public class OtherPowerController {
     @GetMapping("get")
     public OtherPower get(Integer id) {
         OtherPower otherPower = otherPowerService.getById(id);
-        otherPower.setDisplayNameeTmp(Arrays.asList(otherPower.getDisplayNamee().split(",")));
         otherPower.setTimeLimitTmp(Arrays.asList(otherPower.getTimeLimit().split("至")));
         List<FileVO> fileList = new ArrayList<>();
         List<FormFile> formFileList = formFileService.list(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "OtherPower").eq(FormFile::getBusinessId, id));
