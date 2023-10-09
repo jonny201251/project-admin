@@ -5,6 +5,8 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.haiying.project.bean.PageBean;
+import com.haiying.project.common.result.ResponseResult;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.model.entity.ProcessInst;
 import com.haiying.project.model.entity.ProjectOut;
@@ -20,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * <p>
@@ -39,6 +43,8 @@ public class ProjectOutController {
     HttpSession httpSession;
     @Autowired
     ProcessInstService processInstService;
+    @Autowired
+    PageBean pageBean;
 
     @PostMapping("list")
     public IPage<ProjectOut> list(@RequestBody Map<String, Object> paramMap) {
@@ -97,6 +103,53 @@ public class ProjectOutController {
         return page;
     }
 
+
+    @PostMapping("list2")
+    public ResponseResult list2(@RequestBody Map<String, Object> paramMap) {
+        ResponseResult responseResult = ResponseResult.success();
+        Object haveContract = paramMap.get("haveContract");
+        Object taskCode = paramMap.get("taskCode");
+        Object contractCode = paramMap.get("contractCode");
+        Object costType = paramMap.get("costType");
+        Object costRate = paramMap.get("costRate");
+        LambdaQueryWrapper<ProjectOut> wrapper = new LambdaQueryWrapper<ProjectOut>().eq(ProjectOut::getHaveContract, haveContract).eq(ProjectOut::getTaskCode, taskCode);
+        if ("有".equals(haveContract)) {
+            if (ObjectUtil.isNotEmpty(contractCode)) {
+                wrapper.eq(ProjectOut::getContractCode, contractCode);
+            }
+            if (ObjectUtil.isNotEmpty(costType)) {
+                wrapper.eq(ProjectOut::getCostType, costType);
+            }
+            if (ObjectUtil.isNotEmpty(costRate)) {
+                wrapper.eq(ProjectOut::getCostRate, costRate);
+            }
+        } else {
+            if (ObjectUtil.isNotEmpty(costType)) {
+                wrapper.eq(ProjectOut::getCostType, costType);
+            }
+        }
+        List<ProjectOut> list = projectOutService.list(wrapper);
+        if (ObjectUtil.isNotEmpty(list)) {
+            ProjectOut tmp = new ProjectOut();
+            Double money1 = 0.0, money2 = 0.0;
+            int count = 1;
+            for (ProjectOut out : list) {
+                out.setId(count++);
+                money1 += ofNullable(out.getMoney1()).orElse(0.0);
+                money2 += ofNullable(out.getMoney2()).orElse(0.0);
+            }
+            if (money1 > 0) {
+                tmp.setMoney1(money1);
+            }
+            if (money2 > 0) {
+                tmp.setMoney2(money2);
+            }
+            list.add(tmp);
+            responseResult = pageBean.get(1, 100, list.size(), list);
+        }
+
+        return responseResult;
+    }
 
     @GetMapping("get")
     public ProjectOut get(Integer id) {

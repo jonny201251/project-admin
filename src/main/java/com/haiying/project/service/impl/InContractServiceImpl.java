@@ -239,6 +239,7 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
                     obj.setProjectId(budget.getProjectId());
                     obj.setBudgetId(budget.getId());
                 }
+                obj.setId(null);
 
                 resultList.add(obj);
             }

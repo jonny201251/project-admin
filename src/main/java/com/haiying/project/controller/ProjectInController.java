@@ -5,7 +5,9 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.haiying.project.bean.PageBean;
 import com.haiying.project.common.exception.PageTipException;
+import com.haiying.project.common.result.ResponseResult;
 import com.haiying.project.common.result.Wrapper;
 import com.haiying.project.model.entity.ProjectIn;
 import com.haiying.project.model.entity.SysUser;
@@ -18,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * <p>
@@ -35,6 +39,8 @@ public class ProjectInController {
     HttpSession httpSession;
     @Autowired
     ProjectInService projectInService;
+    @Autowired
+    PageBean pageBean;
 
     @PostMapping("list")
     public IPage<ProjectIn> list(@RequestBody Map<String, Object> paramMap) {
@@ -76,6 +82,35 @@ public class ProjectInController {
             wrapper.eq(ProjectIn::getDisplayName, user.getDisplayName());
         }
         return projectInService.page(new Page<>(current, pageSize), wrapper);
+    }
+
+    @PostMapping("list2")
+    public ResponseResult list2(@RequestBody Map<String, Object> paramMap) {
+        ResponseResult responseResult = ResponseResult.success();
+        Object taskCode = paramMap.get("taskCode");
+        Object contractCode = paramMap.get("contractCode");
+        LambdaQueryWrapper<ProjectIn> wrapper = new LambdaQueryWrapper<ProjectIn>().eq(ProjectIn::getTaskCode, taskCode).eq(ProjectIn::getContractCode,contractCode);
+        List<ProjectIn> list = projectInService.list(wrapper);
+        if (ObjectUtil.isNotEmpty(list)) {
+            ProjectIn tmp = new ProjectIn();
+            Double money1 = 0.0, money2 = 0.0;
+            int count = 1;
+            for (ProjectIn in : list) {
+                in.setId(count++);
+                money1 += ofNullable(in.getMoney1()).orElse(0.0);
+                money2 += ofNullable(in.getMoney2()).orElse(0.0);
+            }
+            if (money1 > 0) {
+                tmp.setMoney1(money1);
+            }
+            if (money2 > 0) {
+                tmp.setMoney2(money2);
+            }
+            list.add(tmp);
+            responseResult = pageBean.get(1, 100, list.size(), list);
+        }
+
+        return responseResult;
     }
 
     @PostMapping("add")

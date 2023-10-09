@@ -103,5 +103,7 @@ public class ProjectIn implements Serializable {
 
     private String deptName;
 
+    private String code;
+
 
 }
