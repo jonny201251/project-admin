@@ -109,5 +109,8 @@ public class OtherPower implements Serializable {
     @TableField(exist = false)
     private List<FileVO> fileList;
 
+    //归口管理部门
+    @TableField(exist = false)
+    private List<String> userNameeList;
     private String userNamee;
 }

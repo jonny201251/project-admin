@@ -60,6 +60,7 @@ public class OtherPowerServiceImpl extends ServiceImpl<OtherPowerMapper, OtherPo
     private void add(OtherPower formValue) {
         formValue.setHaveDisplay("是");
         formValue.setVersion(0);
+        formValue.setUserNamee(String.join(",", formValue.getUserNameeList()));
         formValue.setTimeLimit(String.join("至", formValue.getTimeLimitTmp()));
 
         formValue.setYear(Integer.parseInt(DateUtil.format(DateUtil.date(), "yyyy")));
@@ -82,6 +83,7 @@ public class OtherPowerServiceImpl extends ServiceImpl<OtherPowerMapper, OtherPo
     }
 
     private void edit(OtherPower formValue) {
+        formValue.setUserNamee(String.join(",", formValue.getUserNameeList()));
         formValue.setTimeLimit(String.join("至", formValue.getTimeLimitTmp()));
         this.updateById(formValue);
         formFileService.remove(new LambdaQueryWrapper<FormFile>().eq(FormFile::getType, "OtherPower").eq(FormFile::getBusinessId, formValue.getId()));

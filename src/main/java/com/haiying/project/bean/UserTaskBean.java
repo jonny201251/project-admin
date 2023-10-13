@@ -158,7 +158,8 @@ public class UserTaskBean {
                     }
                 } else {
                     String userNamee = otherPower.getUserNamee();
-                    loginNameSet.add(userNamee);
+                    String[] tmp = userNamee.split(",");
+                    loginNameSet.addAll(Arrays.asList(tmp));
                 }
             } else if (path.equals("smallProjectPath")) {
                 loginNameSet.add("于欣坤");
