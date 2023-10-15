@@ -1,7 +1,6 @@
 package com.haiying.project.bean;
 
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.ReflectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.haiying.project.common.exception.PageTipException;
 import com.haiying.project.common.utils.SpringUtil;
@@ -130,16 +129,6 @@ public class UserTaskBean {
                 String str = providerControl.getUserNamee();
                 String[] tmp = str.split(",");
                 loginNameSet.addAll(Arrays.asList(tmp));
-            } else if (path.equals("outContractPath")) {
-                //付款合同
-                OutContract outContract = outContractService.getById(businessId);
-                Object fieldValue = ReflectUtil.getFieldValue(outContract, processDesignTask.getJavaVarName());
-                String deptName = (String) fieldValue;
-                if (deptName.equals("机电系统集成事业部") || deptName.equals("市场部") || deptName.equals("海南事业部")) {
-                    loginNameSet.add("李海燕");
-                } else {
-                    loginNameSet.add("乔丹月");
-                }
             } else if (path.equals("otherPowerPath")) {
                 //一事一授权
                 OtherPower otherPower = otherPowerService.getById(businessId);
@@ -195,19 +184,21 @@ public class UserTaskBean {
                 String str = projectProtect.getUserNamee();
                 String[] tmp = str.split(",");
                 loginNameSet.addAll(Arrays.asList(tmp));
-            } else if (path.equals("budgetProjecttPath") || path.equals("bigBudgetProjecttPath")) {
+            } else if (path.contains("udgetProjecttPath")) {
                 //项目预算
                 BudgetProjectt budgetProjectt = budgetProjecttService.getById(businessId);
                 String taskName = processDesignTask.getTaskName();
                 if ("财务部".equals(taskName)) {
                     String userNamee = budgetProjectt.getUserNamee();
                     loginNameSet.add(userNamee);
-                } else {
+                } else if ("综合计划部".equals(taskName)) {
                     String deptName = budgetProjectt.getDeptName();
-                    if (deptName.equals("机电系统集成事业部") || deptName.equals("市场部") || deptName.equals("海南事业部")) {
-                        loginNameSet.add("李海燕");
-                    } else {
-                        loginNameSet.add("乔丹月");
+                    if (budgetProjectt.getVersion() > 0) {
+                        if (deptName.equals("机电系统集成事业部") || deptName.equals("市场部") || deptName.equals("海南事业部")) {
+                            loginNameSet.add("李海燕");
+                        } else {
+                            loginNameSet.add("乔丹月");
+                        }
                     }
                     loginNameSet.add("于欣坤");
                 }

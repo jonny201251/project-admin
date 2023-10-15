@@ -100,15 +100,18 @@ public class WorkFlowBean {
 
     //重新设置候选人
     public void setCandidates(Task task, String oldNames, String newNames) {
-        String[] arr1 = oldNames.split(",");
-        for (String name : arr1) {
-            taskService.deleteCandidateUser(task.getId(), name);
+        if (ObjectUtil.isNotEmpty(oldNames)) {
+            String[] arr1 = oldNames.split(",");
+            for (String name : arr1) {
+                taskService.deleteCandidateUser(task.getId(), name);
+            }
         }
-        String[] arr2 = newNames.split(",");
-        for (String name : arr2) {
-            taskService.addCandidateUser(task.getId(), name);
+        if (ObjectUtil.isNotEmpty(newNames)) {
+            String[] arr2 = newNames.split(",");
+            for (String name : arr2) {
+                taskService.addCandidateUser(task.getId(), name);
+            }
         }
-
     }
 
     public Task getMyRunTask(String actProcessInstanceId) {
