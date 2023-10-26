@@ -120,6 +120,7 @@ public class ProjectCodeController {
         if (ObjectUtil.isNotEmpty(resultList)) {
             responseResult.setData(pageBean.get(1, 100, resultList.size(), resultList));
         } else {
+            page.setProjectName(page.getProjectName().replaceAll("\\s+", ""));
             projectCodeService.add(page);
         }
 
@@ -129,6 +130,7 @@ public class ProjectCodeController {
     @Wrapper
     @PostMapping("edit")
     public boolean edit(@RequestBody ProjectCode projectCode) {
+        projectCode.setProjectName(projectCode.getProjectName().replaceAll("\\s+", ""));
         return projectCodeService.edit(projectCode);
     }
 

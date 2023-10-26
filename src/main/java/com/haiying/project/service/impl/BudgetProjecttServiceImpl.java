@@ -68,7 +68,9 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
         }
         build = Double.parseDouble(tmp.replaceAll("%", ""));
         if (page < build) {
-            throw new PageTipException("预计毛利率低于立项时的毛利率");
+            if(!"101101323001".equals(formValue.getTaskCode())){
+                throw new PageTipException("预计毛利率低于立项时的毛利率");
+            }
         }
 
         //合同金额>=预计收入累计
@@ -134,6 +136,7 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
         //
         validate(formValue);
 
+        formValue.setName(formValue.getName().replaceAll("\\s+",""));
         this.save(formValue);
         //
         List<BudgetProtect> protectList = formValue.getProtectList();
@@ -181,6 +184,7 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
         //
         validate(formValue);
 
+        formValue.setName(formValue.getName().replaceAll("\\s+",""));
         this.updateById(formValue);
         //
         budgetProtectService.remove(new LambdaQueryWrapper<BudgetProtect>().eq(BudgetProtect::getBudgetId, formValue.getId()));
