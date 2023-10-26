@@ -40,7 +40,7 @@ public class BudgetProjectServiceImpl extends ServiceImpl<BudgetProjectMapper, B
         //判断是否重复
         List<BudgetProject> ll = this.list(new LambdaQueryWrapper<BudgetProject>().eq(BudgetProject::getHaveDisplay, "是").eq(BudgetProject::getTaskCode, obj.getTaskCode()));
         if (ObjectUtil.isNotEmpty(ll)) {
-            throw new PageTipException("任务号   已存在");
+            throw new PageTipException("备案号   已存在");
         }
         //页面的毛利率>立项时的毛利率
         double page = Double.parseDouble(obj.getProjectRate().replaceAll("%", ""));

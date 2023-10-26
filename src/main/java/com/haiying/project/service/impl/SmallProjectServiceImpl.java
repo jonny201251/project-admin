@@ -51,7 +51,7 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
         //判断是否重复添加
         List<SmallProject> ll = this.list(new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getTaskCode, formValue.getTaskCode()));
         if (ObjectUtil.isNotEmpty(ll)) {
-            throw new PageTipException("任务号   已存在");
+            throw new PageTipException("备案号   已存在");
         }
 
         formValue.setHaveDisplay("是");

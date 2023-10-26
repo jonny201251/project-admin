@@ -89,7 +89,7 @@ public class ProjectInController {
         ResponseResult responseResult = ResponseResult.success();
         Object taskCode = paramMap.get("taskCode");
         Object contractCode = paramMap.get("contractCode");
-        LambdaQueryWrapper<ProjectIn> wrapper = new LambdaQueryWrapper<ProjectIn>().eq(ProjectIn::getTaskCode, taskCode).eq(ProjectIn::getContractCode,contractCode);
+        LambdaQueryWrapper<ProjectIn> wrapper = new LambdaQueryWrapper<ProjectIn>().eq(ProjectIn::getTaskCode, taskCode).eq(ProjectIn::getContractCode, contractCode);
         List<ProjectIn> list = projectInService.list(wrapper);
         if (ObjectUtil.isNotEmpty(list)) {
             ProjectIn tmp = new ProjectIn();
@@ -137,7 +137,15 @@ public class ProjectInController {
         if (ObjectUtil.isAllNotEmpty(projectIn.getMoney1(), projectIn.getMoney2())) {
             throw new PageTipException("只能有一个开票金额或者收款金额");
         }
+
+        if (ObjectUtil.isEmpty(projectIn.getMoney1())) {
+            projectIn.setMoney1(0.0);
+        } else {
+            projectIn.setMoney2(0.0);
+        }
+
         return projectInService.updateById(projectIn);
+
     }
 
     @GetMapping("delete")

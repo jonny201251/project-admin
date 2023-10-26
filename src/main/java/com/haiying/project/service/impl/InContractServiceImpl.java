@@ -92,7 +92,11 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
         List<BudgetProjectt> budgetList = budgetProjecttService.list();
         Map<String, BudgetProjectt> budgetMap = new HashMap<>();
         for (BudgetProjectt budget : budgetList) {
-            budgetMap.put(budget.getTaskCode().split("-")[0], budget);
+            if ("机电系统集成事业部".equals(budget.getDeptName())) {
+                budgetMap.put(budget.getTaskCode(), budget);
+            } else {
+                budgetMap.put(budget.getTaskCode().split("-")[0], budget);
+            }
         }
         //
         List<InContract> inList = this.list();
@@ -238,6 +242,7 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
                     obj.setProjectType(budget.getProjectType());
                     obj.setProjectId(budget.getProjectId());
                     obj.setBudgetId(budget.getId());
+                    obj.setName(budget.getName());
                 }
                 obj.setId(null);
 
@@ -301,7 +306,7 @@ public class InContractServiceImpl extends ServiceImpl<InContractMapper, InContr
         //判断是否重复添加
         List<InContract> ll = this.list(new LambdaQueryWrapper<InContract>().eq(InContract::getTaskCode, inContract.getTaskCode()));
         if (ObjectUtil.isNotEmpty(ll)) {
-            throw new PageTipException("任务号   已存在");
+            throw new PageTipException("备案号   已存在");
         }
 
         if (ObjectUtil.isNotEmpty(inContract.getRuntimeTmp())) {

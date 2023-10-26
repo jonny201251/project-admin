@@ -36,7 +36,7 @@ public class SmallBudgetOutServiceImpl extends ServiceImpl<SmallBudgetOutMapper,
         }
         List<SmallBudgetOut> ll = this.list(wrapper);
         if (ObjectUtil.isNotEmpty(ll)) {
-            throw new PageTipException("任务号、成本类型和税率   已存在");
+            throw new PageTipException("备案号、成本类型和税率   已存在");
         }
 
         double count = 1, totalCost = 0.0;

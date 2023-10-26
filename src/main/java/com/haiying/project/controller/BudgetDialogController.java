@@ -51,6 +51,7 @@ public class BudgetDialogController {
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");
         Object taskCode = paramMap.get("taskCode");
+        Object wbs = paramMap.get("wbs");
 
         LambdaQueryWrapper<BudgetProjectt> wrapper = new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getHaveDisplay, "是");
         if (!user.getDeptName().equals("综合计划部")) {
@@ -61,6 +62,9 @@ public class BudgetDialogController {
         }
         if (ObjectUtil.isNotEmpty(taskCode)) {
             wrapper.like(BudgetProjectt::getTaskCode, taskCode);
+        }
+        if (ObjectUtil.isNotEmpty(wbs)) {
+            wrapper.like(BudgetProjectt::getWbs, wbs);
         }
         List<BudgetProjectt> list = budgetProjecttService.list(wrapper);
         if (ObjectUtil.isNotEmpty(list)) {
@@ -83,7 +87,7 @@ public class BudgetDialogController {
 
 
     //付款合同-弹窗
-    //项目名称，任务号，WBS编号，成本类型
+    //项目名称，备案号，WBS编号，成本类型
     @PostMapping("listCost")
     public ResponseResult listCost(@RequestBody Map<String, Object> paramMap) {
         ResponseResult responseResult = ResponseResult.success();
@@ -93,8 +97,9 @@ public class BudgetDialogController {
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");
         Object taskCode = paramMap.get("taskCode");
+        Object wbs = paramMap.get("wbs");
 
-        LambdaQueryWrapper<InContract> wrapper = new LambdaQueryWrapper<InContract>();
+        LambdaQueryWrapper<InContract> wrapper = new LambdaQueryWrapper<>();
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq(InContract::getDeptId, user.getDeptId());
         }
@@ -104,10 +109,21 @@ public class BudgetDialogController {
         if (ObjectUtil.isNotEmpty(taskCode)) {
             wrapper.like(InContract::getTaskCode, taskCode);
         }
+        if (ObjectUtil.isNotEmpty(wbs)) {
+            wrapper.like(InContract::getWbs, wbs);
+        }
         List<InContract> list = inContractService.list(wrapper);
         if (ObjectUtil.isNotEmpty(list)) {
             List<String> taskCodeList = new ArrayList<>();
-            list.forEach(item -> taskCodeList.add(item.getTaskCode()));
+            for (InContract item : list) {
+                if (ObjectUtil.isNotEmpty(item.getTaskCode())) {
+                    if ("机电系统集成事业部".equals(item.getDeptName())) {
+                        taskCodeList.add(item.getTaskCode());
+                    } else {
+                        taskCodeList.add(item.getTaskCode().split("-")[0]);
+                    }
+                }
+            }
             //
             LambdaQueryWrapper<BudgetProjectt> wrapper1 = new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getHaveDisplay, "是").in(BudgetProjectt::getTaskCode, taskCodeList);
             List<BudgetProjectt> list1 = budgetProjecttService.list(wrapper1);

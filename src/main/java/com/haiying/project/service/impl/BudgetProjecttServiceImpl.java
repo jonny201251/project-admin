@@ -94,11 +94,11 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
         formValue.setInvoiceRate(Strings.join(rateList, '，'));
     }
 
-    //任务号
+    //备案号
     public void taskCode(BudgetProjectt formValue) {
         ProjectCode code = projectCodeService.getOne(new LambdaQueryWrapper<ProjectCode>().eq(ProjectCode::getTaskCode, formValue.getTaskCode()));
         if (code == null) {
-            throw new PageTipException("项目备案里没有任务号，联系管理员(张强)");
+            throw new PageTipException("项目备案里没有备案号，联系管理员(张强)");
         }
         if (code.getHaveMoreBudget().equals("是")) {
             LambdaQueryWrapper<BudgetProjectt> wrapper = new LambdaQueryWrapper<BudgetProjectt>().likeRight(BudgetProjectt::getTaskCode, formValue.getTaskCode()).orderByDesc(BudgetProjectt::getId);
@@ -127,7 +127,7 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
         //判断是否重复添加
         List<BudgetProjectt> ll = this.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getHaveDisplay, "是").eq(BudgetProjectt::getTaskCode, formValue.getTaskCode()));
         if (ObjectUtil.isNotEmpty(ll)) {
-            throw new PageTipException("任务号   已存在");
+            throw new PageTipException("备案号   已存在");
         }
         formValue.setHaveDisplay("是");
         formValue.setVersion(0);

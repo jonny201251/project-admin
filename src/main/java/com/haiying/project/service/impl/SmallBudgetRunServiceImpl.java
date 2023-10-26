@@ -45,7 +45,7 @@ public class SmallBudgetRunServiceImpl extends ServiceImpl<SmallBudgetRunMapper,
         //判断是否重复添加
         List<SmallBudgetRun> ll = this.list(new LambdaQueryWrapper<SmallBudgetRun>().eq(SmallBudgetRun::getHaveDisplay, "是").eq(SmallBudgetRun::getTaskCode, formValue.getTaskCode()));
         if (ObjectUtil.isNotEmpty(ll)) {
-            throw new PageTipException("任务号   已存在");
+            throw new PageTipException("备案号   已存在");
         }
 
         formValue.setHaveDisplay("是");

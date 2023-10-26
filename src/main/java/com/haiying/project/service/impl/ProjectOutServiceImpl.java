@@ -107,6 +107,11 @@ public class ProjectOutServiceImpl extends ServiceImpl<ProjectOutMapper, Project
             formValue.setOutStyle(null);
             formValue.setArriveDate(null);
         }
+        if (ObjectUtil.isEmpty(formValue.getMoney1())) {
+            formValue.setMoney1(0.0);
+        } else {
+            formValue.setMoney2(0.0);
+        }
         this.updateById(formValue);
     }
 
