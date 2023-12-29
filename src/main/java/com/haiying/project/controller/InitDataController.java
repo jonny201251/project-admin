@@ -179,7 +179,7 @@ public class InitDataController {
         }
 
 
-        InputStream inputStream = new FileInputStream("d:/a/供方2.xls");
+        InputStream inputStream = new FileInputStream("d:/a/供方3.xls");
         //
         ExcelReader excelReader = EasyExcel.read(inputStream).build();
         //
@@ -215,7 +215,7 @@ public class InitDataController {
                 if (tmp.getDeptName().equals("资产与信息化")) {
                     tmp.setDeptName("资产与信息化部");
                 }
-                if (tmp.getDeptName().equals("机电系统集成") || tmp.getDeptName().equals("第八事业部")) {
+                if (tmp.getDeptName().equals("机电系统集成") || tmp.getDeptName().equals("第八事业部") || tmp.getDeptName().equals("机电事业部")) {
                     tmp.setDeptName("机电系统集成事业部");
                 }
                 if (tmp.getDeptName().equals("天津（第三）")) {
@@ -223,6 +223,12 @@ public class InitDataController {
                 }
                 if (tmp.getDeptName().equals("国际工程")) {
                     tmp.setDeptName("国际工程事业部");
+                }
+                if (tmp.getDeptName().equals("动力工程")) {
+                    tmp.setDeptName("动力工程事业部");
+                }
+                if (tmp.getDeptName().equals("节能环保")) {
+                    tmp.setDeptName("节能环保事业部");
                 }
                 if (tmp.getDeptName().equals("军民融合") || tmp.getDeptName().equals("JM融合")) {
                     tmp.setDeptName("军民融合部");
@@ -245,6 +251,7 @@ public class InitDataController {
             }
         }
 
+
         List<Provider> list1 = new ArrayList<>();
         List<Provider> list2 = new ArrayList<>();
 
@@ -258,6 +265,7 @@ public class InitDataController {
                 System.out.println(provider.getName());
             }
         }
+
 
         for (ProviderExcel tmp : list) {
             Provider p1 = new Provider();
@@ -306,7 +314,7 @@ public class InitDataController {
         System.out.println(list2.size());
 
         providerService.saveBatch(list1);
-        providerService.updateBatchById(list2);
+//        providerService.updateBatchById(list2);
 
         return true;
     }

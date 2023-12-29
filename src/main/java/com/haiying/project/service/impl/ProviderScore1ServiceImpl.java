@@ -197,7 +197,7 @@ public class ProviderScore1ServiceImpl extends ServiceImpl<ProviderScore1Mapper,
                 providerService.updateById(provider);
                 //
                 if ("重大项目".equals(provider.getType())) {
-                    ProviderQuery providerQuery = providerQueryService.getOne(new LambdaQueryWrapper<ProviderQuery>().eq(ProviderQuery::getProviderId,formValue.getProviderId()));
+                    ProviderQuery providerQuery = providerQueryService.getOne(new LambdaQueryWrapper<ProviderQuery>().eq(ProviderQuery::getHaveDisplay,"是").eq(ProviderQuery::getProviderId,formValue.getProviderId()));
                     providerQuery.setResult(formValue.getResult());
                     providerQuery.setScore(formValue.getEndScore());
                     providerQueryService.updateById(providerQuery);

@@ -35,5 +35,7 @@ public class Test {
         System.out.println(!"非密".equals("内部"));
 
         System.out.println("a   aaa    aa    aa".replaceAll("\\s+",""));
+
+        System.out.println("2023".substring(2));
     }
 }

@@ -38,12 +38,12 @@ public class SysUser implements Serializable {
 
     private String remark;
 
-    /**
-     * 部门id
-     */
+    //一级部门
     private Integer deptId;
-
     private String deptName;
+    //二级部门
+    private Integer deptId2;
+    private String deptName2;
 
     private String status;
     //职务，如部门领导

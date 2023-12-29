@@ -61,13 +61,6 @@ public class UserTaskBean {
     public Set<String> getLoginNameList(ProcessDesignTask processDesignTask, Integer businessId, String actProcessInstanceId) {
         Set<String> loginNameSet = new TreeSet<>();
 
-        Integer processDesignId = processDesignTask.getProcessDesignId();
-        Set<Integer> processDesignIdSet = new HashSet<>();
-        processDesignIdSet.add(69);
-        processDesignIdSet.add(70);
-        processDesignIdSet.add(47);
-        processDesignIdSet.add(48);
-
         String type = processDesignTask.getType();
         if (type.equals("角色") || type.equals("用户")) {
             String[] idArr = processDesignTask.getTypeIds().split(",");
@@ -86,12 +79,16 @@ public class UserTaskBean {
                     if (sysRole.getName().equals("当前用户")) {
                         loginNameSet.add(loginUser.getLoginName());
                     } else if (sysRole.getName().equals("部门领导")) {
-                        List<SysUser> leaderList = sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getDeptId, loginUser.getDeptId()).eq(SysUser::getPosition, "部门正职领导"));
+                        LambdaQueryWrapper<SysUser> l = new LambdaQueryWrapper<SysUser>().eq(SysUser::getPosition, "部门正职领导");
+                        if (loginUser.getDeptName().equals("动力运营事业部")) {
+                            l.eq(SysUser::getDeptId2, loginUser.getDeptId2());
+                        }
+                        List<SysUser> leaderList = sysUserService.list(l);
                         if (ObjectUtil.isNotEmpty(leaderList)) {
                             leaderList.forEach(user -> loginNameSet.add(user.getLoginName()));
                         }
-                        //供电中心
-                        if (loginUser.getDeptName().equals("供电中心") && processDesignIdSet.contains(processDesignId)) {
+                        //
+                        if (loginUser.getDeptName().equals("动力运营事业部")) {
                             loginNameSet.add("黄少芳");
                         }
                     } else if (sysRole.getName().equals("公司主管领导")) {
@@ -195,7 +192,7 @@ public class UserTaskBean {
                     String deptName = budgetProjectt.getDeptName();
                     if (budgetProjectt.getVersion() > 0) {
                         if (deptName.equals("机电系统集成事业部") || deptName.equals("市场部") || deptName.equals("海南事业部")) {
-                            loginNameSet.add("李海燕");
+                            loginNameSet.add("王婧瑞");
                         } else {
                             loginNameSet.add("乔丹月");
                         }

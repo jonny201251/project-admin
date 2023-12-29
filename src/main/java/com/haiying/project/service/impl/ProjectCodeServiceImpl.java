@@ -36,8 +36,13 @@ public class ProjectCodeServiceImpl extends ServiceImpl<ProjectCodeMapper, Proje
         String year = DateUtil.format(DateUtil.date(), "yyyy");
         String simpleYear = DateUtil.format(DateUtil.date(), "yy");
 
-        ProjectCodeCount projectCodeCount = projectCodeCountService.getOne(new LambdaQueryWrapper<ProjectCodeCount>().eq(ProjectCodeCount::getYear, year).eq(ProjectCodeCount::getDeptId, user.getDeptId()));
-
+        LambdaQueryWrapper<ProjectCodeCount> l = new LambdaQueryWrapper<ProjectCodeCount>().eq(ProjectCodeCount::getYear, year);
+        if (user.getDeptName().equals("动力运营事业部")) {
+            l.eq(ProjectCodeCount::getDeptId, user.getDeptId2());
+        } else {
+            l.eq(ProjectCodeCount::getDeptId, user.getDeptId());
+        }
+        ProjectCodeCount projectCodeCount = projectCodeCountService.getOne(l);
         projectCode.setDeptType(projectCodeCount.getDeptType());
         projectCode.setBusinessType(String.join(",", projectCode.getBusinessTypeTmp()));
         //任务号
@@ -69,7 +74,13 @@ public class ProjectCodeServiceImpl extends ServiceImpl<ProjectCodeMapper, Proje
         String year = DateUtil.format(DateUtil.date(), "yyyy");
         String simpleYear = DateUtil.format(DateUtil.date(), "yy");
 
-        ProjectCodeCount projectCodeCount = projectCodeCountService.getOne(new LambdaQueryWrapper<ProjectCodeCount>().eq(ProjectCodeCount::getYear, year).eq(ProjectCodeCount::getDeptId, user.getDeptId()));
+        LambdaQueryWrapper<ProjectCodeCount> l = new LambdaQueryWrapper<ProjectCodeCount>().eq(ProjectCodeCount::getYear, year);
+        if (user.getDeptName().equals("动力运营事业部")) {
+            l.eq(ProjectCodeCount::getDeptId, user.getDeptId2());
+        } else {
+            l.eq(ProjectCodeCount::getDeptId, user.getDeptId());
+        }
+        ProjectCodeCount projectCodeCount = projectCodeCountService.getOne(l);
 
         projectCode.setDeptType(projectCodeCount.getDeptType());
         projectCode.setBusinessType(String.join(",", projectCode.getBusinessTypeTmp()));

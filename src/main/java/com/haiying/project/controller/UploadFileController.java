@@ -7,14 +7,16 @@ import com.haiying.project.model.entity.SysUser;
 import com.haiying.project.model.vo.FileVO;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.URLEncoder;
 
 @RestController
 public class UploadFileController {
@@ -46,5 +48,28 @@ public class UploadFileController {
         fileVO.setStatus("done");
         fileVO.setUrl("/project/upload/" + user.getLoginName() + "/" + fileName);
         return fileVO;
+    }
+
+    //下载文件
+    @GetMapping("/upload/{loginName}/{fileName}")
+    public void downloadFile(@PathVariable String loginName, @PathVariable String fileName, HttpServletResponse response) throws IOException {
+        System.out.println(fileName);
+        SysUser user = (SysUser) httpSession.getAttribute("user");
+        if (user == null) {
+            throw new PageTipException("用户未登录");
+        }
+        File file = new File("D:/appFile/projectFile/upload/" + loginName + "/" + fileName);
+
+        response.setContentType("application/octet-stream");
+        response.setCharacterEncoding("utf-8");
+        response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+
+        try (InputStream inputStream = new FileInputStream(file); OutputStream outputStream = response.getOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        }
     }
 }
