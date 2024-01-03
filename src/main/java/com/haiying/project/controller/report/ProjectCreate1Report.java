@@ -181,9 +181,9 @@ public class ProjectCreate1Report {
 
                 vo.setDeptId(item.getDeptId());
                 vo.setDeptName(item.getDeptName());
-                vo.setName(vo.getName());
-                vo.setTaskCode(vo.getTaskCode());
-                vo.setProperty(vo.getProperty());
+                vo.setName(item.getName());
+                vo.setTaskCode(item.getTaskCode());
+                vo.setProperty(item.getProperty());
                 String str2 = item.getHaveBid();
                 vo.setBidStatus("是".equals(str2) ? "投标" : "直签");
                 vo.setEndDatetime(map3.get("smallProjectPath," + item.getId()));
@@ -200,8 +200,8 @@ public class ProjectCreate1Report {
 
                 vo.setDeptId(item.getDeptId());
                 vo.setDeptName(item.getDeptName());
-                vo.setName(vo.getName());
-                vo.setProperty(vo.getProperty());
+                vo.setName(item.getName());
+                vo.setProperty(item.getProperty());
                 vo.setBidStatus("投标");
                 vo.setEndDatetime(map3.get("bigProjectPath," + item.getId()));
 
@@ -222,6 +222,9 @@ public class ProjectCreate1Report {
                 ProjectCreate1VO vo1 = vo1Map.get(vo2.getDeptName());
                 if (vo1 == null) {
                     vo1 = new ProjectCreate1VO();
+                    vo1.setYear1(year1 + "");
+                    vo1.setYear2(year2 + "");
+                    vo1.setYear3(year3 + "");
                     vo1.setDeptName(vo2.getDeptName());
 
                     vo1Map.put(vo2.getDeptName(), vo1);

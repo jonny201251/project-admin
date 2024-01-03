@@ -138,6 +138,7 @@ public class BigProject implements Serializable {
     private String remark;
 
     private String projectType;
+    private String projectTypee;
 
     private String projectStatus;
 

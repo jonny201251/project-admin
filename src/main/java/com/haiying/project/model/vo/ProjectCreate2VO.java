@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class ProjectCreate2VO {
+    private String year;
     //申请部门
     private Integer deptId;
     private String deptName;

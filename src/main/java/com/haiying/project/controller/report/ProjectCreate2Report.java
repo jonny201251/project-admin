@@ -73,10 +73,10 @@ public class ProjectCreate2Report {
         }
 
         List<BigProjectTest> list5 = null;
-        LambdaQueryWrapper<BigProjectTest> wrapper5=new LambdaQueryWrapper<BigProjectTest>().eq(BigProjectTest::getDesc1, "垫资额度(万元)").eq(BigProjectTest::getType, "project");
-        if(ObjectUtil.isNotEmpty(idList2)){
+        LambdaQueryWrapper<BigProjectTest> wrapper5 = new LambdaQueryWrapper<BigProjectTest>().eq(BigProjectTest::getDesc1, "垫资额度(万元)").eq(BigProjectTest::getType, "project");
+        if (ObjectUtil.isNotEmpty(idList2)) {
             wrapper5.in(BigProjectTest::getProjectId, idList2);
-            list5=bigProjectTestService.list(wrapper5);
+            list5 = bigProjectTestService.list(wrapper5);
         }
 
 
@@ -94,19 +94,20 @@ public class ProjectCreate2Report {
             for (SmallProject item : list1) {
                 ProjectCreate2VO vo = new ProjectCreate2VO();
 
+                vo.setYear(year);
                 vo.setDeptName(item.getDeptName());
                 vo.setCreateDatetime(item.getCreateDatetime());
                 LocalDateTime endDatetime = map0.get("smallProjectPath," + item.getId());
                 vo.setEndDatetime(endDatetime);
                 vo.setProcessStatus(endDatetime == null ? "审批中" : "完成");
-                vo.setProjectType(vo.getProjectType());
-                vo.setProjectTypee(vo.getProjectTypee());
-                vo.setName(vo.getName());
-                vo.setTaskCode(vo.getTaskCode());
-                vo.setProperty(vo.getProperty());
-                vo.setProjectRate(vo.getProjectRate());
-                vo.setExpectMoney(vo.getExpectMoney());
-                vo.setExpectDate(vo.getExpectDate());
+                vo.setProjectType(item.getProjectType());
+                vo.setProjectTypee(item.getProjectTypee());
+                vo.setName(item.getName());
+                vo.setTaskCode(item.getTaskCode());
+                vo.setProperty(item.getProperty());
+                vo.setProjectRate(item.getProjectRate());
+                vo.setExpectMoney(item.getExpectMoney());
+                vo.setExpectDate(item.getExpectDate());
                 vo.setA1(map4.get("一般项目," + item.getId() + ",投标保证金/函"));
                 vo.setA2(map4.get("一般项目," + item.getId() + ",质量保证金/函"));
                 vo.setA3(map4.get("一般项目," + item.getId() + ",工资保证金/函"));
@@ -128,24 +129,30 @@ public class ProjectCreate2Report {
             for (BigProject item : list2) {
                 ProjectCreate2VO vo = new ProjectCreate2VO();
 
+                vo.setYear(year);
                 vo.setDeptName(item.getDeptName());
                 vo.setCreateDatetime(item.getCreateDatetime());
                 LocalDateTime endDatetime = map0.get("bigProjectPath," + item.getId());
                 vo.setEndDatetime(endDatetime);
                 vo.setProcessStatus(endDatetime == null ? "审批中" : "完成");
-                vo.setProjectType(vo.getProjectType());
-                vo.setProjectTypee(vo.getProjectTypee());
-                vo.setName(vo.getName());
-                vo.setProperty(vo.getProperty());
-                vo.setProjectRate(vo.getProjectRate());
-                vo.setExpectMoney(vo.getExpectMoney());
-//                vo.setExpectDate(vo.getExpectDate());
+                vo.setProjectType(item.getProjectType());
+                vo.setProjectTypee(item.getProjectTypee());
+                vo.setName(item.getName());
+                vo.setTaskCode(item.getTaskCode());
+                vo.setProperty(item.getProperty());
+                vo.setProjectRate(item.getProjectRate());
+                vo.setExpectMoney(item.getExpectMoney());
+//                vo.setExpectDate(item.getExpectDate());
                 vo.setA1(map4.get("重大项目," + item.getId() + ",投标保证金/函"));
                 vo.setA2(map4.get("重大项目," + item.getId() + ",质量保证金/函"));
                 vo.setA3(map4.get("重大项目," + item.getId() + ",工资保证金/函"));
                 vo.setA4(map4.get("重大项目," + item.getId() + ",履约保证金/函"));
-                if (ObjectUtil.isNotEmpty(map5.get(item.getId()))) {
-                    vo.setGiveMoney(map5.get(item.getId()) + "万元");
+                String str = map5.get(item.getId());
+                if (ObjectUtil.isNotEmpty(str)) {
+                    str = str.replaceAll("0|无垫资|无", "");
+                    if (ObjectUtil.isNotEmpty(str)) {
+                        vo.setGiveMoney(str + "万元");
+                    }
                 }
                 vo.setLocation(item.getLocation());
                 vo.setProviderName(item.getProviderName());

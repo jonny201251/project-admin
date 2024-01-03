@@ -4,6 +4,9 @@ import lombok.Data;
 
 @Data
 public class ProjectCreate1VO {
+    private String year1;
+    private String year2;
+    private String year3;
     //序号
     private Integer num;
     //申请部门

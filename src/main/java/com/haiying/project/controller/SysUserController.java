@@ -22,8 +22,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -134,11 +136,22 @@ public class SysUserController {
         UserVO userVO = new UserVO();
         userVO.setUser(dbUser);
 
+        Set<String> set = new HashSet<>();
+        set.add("公司领导");
+        set.add("安全生产总监");
+        set.add("副总师级");
+        set.add("财务副总监");
+
         List<SysPermission> menuList;
         if (dbUser.getDisplayName().equals("张强")) {
             menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().ne(SysPermission::getId, 45).orderByAsc(SysPermission::getSort));
         } else {
-            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().notIn(SysPermission::getId, 45).gt(SysPermission::getId, 34).orderByAsc(SysPermission::getSort));
+            if (dbUser.getDeptName().equals("综合计划部") || set.contains(dbUser.getPosition())) {
+                menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().notIn(SysPermission::getId, 45).gt(SysPermission::getId, 34).orderByAsc(SysPermission::getSort));
+            } else {
+                menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().notIn(SysPermission::getId, 45, 78, 79).gt(SysPermission::getId, 34).orderByAsc(SysPermission::getSort));
+            }
+
         }
         userVO.setMenuList(TreeUtil.getTree(menuList));
 

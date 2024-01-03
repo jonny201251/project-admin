@@ -203,6 +203,7 @@ public class SmallProject implements Serializable {
     private String userNamee;
 
     private String projectType;
+    private String projectTypee;
 
     private String projectStatus;
 
@@ -220,5 +221,7 @@ public class SmallProject implements Serializable {
     //
     private String projectLevel;
     private String owerName;
+
+
 
 }
