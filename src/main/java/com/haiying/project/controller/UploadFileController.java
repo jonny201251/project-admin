@@ -53,7 +53,6 @@ public class UploadFileController {
     //下载文件
     @GetMapping("/upload/{loginName}/{fileName}")
     public void downloadFile(@PathVariable String loginName, @PathVariable String fileName, HttpServletResponse response) throws IOException {
-        System.out.println(fileName);
         SysUser user = (SysUser) httpSession.getAttribute("user");
         if (user == null) {
             throw new PageTipException("用户未登录");

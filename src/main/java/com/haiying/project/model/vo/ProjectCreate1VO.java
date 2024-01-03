@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class ProjectCreate1VO {
+    //序号
+    private Integer num;
     //申请部门
     private String deptName;
     //1月
@@ -72,17 +74,9 @@ public class ProjectCreate1VO {
     //总签约数
     private Integer f;
 
-    //总中标率
+    //投标签约率
     private String g1;
-    //一类中标率
-    private String g2;
-    //二类中标率
-    private String g3;
-    //三类中标率
-    private String g4;
-    //立项签约率(不含陪标)
-    private String g5;
     //立项签约率
-    private String g6;
+    private String g2;
     //备注
 }

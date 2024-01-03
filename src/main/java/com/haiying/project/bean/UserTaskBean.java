@@ -82,6 +82,8 @@ public class UserTaskBean {
                         LambdaQueryWrapper<SysUser> l = new LambdaQueryWrapper<SysUser>().eq(SysUser::getPosition, "部门正职领导");
                         if (loginUser.getDeptName().equals("动力运营事业部")) {
                             l.eq(SysUser::getDeptId2, loginUser.getDeptId2());
+                        }else{
+                            l.eq(SysUser::getDeptId, loginUser.getDeptId());
                         }
                         List<SysUser> leaderList = sysUserService.list(l);
                         if (ObjectUtil.isNotEmpty(leaderList)) {

@@ -9,10 +9,14 @@ import java.time.LocalDateTime;
 @Data
 public class ProjectCreate2VO {
     //申请部门
+    private Integer deptId;
     private String deptName;
     //申请时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createDatetime;
+    //完成时间
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime endDatetime;
     //流程状态
     private String processStatus;
     //项目立项

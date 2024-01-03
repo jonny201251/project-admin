@@ -1,7 +1,10 @@
 package com.haiying.project;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.text.TextSimilarity;
 import cn.hutool.core.util.NumberUtil;
+
+import java.text.DecimalFormat;
 
 public class Test {
     public static void main(String[] args) {
@@ -37,5 +40,22 @@ public class Test {
         System.out.println("a   aaa    aa    aa".replaceAll("\\s+",""));
 
         System.out.println("2023".substring(2));
+
+        System.out.println(DateUtil.parse("2023-10-13 16:21:29").month()+1);
+
+//        double result = (double) (1 / 3 );
+//        DecimalFormat decimalFormat = new DecimalFormat("0.00%");
+//        String formattedResult = decimalFormat.format(result);
+//        System.out.println(formattedResult);
+
+        int numerator = 5;
+        int denominator = 3;
+
+        double result = (double) 1/3 ;
+        DecimalFormat decimalFormat = new DecimalFormat("0.00%");
+        String formattedResult = decimalFormat.format(result);
+
+        System.out.println("结果为: " + formattedResult);
+
     }
 }

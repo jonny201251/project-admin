@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 //项目立项-汇总2 列表
@@ -30,33 +31,58 @@ public class ProjectCreate2Report {
 
     @GetMapping("get")
     public synchronized Map<String, List<ProjectCreate2VO>> get(String year) {
-        String shortYear = year.substring(2);
-
         Map<String, List<ProjectCreate2VO>> map = new HashMap<>();
         List<ProjectCreate2VO> list = new ArrayList<>();
         //
-        List<SmallProject> list1 = smallProjectService.list(new LambdaQueryWrapper<SmallProject>().apply("substring(task_code,8,2)={0}", shortYear));
-        List<BigProject> list2 = bigProjectService.list(new LambdaQueryWrapper<BigProject>().apply("substring(task_code,8,2)={0}", shortYear));
-
+        List<ProcessInst> list0 = processInstService.list(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getProcessStatus, "完成").in(ProcessInst::getPath, Arrays.asList("smallProjectPath", "bigProjectPath")).likeRight(ProcessInst::getEndDatetime, year));
+        Map<String, LocalDateTime> map0 = new HashMap<>();
         List<Integer> idList = new ArrayList<>();
-        if (ObjectUtil.isNotEmpty(list1)) {
-            list1.forEach(item -> idList.add(item.getId()));
-        }
-        if (ObjectUtil.isNotEmpty(list2)) {
-            list2.forEach(item -> idList.add(item.getId()));
+        List<Integer> idList1 = new ArrayList<>();
+        List<Integer> idList2 = new ArrayList<>();
+        if (ObjectUtil.isNotEmpty(list0)) {
+            for (ProcessInst item : list0) {
+                map0.put(item.getPath() + "," + item.getBusinessId(), item.getEndDatetime());
+                idList.add(item.getBusinessId());
+                if ("smallProjectPath".equals(item.getPath())) {
+                    idList1.add(item.getBusinessId());
+                } else {
+                    idList2.add(item.getBusinessId());
+                }
+            }
         }
         //
-        List<ProcessInst> list3 = processInstService.list(new LambdaQueryWrapper<ProcessInst>().eq(ProcessInst::getProcessStatus, "完成").in(ProcessInst::getPath, Arrays.asList("smallProjectPath", "bigProjectPath")).in(ProcessInst::getBusinessId, idList));
-        List<SmallProtect> list4 = smallProtectService.list(new LambdaQueryWrapper<SmallProtect>().in(SmallProtect::getProjectId, idList));
-        List<BigProjectTest> list5 = bigProjectTestService.list(new LambdaQueryWrapper<BigProjectTest>().eq(BigProjectTest::getDesc1, "垫资额度(万元)").eq(BigProjectTest::getType, "project").in(BigProjectTest::getProjectId, idList));
+        List<SmallProject> list1 = null;
+        LambdaQueryWrapper<SmallProject> wrapper1 = new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getHaveDisplay, "是");
+        if (ObjectUtil.isNotEmpty(idList1)) {
+            wrapper1.in(SmallProject::getId, idList1);
+            list1 = smallProjectService.list(wrapper1);
+        }
+        List<BigProject> list2 = null;
+        LambdaQueryWrapper<BigProject> wrapper2 = new LambdaQueryWrapper<BigProject>().eq(BigProject::getHaveDisplay, "是");
+        if (ObjectUtil.isNotEmpty(idList2)) {
+            wrapper2.in(BigProject::getId, idList2);
+            list2 = bigProjectService.list(wrapper2);
+        }
 
-        Map<String, String> map3 = new HashMap<>();
+        //
+        List<SmallProtect> list4 = null;
+        LambdaQueryWrapper<SmallProtect> wrapper4 = new LambdaQueryWrapper<>();
+        if (ObjectUtil.isNotEmpty(idList)) {
+            wrapper4.in(SmallProtect::getProjectId, idList);
+            list4 = smallProtectService.list(wrapper4);
+        }
+
+        List<BigProjectTest> list5 = null;
+        LambdaQueryWrapper<BigProjectTest> wrapper5=new LambdaQueryWrapper<BigProjectTest>().eq(BigProjectTest::getDesc1, "垫资额度(万元)").eq(BigProjectTest::getType, "project");
+        if(ObjectUtil.isNotEmpty(idList2)){
+            wrapper5.in(BigProjectTest::getProjectId, idList2);
+            list5=bigProjectTestService.list(wrapper5);
+        }
+
+
         Map<String, String> map4 = new HashMap<>();
         Map<Integer, String> map5 = new HashMap<>();
 
-        if (ObjectUtil.isNotEmpty(list3)) {
-            list3.forEach(item -> map3.put(item.getPath() + "," + item.getBusinessId(), "完成"));
-        }
         if (ObjectUtil.isNotEmpty(list4)) {
             list4.forEach(item -> map4.put(item.getProjectType() + "," + item.getProjectId() + "," + item.getType(), item.getMoney()));
         }
@@ -70,8 +96,9 @@ public class ProjectCreate2Report {
 
                 vo.setDeptName(item.getDeptName());
                 vo.setCreateDatetime(item.getCreateDatetime());
-                String str1 = map3.get("smallProjectPath," + item.getId());
-                vo.setProcessStatus(str1 == null ? "审批中" : "完成");
+                LocalDateTime endDatetime = map0.get("smallProjectPath," + item.getId());
+                vo.setEndDatetime(endDatetime);
+                vo.setProcessStatus(endDatetime == null ? "审批中" : "完成");
                 vo.setProjectType(vo.getProjectType());
                 vo.setProjectTypee(vo.getProjectTypee());
                 vo.setName(vo.getName());
@@ -103,8 +130,9 @@ public class ProjectCreate2Report {
 
                 vo.setDeptName(item.getDeptName());
                 vo.setCreateDatetime(item.getCreateDatetime());
-                String str1 = map3.get("bigProjectPath," + item.getId());
-                vo.setProcessStatus(str1 == null ? "审批中" : "完成");
+                LocalDateTime endDatetime = map0.get("bigProjectPath," + item.getId());
+                vo.setEndDatetime(endDatetime);
+                vo.setProcessStatus(endDatetime == null ? "审批中" : "完成");
                 vo.setProjectType(vo.getProjectType());
                 vo.setProjectTypee(vo.getProjectTypee());
                 vo.setName(vo.getName());
@@ -128,8 +156,9 @@ public class ProjectCreate2Report {
                 list.add(vo);
             }
         }
-
-        Collections.sort(list, Comparator.comparing(ProjectCreate2VO::getCreateDatetime));
+        if (ObjectUtil.isNotEmpty(list)) {
+            Collections.sort(list, Comparator.comparing(ProjectCreate2VO::getEndDatetime));
+        }
         map.put("data", list);
         return map;
     }
