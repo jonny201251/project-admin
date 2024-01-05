@@ -7,10 +7,7 @@ import com.haiying.project.bean.PageBean;
 import com.haiying.project.common.result.ResponseResult;
 import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.ProjectVO;
-import com.haiying.project.service.BigProjectService;
-import com.haiying.project.service.ProcessInstService;
-import com.haiying.project.service.SmallProjectNoService;
-import com.haiying.project.service.SmallProjectService;
+import com.haiying.project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,6 +37,8 @@ public class ProjectDialogController {
     BigProjectService bigProjectService;
     @Autowired
     PageBean pageBean;
+    @Autowired
+    SmallProtectService smallProtectService;
 
     private List<SmallProject> get1(Object name, Object taskCode) {
         SysUser user = (SysUser) httpSession.getAttribute("user");
@@ -113,9 +113,22 @@ public class ProjectDialogController {
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");
         Object taskCode = paramMap.get("taskCode");
+        Object deptName = paramMap.get("deptName");
         //一般项目
         List<SmallProject> list1 = get1(name, taskCode);
         if (ObjectUtil.isNotEmpty(list1)) {
+            List<Integer> idList = list1.stream().map(SmallProject::getId).collect(Collectors.toList());
+            Map<Integer, String> map = new HashMap<>();
+            List<SmallProtect> protectList = smallProtectService.list(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getProjectType, "一般项目").in(SmallProtect::getProjectId, idList));
+            for (SmallProtect item : protectList) {
+                String str = map.get(item.getProjectId());
+                if (str == null) {
+                    map.put(item.getProjectId(), item.getType().replaceAll("保证金/函", "") + ":" + item.getMoney());
+                } else {
+                    map.put(item.getProjectId(), str + "," + item.getType().replaceAll("保证金/函", "") + ":" + item.getMoney());
+                }
+            }
+
             for (SmallProject tmp : list1) {
                 ProjectVO p = new ProjectVO();
                 p.setIdd(count++);
@@ -130,7 +143,9 @@ public class ProjectDialogController {
                 p.setVersion(tmp.getVersion());
 
                 p.setExpectMoney(tmp.getExpectMoney());
+                p.setProtectMoney(map.get(tmp.getId()));
                 p.setLoginName(tmp.getLoginName());
+                p.setDeptId(tmp.getDeptId());
                 p.setDeptName(tmp.getDeptName());
                 p.setCreateDatetime(tmp.getCreateDatetime());
                 dataList.add(p);
@@ -158,6 +173,18 @@ public class ProjectDialogController {
         //重大项目
         List<BigProject> list3 = get3(name, taskCode);
         if (ObjectUtil.isNotEmpty(list3)) {
+            List<Integer> idList = list3.stream().map(BigProject::getId).collect(Collectors.toList());
+            Map<Integer, String> map = new HashMap<>();
+            List<SmallProtect> protectList = smallProtectService.list(new LambdaQueryWrapper<SmallProtect>().eq(SmallProtect::getProjectType, "重大项目").in(SmallProtect::getProjectId, idList));
+            for (SmallProtect item : protectList) {
+                String str = map.get(item.getProjectId());
+                if (str == null) {
+                    map.put(item.getProjectId(), item.getType().replaceAll("保证金/函", "") + ":" + item.getMoney());
+                } else {
+                    map.put(item.getProjectId(), str + "," + item.getType().replaceAll("保证金/函", "") + ":" + item.getMoney());
+                }
+            }
+
             for (BigProject tmp : list3) {
                 ProjectVO p = new ProjectVO();
                 p.setIdd(count++);
@@ -172,6 +199,7 @@ public class ProjectDialogController {
                 p.setVersion(tmp.getVersion());
 
                 p.setExpectMoney(tmp.getExpectMoney());
+                p.setProtectMoney(map.get(tmp.getId()));
                 p.setLoginName(tmp.getLoginName());
                 p.setDeptName(tmp.getDeptName());
                 p.setCreateDatetime(tmp.getCreateDatetime());

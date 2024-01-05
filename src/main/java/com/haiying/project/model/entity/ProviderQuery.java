@@ -53,7 +53,7 @@ public class ProviderQuery implements Serializable {
     /**
      * 考察时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate queryDate;
 
     /**

@@ -188,6 +188,9 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
         String buttonName = after.getButtonName();
         String path = after.getPath();
         String comment = after.getComment();
+
+        formValue.setName(formValue.getName().trim().replaceAll("\\s+", ""));
+
         if (type.equals("add")) {
             if (buttonName.equals("草稿")) {
                 add(formValue);
@@ -226,7 +229,7 @@ public class SmallProjectServiceImpl extends ServiceImpl<SmallProjectMapper, Sma
             ProcessInst processInst = processInstService.getById(formValue.getProcessInstId());
             //业务主管领导
             if (processInst.getDisplayProcessStep().contains("业务主管领导")) {
-                List<Customer> list = customerService.list(new LambdaQueryWrapper<Customer>().eq(Customer::getHaveDisplay,"是").eq(Customer::getName, after.getFormValue().getCustomerName()).in(Customer::getResult, Arrays.asList("优秀", "良好", "一般")));
+                List<Customer> list = customerService.list(new LambdaQueryWrapper<Customer>().eq(Customer::getHaveDisplay, "是").eq(Customer::getName, after.getFormValue().getCustomerName()).in(Customer::getResult, Arrays.asList("优秀", "良好", "一般")));
                 if (ObjectUtil.isEmpty(list)) {
                     throw new PageTipException("先审批 客户信用评级评分,客户名称=" + after.getFormValue().getCustomerName());
                 }

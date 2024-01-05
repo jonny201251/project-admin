@@ -96,17 +96,17 @@ public class InContract implements Serializable {
     private String contractLevel;
 
     private String printType;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate printDate;
 
     private String location;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate startDate;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate endDate;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate expectDate;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate documentDate;
 
     @TableField(exist = false)
@@ -115,10 +115,10 @@ public class InContract implements Serializable {
     //项目类别
     private String projectTypee;
     //生效日期
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate validDate;
     //结束时间
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate endDatee;
     //履行时间
     @TableField(exist = false)

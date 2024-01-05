@@ -94,7 +94,7 @@ public class SmallProject implements Serializable {
     /**
      * 预计签约日期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate expectDate;
 
     /**
@@ -120,7 +120,7 @@ public class SmallProject implements Serializable {
     /**
      * 投标截止日期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate bidDate;
 
     /**

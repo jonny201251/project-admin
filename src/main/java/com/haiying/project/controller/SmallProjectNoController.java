@@ -73,11 +73,13 @@ public class SmallProjectNoController {
 
     @PostMapping("add")
     public boolean add(@RequestBody SmallProjectNo smallProjectNo) {
+        smallProjectNo.setName(smallProjectNo.getName().trim().replaceAll("\\s+", ""));
         return smallProjectNoService.add(smallProjectNo);
     }
 
     @PostMapping("edit")
     public boolean edit(@RequestBody SmallProjectNo smallProjectNo) {
+        smallProjectNo.setName(smallProjectNo.getName().trim().replaceAll("\\s+", ""));
         return smallProjectNoService.updateById(smallProjectNo);
     }
 

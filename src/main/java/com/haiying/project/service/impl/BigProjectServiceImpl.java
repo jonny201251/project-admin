@@ -274,6 +274,9 @@ public class BigProjectServiceImpl extends ServiceImpl<BigProjectMapper, BigProj
         String buttonName = after.getButtonName();
         String path = after.getPath();
         String comment = after.getComment();
+
+        formValue.setName(formValue.getName().trim().replaceAll("\\s+", ""));
+
         if (type.equals("add")) {
             if (buttonName.equals("草稿")) {
                 add(formValue);

@@ -19,7 +19,10 @@ public class ProjectVO {
     private Integer version;
 
     private Double expectMoney;
+    private String protectMoney;
+
     private String loginName;
+    private Integer deptId;
     private String deptName;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createDatetime;

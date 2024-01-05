@@ -50,7 +50,7 @@ public class BigBudgetOut implements Serializable {
     private Integer companyId;
 
     private String companyName;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private String outDate;
 
     private Double money;

@@ -51,12 +51,12 @@ public class BudgetProtect implements Serializable {
     /**
      * 支出日期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private String outDate;
 
     /**
      * 收回日期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private String inDate;
 }

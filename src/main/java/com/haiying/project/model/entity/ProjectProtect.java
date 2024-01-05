@@ -47,7 +47,7 @@ public class ProjectProtect implements Serializable {
      * 中标，未中标，终止
      */
     private String status;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate registeDate;
 
     private Double money;
@@ -78,5 +78,11 @@ public class ProjectProtect implements Serializable {
 
     private String remark;
 
+    private String protectType;
+
+    @JsonFormat(pattern = "yyyy-M-d")
+    private LocalDate realDate;
+
+    private String payStatus;
 
 }

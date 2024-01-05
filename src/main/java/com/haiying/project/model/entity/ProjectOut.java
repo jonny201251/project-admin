@@ -81,7 +81,7 @@ public class ProjectOut implements Serializable {
     /**
      * 日期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate outDate;
 
     /**

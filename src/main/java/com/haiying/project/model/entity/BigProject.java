@@ -95,7 +95,7 @@ public class BigProject implements Serializable {
     /**
      * 预计投标日期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate expectDate;
 
     /**

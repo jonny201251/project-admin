@@ -36,7 +36,7 @@ public class ProjectCreate2VO {
     //预计签约金额(元)
     private Double expectMoney;
     //预计签约日期
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate expectDate;
     //投标保证金/函(元)
     private String a1;
@@ -55,7 +55,7 @@ public class ProjectCreate2VO {
     //业务状态
     private String bidStatus;
     //投标截止日期
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate bidDate;
     //备注
     private String remark;

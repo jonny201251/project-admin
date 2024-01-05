@@ -94,13 +94,13 @@ public class BudgetProject implements Serializable {
     /**
      * 开工时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate startDate;
 
     /**
      * 预计完工时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate endDate;
 
     /**

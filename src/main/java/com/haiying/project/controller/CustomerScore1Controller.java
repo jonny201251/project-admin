@@ -56,12 +56,12 @@ public class CustomerScore1Controller {
         LambdaQueryWrapper<CustomerScore1> wrapper = new LambdaQueryWrapper<CustomerScore1>().eq(CustomerScore1::getHaveDisplay, "是").orderByDesc(CustomerScore1::getId);
 
         Object customerName = paramMap.get("customerName");
-        Object result = paramMap.get("result");
+        Object deptName = paramMap.get("deptName");
         if (ObjectUtil.isNotEmpty(customerName)) {
             wrapper.like(CustomerScore1::getCustomerName, customerName);
         }
-        if (ObjectUtil.isNotEmpty(result)) {
-            wrapper.like(CustomerScore1::getResult, result);
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper.like(CustomerScore1::getDeptName, deptName);
         }
 
 

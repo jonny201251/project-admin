@@ -33,7 +33,7 @@ public class BudgetIn2 implements Serializable {
     /**
      * 预计回款日期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-M-d")
     private String inDate;
 
     //年月，生成预算表时排序
