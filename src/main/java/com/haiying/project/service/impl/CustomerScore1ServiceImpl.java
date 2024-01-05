@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haiying.project.bean.ButtonHandleBean;
+import com.haiying.project.common.utils.SpringUtil;
 import com.haiying.project.mapper.CustomerScore1Mapper;
 import com.haiying.project.model.entity.*;
 import com.haiying.project.model.vo.CustomerScore1After;
@@ -35,14 +36,30 @@ public class CustomerScore1ServiceImpl extends ServiceImpl<CustomerScore1Mapper,
     @Autowired
     HttpSession httpSession;
     @Autowired
-    CustomerService customerService;
-    @Autowired
     FormFileService formFileService;
 
+    //复评处理
+    private void copyScore1(Customer customer, CustomerScore1 formValue) {
+        CustomerScore1 old = this.getOne(new LambdaQueryWrapper<CustomerScore1>().eq(CustomerScore1::getCustomerId, customer.getBeforeId()));
+        if (old == null) {
+            add2(formValue);
+        } else {
+            formValue.setVersion(old.getVersion() + 1);
+            formValue.setBeforeId(old.getId());
+            if (old.getBaseId() == null) {
+                formValue.setBaseId(old.getId());
+            } else {
+                formValue.setBaseId(old.getBaseId());
+            }
+            add2(formValue);
+        }
+    }
 
-    private void add(CustomerScore1 formValue) {
+    private void add2(CustomerScore1 formValue) {
         formValue.setHaveDisplay("是");
-        formValue.setVersion(0);
+        if (formValue.getVersion() == null) {
+            formValue.setVersion(0);
+        }
         formValue.setDesc2(String.join(",", formValue.getDesc2Tmp()));
         this.save(formValue);
         List<CustomerScore2> ll = formValue.getList();
@@ -61,6 +78,17 @@ public class CustomerScore1ServiceImpl extends ServiceImpl<CustomerScore1Mapper,
                 list.add(formFile);
             }
             formFileService.saveBatch(list);
+        }
+    }
+
+    private void add(CustomerScore1 formValue) {
+        CustomerService customerService = SpringUtil.getBean(CustomerService.class);
+        Customer customer = customerService.getById(formValue.getCustomerId());
+        if (customer.getBeforeId() != null) {
+            //复评
+            copyScore1(customer, formValue);
+        } else {
+            add2(formValue);
         }
     }
 
@@ -213,8 +241,9 @@ public class CustomerScore1ServiceImpl extends ServiceImpl<CustomerScore1Mapper,
             if (haveEditForm.equals("是")) {
                 edit(formValue);
             }
-            boolean flag=buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
+            boolean flag = buttonHandleBean.checkReject(formValue.getProcessInstId(), formValue, buttonName, comment);
             if (flag) {
+                CustomerService customerService = SpringUtil.getBean(CustomerService.class);
                 Customer customer = customerService.getById(formValue.getCustomerId());
                 customer.setResult(formValue.getResult());
                 customerService.updateById(customer);

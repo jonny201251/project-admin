@@ -56,7 +56,7 @@ public class CustomerController {
 
     @PostMapping("list")
     public IPage<Customer> list(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<Customer>().orderByDesc(Customer::getId).in(Customer::getResult, Arrays.asList("", "优秀", "良好", "一般"));
+        LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<Customer>().orderByDesc(Customer::getId).eq(Customer::getHaveDisplay, "是").in(Customer::getResult, Arrays.asList("", "优秀", "良好", "一般"));
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");
@@ -83,7 +83,7 @@ public class CustomerController {
     //用于 客户评分
     @PostMapping("list2")
     public IPage<Customer> list2(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<Customer>().eq(Customer::getResult,"");
+        LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<Customer>().eq(Customer::getHaveDisplay,"是").eq(Customer::getResult, "");
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");
@@ -100,7 +100,7 @@ public class CustomerController {
     //用于项目立项
     @PostMapping("list3")
     public IPage<Customer> list3(@RequestBody Map<String, Object> paramMap) {
-        LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<Customer>().in(Customer::getResult, Arrays.asList("优秀", "良好", "一般"));
+        LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<Customer>().eq(Customer::getHaveDisplay,"是").in(Customer::getResult, Arrays.asList("优秀", "良好", "一般"));
         Integer current = (Integer) paramMap.get("current");
         Integer pageSize = (Integer) paramMap.get("pageSize");
         Object name = paramMap.get("name");
@@ -116,7 +116,7 @@ public class CustomerController {
     @PostMapping("add")
     public boolean add(@RequestBody Customer customer) {
         //判断是否重复添加
-        List<Customer> list = customerService.list(new LambdaQueryWrapper<Customer>().eq(Customer::getName, customer.getName().trim()));
+        List<Customer> list = customerService.list(new LambdaQueryWrapper<Customer>().eq(Customer::getHaveDisplay,"是").eq(Customer::getName, customer.getName().trim()));
         if (ObjectUtil.isNotEmpty(list)) {
             throw new PageTipException("客户名称   已存在");
         }
@@ -174,16 +174,22 @@ public class CustomerController {
         List<CustomerrExcel> dataList = new ArrayList<>();
         WriteSheet sheet = EasyExcel.writerSheet(0, "客户").head(CustomerrExcel.class).build();
         //
-        LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<Customer>().in(Customer::getResult, Arrays.asList("优秀", "良好", "一般")).orderByDesc(Customer::getId);
+        LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<Customer>().eq(Customer::getHaveDisplay,"是").in(Customer::getResult, Arrays.asList("优秀", "良好", "一般")).orderByDesc(Customer::getId);
         List<Customer> list = customerService.list(wrapper);
         for (Customer customer : list) {
-            CustomerrExcel customerrExcel=new CustomerrExcel();
-            BeanUtils.copyProperties(customer,customerrExcel);
+            CustomerrExcel customerrExcel = new CustomerrExcel();
+            BeanUtils.copyProperties(customer, customerrExcel);
             dataList.add(customerrExcel);
         }
 
         excelWriter.write(dataList, sheet);
         //
         excelWriter.finish();
+    }
+
+
+    @GetMapping("modify")
+    public boolean modify(Integer id) {
+        return customerService.modify(id);
     }
 }

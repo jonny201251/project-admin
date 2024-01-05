@@ -28,10 +28,11 @@ public class CustomerScore1Report {
     @GetMapping("get")
     public synchronized Map<String, List<CustomerScore1>> get(Integer id) {
         Map<String, List<CustomerScore1>> map = new HashMap<>();
-        List<CustomerScore1> list = customerScore1Service.list(new LambdaQueryWrapper<CustomerScore1>().eq(CustomerScore1::getId, id));
+        List<CustomerScore1> list = customerScore1Service.list(new LambdaQueryWrapper<CustomerScore1>().eq(CustomerScore1::getHaveDisplay, "是").eq(CustomerScore1::getId, id));
         map.put("data", list);
         return map;
     }
+
     @GetMapping("get2")
     public synchronized Map<String, List<CustomerScore2>> get2(Integer customerScore1Id) {
         Map<String, List<CustomerScore2>> map = new HashMap<>();

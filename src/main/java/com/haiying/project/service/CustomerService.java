@@ -15,4 +15,6 @@ public interface CustomerService extends IService<Customer> {
     boolean add(Customer customer);
 
     boolean edit(Customer customer);
+
+    boolean modify(Integer id);
 }

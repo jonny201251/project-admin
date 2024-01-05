@@ -502,7 +502,7 @@ public class InitDataController {
             providerMap.put(tmp.getName(), tmp.getId());
         }
 
-        List<Customer> customerList = customerService.list(new LambdaQueryWrapper<Customer>().in(Customer::getResult, Arrays.asList("优秀", "良好", "一般")));
+        List<Customer> customerList = customerService.list(new LambdaQueryWrapper<Customer>().eq(Customer::getHaveDisplay,"是").in(Customer::getResult, Arrays.asList("优秀", "良好", "一般")));
         Map<String, Integer> customerMap = new HashMap<>();
         for (Customer tmp : customerList) {
             customerMap.put(tmp.getName(), tmp.getId());
