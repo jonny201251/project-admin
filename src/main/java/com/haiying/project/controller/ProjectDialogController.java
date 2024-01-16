@@ -42,9 +42,12 @@ public class ProjectDialogController {
 
     private List<SmallProject> get1(Object name, Object taskCode) {
         SysUser user = (SysUser) httpSession.getAttribute("user");
-        LambdaQueryWrapper<SmallProject> wrapper = new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getHaveDisplay, "是").like(SmallProject::getName, name);
+        LambdaQueryWrapper<SmallProject> wrapper = new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getHaveDisplay, "是");
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq(SmallProject::getDeptId, user.getDeptId());
+        }
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like(SmallProject::getName, name);
         }
         if (ObjectUtil.isNotEmpty(taskCode)) {
             wrapper.like(SmallProject::getTaskCode, taskCode);
