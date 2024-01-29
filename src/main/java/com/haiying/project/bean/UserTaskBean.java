@@ -134,7 +134,7 @@ public class UserTaskBean {
                 if (processDesignTask.getTaskName().equals("授权人意见")) {
                     String endType = otherPower.getEndType();
                     if (endType.equals("董事长")) {
-                        loginNameSet.add("高志国");
+                        loginNameSet.add("郭琳");
                     } else {
                         //公司主管领导
                         List<String> leader2List = chargeDeptLeaderService
