@@ -92,7 +92,7 @@ public class SmallProjectController {
         if (user.getLoginName().equals("祁瑛")) {
             wrapper.eq(SmallProject::getHavePower, "是");
         } else {
-            if (!(user.getDeptName().equals("综合计划部") || user.getDeptName().equals("财务部"))) {
+            if (!(user.getDeptName().equals("综合计划部") || user.getDeptName().equals("财务部") || user.getPosition().equals("公司领导")  || user.getPosition().equals("安全生产总监") || user.getPosition().equals("副总师级"))) {
                 wrapper.eq(SmallProject::getDeptId, user.getDeptId());
             }
         }

@@ -75,7 +75,7 @@ public class ProjectCodeController {
         }
 
         SysUser user = (SysUser) httpSession.getAttribute("user");
-        if (!user.getDeptName().equals("综合计划部")) {
+        if (!(user.getDeptName().equals("综合计划部") || user.getPosition().equals("公司领导")  || user.getPosition().equals("安全生产总监") || user.getPosition().equals("副总师级"))) {
             wrapper.eq(ProjectCode::getDeptId, user.getDeptId());
         }
         return projectCodeService.page(new Page<>(current, pageSize), wrapper);

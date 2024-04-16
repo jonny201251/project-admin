@@ -38,7 +38,10 @@ public class PreloadController {
         List<LabelValue> userList = sysUserList.stream().map(item -> new LabelValue(item.getLoginName(), item.getLoginName())).collect(Collectors.toList());
         map.put("userList", userList);
         //用户
-        Map<String, SysUser> userMap = sysUserList.stream().collect(Collectors.toMap(SysUser::getLoginName, v -> v));
+        Map<String, SysUser> userMap = new HashMap<>();
+        if (sysUserList.size() > 0) {
+            sysUserList.forEach(u -> userMap.put(u.getLoginName(), u));
+        }
         map.put("userMap", userMap);
         return map;
     }

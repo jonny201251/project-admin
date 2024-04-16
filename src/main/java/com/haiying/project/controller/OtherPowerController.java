@@ -77,7 +77,7 @@ public class OtherPowerController {
             wrapper.like(OtherPower::getDeptName, deptName);
         }
 
-        if (!user.getDeptName().equals("纪监法审部")) {
+        if (!(user.getDeptName().equals("纪监法审部") || user.getPosition().equals("公司领导") || user.getPosition().equals("安全生产总监") || user.getPosition().equals("副总师级"))) {
             wrapper.eq(OtherPower::getDeptId, user.getDeptId());
         }
         page = otherPowerService.page(new Page<>(current, pageSize), wrapper);

@@ -68,7 +68,7 @@ public class BudgetProjecttServiceImpl extends ServiceImpl<BudgetProjecttMapper,
         }
         build = Double.parseDouble(tmp.replaceAll("%", ""));
         if (page < build) {
-            if(!"101101323001".equals(formValue.getTaskCode())){
+            if(!"061104124022".equals(formValue.getTaskCode())){
                 throw new PageTipException("预计毛利率低于立项时的毛利率");
             }
         }

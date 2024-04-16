@@ -75,6 +75,9 @@ public class ProjectDialogController {
         if (!user.getDeptName().equals("综合计划部")) {
             wrapper.eq(SmallProjectNo::getDeptId, user.getDeptId());
         }
+        if (ObjectUtil.isNotEmpty(taskCode)) {
+            wrapper.like(SmallProjectNo::getTaskCode, taskCode);
+        }
         return smallProjectNoService.list(wrapper);
     }
 

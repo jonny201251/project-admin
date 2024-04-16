@@ -71,4 +71,7 @@ public class SmallProjectNo implements Serializable {
 
     //
     private String projectLevel;
+
+    private Integer customerId;
+    private String customerName;
 }

@@ -39,6 +39,7 @@ public class Provider implements Serializable {
 
     //供方用途
     private String usee;
+
     private String type;
     /**
      * 供方名称
@@ -46,6 +47,9 @@ public class Provider implements Serializable {
     private String name;
 
     private String property;
+
+    private String zizhi;
+
 
     /**
      * 注册地址
