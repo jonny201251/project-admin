@@ -206,767 +206,792 @@ public class InitDataController {
             }
 
         }
-            customerService.saveBatch(customerList);
+        customerService.saveBatch(customerList);
 
-            return true;
+        return true;
+    }
+
+    @GetMapping("provider")
+    public boolean provider() throws Exception {
+        List<SysDept> deptList = deptService.list();
+        Map<String, Integer> deptMap = new HashMap<>();
+        for (SysDept tmp : deptList) {
+            deptMap.put(tmp.getName(), tmp.getId());
         }
 
-        @GetMapping("provider")
-        public boolean provider () throws Exception {
-            List<SysDept> deptList = deptService.list();
-            Map<String, Integer> deptMap = new HashMap<>();
-            for (SysDept tmp : deptList) {
-                deptMap.put(tmp.getName(), tmp.getId());
-            }
+
+        InputStream inputStream = new FileInputStream("d:/a/供方3.xls");
+        //
+        ExcelReader excelReader = EasyExcel.read(inputStream).build();
+        //
+        ExcelListener<ProviderExcel> listener = new ExcelListener<>();
+        //获取sheet对象
+        ReadSheet sheet0 = EasyExcel.readSheet(0).head(ProviderExcel.class).registerReadListener(listener).build();
+        //读取数据
+        excelReader.read(sheet0);
+        //获取数据
+        List<ProviderExcel> list = listener.getData();
 
 
-            InputStream inputStream = new FileInputStream("d:/a/供方3.xls");
-            //
-            ExcelReader excelReader = EasyExcel.read(inputStream).build();
-            //
-            ExcelListener<ProviderExcel> listener = new ExcelListener<>();
-            //获取sheet对象
-            ReadSheet sheet0 = EasyExcel.readSheet(0).head(ProviderExcel.class).registerReadListener(listener).build();
-            //读取数据
-            excelReader.read(sheet0);
-            //获取数据
-            List<ProviderExcel> list = listener.getData();
-
-
-            for (ProviderExcel tmp : list) {
-                if (deptMap.get(tmp.getDeptName()) == null) {
-                    if (tmp.getDeptName().equals("第三事业部")) {
-                        tmp.setDeptName("天津第三事业部");
-                    }
-                    if (tmp.getDeptName().equals("第五事业部")) {
-                        tmp.setDeptName("天津第五事业部");
-                    }
-                    if (tmp.getDeptName().equals("风机研发中心")) {
-                        tmp.setDeptName("节能环保事业部");
-                    }
-                    if (tmp.getDeptName().equals("纪检法审")) {
-                        tmp.setDeptName("纪监法审部");
-                    }
-                    if (tmp.getDeptName().equals("海南分公司")) {
-                        tmp.setDeptName("海南事业部");
-                    }
-                    if (tmp.getDeptName().equals("天津（第五）") || tmp.getDeptName().equals("天津（5）")) {
-                        tmp.setDeptName("天津第五事业部");
-                    }
-                    if (tmp.getDeptName().equals("资产与信息化")) {
-                        tmp.setDeptName("资产与信息化部");
-                    }
-                    if (tmp.getDeptName().equals("机电系统集成") || tmp.getDeptName().equals("第八事业部") || tmp.getDeptName().equals("机电事业部")) {
-                        tmp.setDeptName("机电系统集成事业部");
-                    }
-                    if (tmp.getDeptName().equals("天津（第三）")) {
-                        tmp.setDeptName("天津第三事业部");
-                    }
-                    if (tmp.getDeptName().equals("国际工程")) {
-                        tmp.setDeptName("国际工程事业部");
-                    }
-                    if (tmp.getDeptName().equals("动力工程")) {
-                        tmp.setDeptName("动力工程事业部");
-                    }
-                    if (tmp.getDeptName().equals("节能环保")) {
-                        tmp.setDeptName("节能环保事业部");
-                    }
-                    if (tmp.getDeptName().equals("军民融合") || tmp.getDeptName().equals("JM融合")) {
-                        tmp.setDeptName("军民融合部");
-                    }
-                    if (tmp.getDeptName().equals("动力运营事业部") || tmp.getDeptName().equals("动力运营（经营调度中心）")) {
-                        tmp.setDeptName("经营调度中心");
-                    }
-                    if (tmp.getDeptName().equals("动力运营事业部（供水）")) {
-                        tmp.setDeptName("供水中心");
-                    }
+        for (ProviderExcel tmp : list) {
+            if (deptMap.get(tmp.getDeptName()) == null) {
+                if (tmp.getDeptName().equals("第三事业部")) {
+                    tmp.setDeptName("天津第三事业部");
+                }
+                if (tmp.getDeptName().equals("第五事业部")) {
+                    tmp.setDeptName("天津第五事业部");
+                }
+                if (tmp.getDeptName().equals("风机研发中心")) {
+                    tmp.setDeptName("节能环保事业部");
+                }
+                if (tmp.getDeptName().equals("纪检法审")) {
+                    tmp.setDeptName("纪监法审部");
+                }
+                if (tmp.getDeptName().equals("海南分公司")) {
+                    tmp.setDeptName("海南事业部");
+                }
+                if (tmp.getDeptName().equals("天津（第五）") || tmp.getDeptName().equals("天津（5）")) {
+                    tmp.setDeptName("天津第五事业部");
+                }
+                if (tmp.getDeptName().equals("资产与信息化")) {
+                    tmp.setDeptName("资产与信息化部");
+                }
+                if (tmp.getDeptName().equals("机电系统集成") || tmp.getDeptName().equals("第八事业部") || tmp.getDeptName().equals("机电事业部")) {
+                    tmp.setDeptName("机电系统集成事业部");
+                }
+                if (tmp.getDeptName().equals("天津（第三）")) {
+                    tmp.setDeptName("天津第三事业部");
+                }
+                if (tmp.getDeptName().equals("国际工程")) {
+                    tmp.setDeptName("国际工程事业部");
+                }
+                if (tmp.getDeptName().equals("动力工程")) {
+                    tmp.setDeptName("动力工程事业部");
+                }
+                if (tmp.getDeptName().equals("节能环保")) {
+                    tmp.setDeptName("节能环保事业部");
+                }
+                if (tmp.getDeptName().equals("军民融合") || tmp.getDeptName().equals("JM融合")) {
+                    tmp.setDeptName("军民融合部");
+                }
+                if (tmp.getDeptName().equals("动力运营事业部") || tmp.getDeptName().equals("动力运营（经营调度中心）")) {
+                    tmp.setDeptName("经营调度中心");
+                }
+                if (tmp.getDeptName().equals("动力运营事业部（供水）")) {
+                    tmp.setDeptName("供水中心");
                 }
             }
+        }
 
-            for (ProviderExcel tmp : list) {
-                if (deptMap.get(tmp.getDeptName()) == null) {
-                    System.out.println(tmp.getDeptName());
-                } else {
-                    Integer deptId = deptMap.get(tmp.getDeptName());
-                    tmp.setDeptId(deptId);
-                }
+        for (ProviderExcel tmp : list) {
+            if (deptMap.get(tmp.getDeptName()) == null) {
+                System.out.println(tmp.getDeptName());
+            } else {
+                Integer deptId = deptMap.get(tmp.getDeptName());
+                tmp.setDeptId(deptId);
             }
+        }
 
 
-            List<Provider> list1 = new ArrayList<>();
-            List<Provider> list2 = new ArrayList<>();
+        List<Provider> list1 = new ArrayList<>();
+        List<Provider> list2 = new ArrayList<>();
 
-            List<Provider> ll = providerService.list();
-            Map<String, Provider> mm = new HashMap<>();
-            for (Provider provider : ll) {
-                Provider provider1 = mm.get(provider.getName());
-                if (provider1 == null) {
-                    mm.put(provider.getName(), provider);
-                } else {
-                    System.out.println(provider.getName());
-                }
+        List<Provider> ll = providerService.list();
+        Map<String, Provider> mm = new HashMap<>();
+        for (Provider provider : ll) {
+            Provider provider1 = mm.get(provider.getName());
+            if (provider1 == null) {
+                mm.put(provider.getName(), provider);
+            } else {
+                System.out.println(provider.getName());
             }
+        }
 
 
-            for (ProviderExcel tmp : list) {
-                Provider p1 = new Provider();
-                Provider p2 = mm.get(tmp.getName());
-                if (p2 != null) {
-                    if (ObjectUtil.isNotEmpty(tmp.getScore())) {
-                        int score = Integer.parseInt(tmp.getScore());
-                        p2.setScore(score);
-                        if (score >= 40) {
-                            p2.setResult("优良");
-                        } else if (score >= 30) {
-                            p2.setResult("合格");
-                        } else {
-                            p2.setResult("不合格");
-                        }
-                    }
-                    list2.add(p2);
-                } else {
-                    if (ObjectUtil.isNotEmpty(tmp.getScore())) {
-                        int score = Integer.parseInt(tmp.getScore());
-                        p1.setScore(score);
-                        if (score >= 40) {
-                            p1.setResult("优良");
-                        } else if (score >= 30) {
-                            p1.setResult("合格");
-                        } else {
-                            p1.setResult("不合格");
-                        }
+        for (ProviderExcel tmp : list) {
+            Provider p1 = new Provider();
+            Provider p2 = mm.get(tmp.getName());
+            if (p2 != null) {
+                if (ObjectUtil.isNotEmpty(tmp.getScore())) {
+                    int score = Integer.parseInt(tmp.getScore());
+                    p2.setScore(score);
+                    if (score >= 40) {
+                        p2.setResult("优良");
+                    } else if (score >= 30) {
+                        p2.setResult("合格");
                     } else {
+                        p2.setResult("不合格");
+                    }
+                }
+                list2.add(p2);
+            } else {
+                if (ObjectUtil.isNotEmpty(tmp.getScore())) {
+                    int score = Integer.parseInt(tmp.getScore());
+                    p1.setScore(score);
+                    if (score >= 40) {
+                        p1.setResult("优良");
+                    } else if (score >= 30) {
                         p1.setResult("合格");
+                    } else {
+                        p1.setResult("不合格");
                     }
-                    p1.setName(tmp.getName());
-                    p1.setDeptName(tmp.getDeptName());
-                    p1.setDeptId(tmp.getDeptId());
-                    if (ObjectUtil.isEmpty(tmp.getRemark())) {
-                        p1.setRemark(tmp.getPs() + "," + tmp.getRemark());
-                    }
-
-                    list1.add(p1);
+                } else {
+                    p1.setResult("合格");
+                }
+                p1.setName(tmp.getName());
+                p1.setDeptName(tmp.getDeptName());
+                p1.setDeptId(tmp.getDeptId());
+                if (ObjectUtil.isEmpty(tmp.getRemark())) {
+                    p1.setRemark(tmp.getPs() + "," + tmp.getRemark());
                 }
 
-
+                list1.add(p1);
             }
-            System.out.println(list.size());
-            System.out.println(list1.size());
-            System.out.println(list2.size());
 
-            providerService.saveBatch(list1);
+
+        }
+        System.out.println(list.size());
+        System.out.println(list1.size());
+        System.out.println(list2.size());
+
+        providerService.saveBatch(list1);
 //        providerService.updateBatchById(list2);
 
-            return true;
+        return true;
+    }
+
+    @GetMapping("customer2")
+    public boolean customer2() throws Exception {
+        List<SysDept> deptList = deptService.list();
+        Map<String, Integer> deptMap = new HashMap<>();
+        for (SysDept tmp : deptList) {
+            deptMap.put(tmp.getName(), tmp.getId());
         }
 
-        @GetMapping("customer2")
-        public boolean customer2 () throws Exception {
-            List<SysDept> deptList = deptService.list();
-            Map<String, Integer> deptMap = new HashMap<>();
-            for (SysDept tmp : deptList) {
-                deptMap.put(tmp.getName(), tmp.getId());
-            }
+
+        InputStream inputStream = new FileInputStream("d:/a/客户2.xls");
+        //
+        ExcelReader excelReader = EasyExcel.read(inputStream).build();
+        //
+        ExcelListener<CustomerExcel> listener = new ExcelListener<>();
+        //获取sheet对象
+        ReadSheet sheet0 = EasyExcel.readSheet(1).head(CustomerExcel.class).registerReadListener(listener).build();
+        //读取数据
+        excelReader.read(sheet0);
+        //获取数据
+        List<CustomerExcel> list = listener.getData();
+        System.out.println();
 
 
-            InputStream inputStream = new FileInputStream("d:/a/客户2.xls");
-            //
-            ExcelReader excelReader = EasyExcel.read(inputStream).build();
-            //
-            ExcelListener<CustomerExcel> listener = new ExcelListener<>();
-            //获取sheet对象
-            ReadSheet sheet0 = EasyExcel.readSheet(1).head(CustomerExcel.class).registerReadListener(listener).build();
-            //读取数据
-            excelReader.read(sheet0);
-            //获取数据
-            List<CustomerExcel> list = listener.getData();
-            System.out.println();
-
-
-            List<Customer> ll = new ArrayList<>();
-            for (CustomerExcel tmp : list) {
-                if (ObjectUtil.isNotEmpty(tmp.getName())) {
-                    Customer p = new Customer();
-                    p.setName(tmp.getName());
-                    p.setHaveDisplay("是");
-                    p.setVersion(0);
-                    p.setResult("优秀");
-                    ll.add(p);
-                }
-
-            }
-            System.out.println();
-            customerService.saveBatch(ll);
-
-            return true;
-        }
-
-        @GetMapping("customer")
-        public boolean customer () throws Exception {
-            List<SysDept> deptList = deptService.list();
-            Map<String, Integer> deptMap = new HashMap<>();
-            for (SysDept tmp : deptList) {
-                deptMap.put(tmp.getName(), tmp.getId());
-            }
-
-
-            InputStream inputStream = new FileInputStream("d:/a/客户2.xls");
-            //
-            ExcelReader excelReader = EasyExcel.read(inputStream).build();
-            //
-            ExcelListener<CustomerExcel> listener = new ExcelListener<>();
-            //获取sheet对象
-            ReadSheet sheet0 = EasyExcel.readSheet(0).head(CustomerExcel.class).registerReadListener(listener).build();
-            //读取数据
-            excelReader.read(sheet0);
-            //获取数据
-            List<CustomerExcel> list = listener.getData();
-            System.out.println();
-
-            for (CustomerExcel tmp : list) {
-                if (deptMap.get(tmp.getDeptName()) == null) {
-                    if (tmp.getDeptName().equals("动力运营")) {
-                        tmp.setDeptName("经营调度中心");
-                    }
-                    if (tmp.getDeptName().equals("风机研发中心")) {
-                        tmp.setDeptName("节能环保事业部");
-                    }
-                    if (tmp.getDeptName().equals("互联网运营中心") || tmp.getDeptName().equals("资产与信息化")) {
-                        tmp.setDeptName("资产与信息化部");
-                    }
-                    if (tmp.getDeptName().equals("天津事业部")) {
-                        tmp.setDeptName("天津第三事业部");
-                        tmp.setRemark("天津事业部");
-                    }
-                }
-            }
-
-            for (CustomerExcel tmp : list) {
-                if (deptMap.get(tmp.getDeptName()) == null) {
-                    System.out.println(tmp.getDeptName());
-                } else {
-                    Integer deptId = deptMap.get(tmp.getDeptName());
-                    tmp.setDeptId(deptId);
-                }
-            }
-
-            List<Customer> ll = new ArrayList<>();
-            for (CustomerExcel tmp : list) {
+        List<Customer> ll = new ArrayList<>();
+        for (CustomerExcel tmp : list) {
+            if (ObjectUtil.isNotEmpty(tmp.getName())) {
                 Customer p = new Customer();
                 p.setName(tmp.getName());
-                p.setDeptName(tmp.getDeptName());
-                p.setDeptId(tmp.getDeptId());
-                p.setRemark(tmp.getRemark());
                 p.setHaveDisplay("是");
                 p.setVersion(0);
-                p.setResult(tmp.getResult().replaceAll("级", ""));
+                p.setResult("优秀");
                 ll.add(p);
             }
 
-            customerService.saveBatch(ll);
+        }
+        System.out.println();
+        customerService.saveBatch(ll);
 
-            return true;
+        return true;
+    }
+
+    @GetMapping("customer")
+    public boolean customer() throws Exception {
+        List<SysDept> deptList = deptService.list();
+        Map<String, Integer> deptMap = new HashMap<>();
+        for (SysDept tmp : deptList) {
+            deptMap.put(tmp.getName(), tmp.getId());
         }
 
-        @GetMapping("code")
-        public boolean code () throws Exception {
-            List<SysDept> deptList = deptService.list();
-            Map<String, Integer> deptMap = new HashMap<>();
-            for (SysDept tmp : deptList) {
-                deptMap.put(tmp.getName(), tmp.getId());
-            }
 
+        InputStream inputStream = new FileInputStream("d:/a/客户2.xls");
+        //
+        ExcelReader excelReader = EasyExcel.read(inputStream).build();
+        //
+        ExcelListener<CustomerExcel> listener = new ExcelListener<>();
+        //获取sheet对象
+        ReadSheet sheet0 = EasyExcel.readSheet(0).head(CustomerExcel.class).registerReadListener(listener).build();
+        //读取数据
+        excelReader.read(sheet0);
+        //获取数据
+        List<CustomerExcel> list = listener.getData();
+        System.out.println();
 
-            InputStream inputStream = new FileInputStream("d:/a/任务号.xls");
-            //
-            ExcelReader excelReader = EasyExcel.read(inputStream).build();
-            //
-            ExcelListener<CodeExcel> listener = new ExcelListener<>();
-            //获取sheet对象
-            ReadSheet sheet0 = EasyExcel.readSheet(0).head(CodeExcel.class).registerReadListener(listener).build();
-            //读取数据
-            excelReader.read(sheet0);
-            //获取数据
-            List<CodeExcel> list = listener.getData();
-
-
-            System.out.println();
-            for (CodeExcel tmp : list) {
-                if (deptMap.get(tmp.getDeptName()) == null) {
-                    if (tmp.getDeptName().equals("动力运营事业部")) {
-                        tmp.setDeptName("经营调度中心");
-                    }
+        for (CustomerExcel tmp : list) {
+            if (deptMap.get(tmp.getDeptName()) == null) {
+                if (tmp.getDeptName().equals("动力运营")) {
+                    tmp.setDeptName("经营调度中心");
                 }
-            }
-
-            for (CodeExcel tmp : list) {
-                if (deptMap.get(tmp.getDeptName()) == null) {
-                    System.out.println(tmp.getDeptName());
-                } else {
-                    Integer deptId = deptMap.get(tmp.getDeptName());
-                    tmp.setDeptId(deptId);
-                }
-            }
-
-            List<ProjectCode> ll = new ArrayList<>();
-            for (CodeExcel tmp : list) {
-                ProjectCode p = new ProjectCode();
-                p.setProjectName(tmp.getName());
-                p.setDeptName(tmp.getDeptName());
-                p.setDeptId(tmp.getDeptId());
-                p.setRemark(tmp.getAa());
-                p.setTaskCode(tmp.getTaskCode());
-                p.setProjectMoney(tmp.getMoney());
-                p.setCustomerName(tmp.getC());
-                p.setProviderName(tmp.getP());
-                p.setYear(2023);
-                p.setStatus("已使用");
-                ll.add(p);
-            }
-
-            projectCodeService.saveBatch(ll);
-
-            return true;
-        }
-
-        @GetMapping("project")
-        public boolean project () throws Exception {
-            List<SysDept> deptList = deptService.list();
-            Map<String, Integer> deptMap = new HashMap<>();
-            for (SysDept tmp : deptList) {
-                deptMap.put(tmp.getName(), tmp.getId());
-            }
-
-            List<Provider> providerList = providerService.list(new LambdaQueryWrapper<Provider>().eq(Provider::getResult, "合格"));
-            Map<String, Integer> providerMap = new HashMap<>();
-            for (Provider tmp : providerList) {
-                providerMap.put(tmp.getName(), tmp.getId());
-            }
-
-            List<Customer> customerList = customerService.list(new LambdaQueryWrapper<Customer>().eq(Customer::getHaveDisplay, "是").in(Customer::getResult, Arrays.asList("优秀", "良好", "一般")));
-            Map<String, Integer> customerMap = new HashMap<>();
-            for (Customer tmp : customerList) {
-                customerMap.put(tmp.getName(), tmp.getId());
-            }
-
-
-            InputStream inputStream = new FileInputStream("d:/a/项目信息和预算4.xls");
-            //
-            ExcelReader excelReader = EasyExcel.read(inputStream).build();
-            //
-            ExcelListener<ProjectExcel> listener = new ExcelListener<>();
-            //获取sheet对象
-            ReadSheet sheet0 = EasyExcel.readSheet(0).head(ProjectExcel.class).registerReadListener(listener).build();
-            //读取数据
-            excelReader.read(sheet0);
-            //获取数据
-            List<ProjectExcel> list = listener.getData();
-
-            //
-            for (ProjectExcel tmp : list) {
-                if (tmp.getDeptName().equals("第三")) {
-                    tmp.setDeptName("天津第三事业部");
-                } else if (tmp.getDeptName().equals("第五")) {
-                    tmp.setDeptName("天津第五事业部");
-                } else if (tmp.getDeptName().equals("动力工程")) {
-                    tmp.setDeptName("动力工程事业部");
-                } else if (tmp.getDeptName().equals("国际工程")) {
-                    tmp.setDeptName("国际工程事业部");
-                } else if (tmp.getDeptName().equals("海南")) {
-                    tmp.setDeptName("海南事业部");
-                } else if (tmp.getDeptName().equals("机电")) {
-                    tmp.setDeptName("机电系统集成事业部");
-                } else if (tmp.getDeptName().equals("节能环保")) {
+                if (tmp.getDeptName().equals("风机研发中心")) {
                     tmp.setDeptName("节能环保事业部");
-                } else if (tmp.getDeptName().equals("系统运维")) {
-                    tmp.setDeptName("系统运维事业部");
-                } else if (tmp.getDeptName().equals("智慧产业")) {
-                    tmp.setDeptName("智慧产业事业部");
-                } else if (tmp.getDeptName().equals("市场")) {
-                    tmp.setDeptName("市场部");
+                }
+                if (tmp.getDeptName().equals("互联网运营中心") || tmp.getDeptName().equals("资产与信息化")) {
+                    tmp.setDeptName("资产与信息化部");
+                }
+                if (tmp.getDeptName().equals("天津事业部")) {
+                    tmp.setDeptName("天津第三事业部");
+                    tmp.setRemark("天津事业部");
                 }
             }
-            //设置部门、客户、供方
-            for (ProjectExcel tmp : list) {
-                if (deptMap.get(tmp.getDeptName()) == null) {
-                    System.out.println(tmp.getDeptName());
-                } else {
-                    Integer deptId = deptMap.get(tmp.getDeptName());
-                    tmp.setDeptId(deptId);
-                }
+        }
 
-                Integer customerId = customerMap.get(tmp.getCustomerName());
-                tmp.setCustomerId(customerId);
-
-                Integer providerId = providerMap.get(tmp.getProviderName());
-                tmp.setProviderId(providerId);
+        for (CustomerExcel tmp : list) {
+            if (deptMap.get(tmp.getDeptName()) == null) {
+                System.out.println(tmp.getDeptName());
+            } else {
+                Integer deptId = deptMap.get(tmp.getDeptName());
+                tmp.setDeptId(deptId);
             }
-            //插入项目中
-            Set<String> set = new HashSet<>();
-            List<SmallProject> list1 = new ArrayList<>();
-            List<BigProject> list2 = new ArrayList<>();
-            List<SmallProjectNo> list3 = new ArrayList<>();
+        }
 
-            Map<String, SmallProject> map1 = new HashMap<>();
-            Map<String, BigProject> map2 = new HashMap<>();
-            Map<String, SmallProjectNo> map3 = new HashMap<>();
+        List<Customer> ll = new ArrayList<>();
+        for (CustomerExcel tmp : list) {
+            Customer p = new Customer();
+            p.setName(tmp.getName());
+            p.setDeptName(tmp.getDeptName());
+            p.setDeptId(tmp.getDeptId());
+            p.setRemark(tmp.getRemark());
+            p.setHaveDisplay("是");
+            p.setVersion(0);
+            p.setResult(tmp.getResult().replaceAll("级", ""));
+            ll.add(p);
+        }
 
-            for (ProjectExcel tmp : list) {
-                set.add(tmp.getTaskCode());
-                if (tmp.getProjectType().equals("一般")) {
-                    SmallProject p = new SmallProject();
-                    p.setDeptId(tmp.getDeptId());
-                    p.setDeptName(tmp.getDeptName());
-                    p.setProjectType("一般项目");
-                    p.setTaskCode(tmp.getTaskCode());
-                    p.setName(tmp.getName());
-                    if ("自营".equals(tmp.getProperty())) {
-                        p.setProperty("一类");
-                    } else if ("半自营".equals(tmp.getProperty())) {
-                        p.setProperty("二类");
-                    } else if ("合作".equals(tmp.getProperty())) {
-                        p.setProperty("三类");
-                    }
-                    p.setCustomerName(tmp.getCustomerName());
-                    p.setCustomerId(tmp.getCustomerId());
-                    p.setProviderName(tmp.getProviderName());
-                    p.setProviderId(tmp.getProviderId());
+        customerService.saveBatch(ll);
 
-                    p.setHaveDisplay("是");
-                    p.setVersion(0);
-                    p.setProcessInstId(0);
-                    list1.add(p);
-                } else if (tmp.getProjectType().equals("重大")) {
-                    BigProject p = new BigProject();
-                    p.setDeptId(tmp.getDeptId());
-                    p.setDeptName(tmp.getDeptName());
-                    p.setProjectType("重大项目");
-                    p.setTaskCode(tmp.getTaskCode());
-                    p.setName(tmp.getName());
-                    if ("自营".equals(tmp.getProperty())) {
-                        p.setProperty("一类");
-                    } else if ("半自营".equals(tmp.getProperty())) {
-                        p.setProperty("二类");
-                    } else if ("合作".equals(tmp.getProperty())) {
-                        p.setProperty("三类");
-                    }
-                    p.setCustomerName(tmp.getCustomerName());
-                    p.setCustomerId(tmp.getCustomerId());
-                    p.setProviderName(tmp.getProviderName());
-                    p.setProviderId(tmp.getProviderId());
+        return true;
+    }
 
-                    p.setHaveDisplay("是");
-                    p.setVersion(0);
-                    p.setProcessInstId(0);
-                    list2.add(p);
-                } else if (tmp.getProjectType().equals("非")) {
-                    SmallProjectNo p = new SmallProjectNo();
-                    p.setDeptId(tmp.getDeptId());
-                    p.setDeptName(tmp.getDeptName());
-                    p.setProjectType("一般项目非");
-                    p.setTaskCode(tmp.getTaskCode());
-                    p.setName(tmp.getName());
-                    if ("自营".equals(tmp.getProperty())) {
-                        p.setProperty("一类");
-                    } else if ("半自营".equals(tmp.getProperty())) {
-                        p.setProperty("二类");
-                    } else if ("合作".equals(tmp.getProperty())) {
-                        p.setProperty("三类");
-                    }
+    @GetMapping("code")
+    public boolean code() throws Exception {
+        List<SysDept> deptList = deptService.list();
+        Map<String, Integer> deptMap = new HashMap<>();
+        for (SysDept tmp : deptList) {
+            deptMap.put(tmp.getName(), tmp.getId());
+        }
 
-                    list3.add(p);
+
+        InputStream inputStream = new FileInputStream("d:/a/任务号.xls");
+        //
+        ExcelReader excelReader = EasyExcel.read(inputStream).build();
+        //
+        ExcelListener<CodeExcel> listener = new ExcelListener<>();
+        //获取sheet对象
+        ReadSheet sheet0 = EasyExcel.readSheet(0).head(CodeExcel.class).registerReadListener(listener).build();
+        //读取数据
+        excelReader.read(sheet0);
+        //获取数据
+        List<CodeExcel> list = listener.getData();
+
+
+        System.out.println();
+        for (CodeExcel tmp : list) {
+            if (deptMap.get(tmp.getDeptName()) == null) {
+                if (tmp.getDeptName().equals("动力运营事业部")) {
+                    tmp.setDeptName("经营调度中心");
                 }
             }
+        }
 
-            System.out.println(set.size());
-            System.out.println(list1.size() + list2.size() + list3.size());
-            //
-            smallProjectService.saveBatch(list1);
-            bigProjectService.saveBatch(list2);
-            smallProjectNoService.saveBatch(list3);
-
-            for (SmallProject tmp : list1) {
-                map1.put(tmp.getTaskCode(), tmp);
+        for (CodeExcel tmp : list) {
+            if (deptMap.get(tmp.getDeptName()) == null) {
+                System.out.println(tmp.getDeptName());
+            } else {
+                Integer deptId = deptMap.get(tmp.getDeptName());
+                tmp.setDeptId(deptId);
             }
-            for (BigProject tmp : list2) {
-                map2.put(tmp.getTaskCode(), tmp);
+        }
+
+        List<ProjectCode> ll = new ArrayList<>();
+        for (CodeExcel tmp : list) {
+            ProjectCode p = new ProjectCode();
+            p.setProjectName(tmp.getName());
+            p.setDeptName(tmp.getDeptName());
+            p.setDeptId(tmp.getDeptId());
+            p.setRemark(tmp.getAa());
+            p.setTaskCode(tmp.getTaskCode());
+            p.setProjectMoney(tmp.getMoney());
+            p.setCustomerName(tmp.getC());
+            p.setProviderName(tmp.getP());
+            p.setYear(2023);
+            p.setStatus("已使用");
+            ll.add(p);
+        }
+
+        projectCodeService.saveBatch(ll);
+
+        return true;
+    }
+
+    @GetMapping("project")
+    public boolean project() throws Exception {
+        List<SysDept> deptList = deptService.list();
+        Map<String, Integer> deptMap = new HashMap<>();
+        for (SysDept tmp : deptList) {
+            deptMap.put(tmp.getName(), tmp.getId());
+        }
+
+        List<Provider> providerList = providerService.list(new LambdaQueryWrapper<Provider>().eq(Provider::getResult, "合格"));
+        Map<String, Integer> providerMap = new HashMap<>();
+        for (Provider tmp : providerList) {
+            providerMap.put(tmp.getName(), tmp.getId());
+        }
+
+        List<Customer> customerList = customerService.list(new LambdaQueryWrapper<Customer>().eq(Customer::getHaveDisplay, "是").in(Customer::getResult, Arrays.asList("优秀", "良好", "一般")));
+        Map<String, Integer> customerMap = new HashMap<>();
+        for (Customer tmp : customerList) {
+            customerMap.put(tmp.getName(), tmp.getId());
+        }
+
+
+        InputStream inputStream = new FileInputStream("d:/a/项目信息和预算4.xls");
+        //
+        ExcelReader excelReader = EasyExcel.read(inputStream).build();
+        //
+        ExcelListener<ProjectExcel> listener = new ExcelListener<>();
+        //获取sheet对象
+        ReadSheet sheet0 = EasyExcel.readSheet(0).head(ProjectExcel.class).registerReadListener(listener).build();
+        //读取数据
+        excelReader.read(sheet0);
+        //获取数据
+        List<ProjectExcel> list = listener.getData();
+
+        //
+        for (ProjectExcel tmp : list) {
+            if (tmp.getDeptName().equals("第三")) {
+                tmp.setDeptName("天津第三事业部");
+            } else if (tmp.getDeptName().equals("第五")) {
+                tmp.setDeptName("天津第五事业部");
+            } else if (tmp.getDeptName().equals("动力工程")) {
+                tmp.setDeptName("动力工程事业部");
+            } else if (tmp.getDeptName().equals("国际工程")) {
+                tmp.setDeptName("国际工程事业部");
+            } else if (tmp.getDeptName().equals("海南")) {
+                tmp.setDeptName("海南事业部");
+            } else if (tmp.getDeptName().equals("机电")) {
+                tmp.setDeptName("机电系统集成事业部");
+            } else if (tmp.getDeptName().equals("节能环保")) {
+                tmp.setDeptName("节能环保事业部");
+            } else if (tmp.getDeptName().equals("系统运维")) {
+                tmp.setDeptName("系统运维事业部");
+            } else if (tmp.getDeptName().equals("智慧产业")) {
+                tmp.setDeptName("智慧产业事业部");
+            } else if (tmp.getDeptName().equals("市场")) {
+                tmp.setDeptName("市场部");
             }
-            for (SmallProjectNo tmp : list3) {
-                map3.put(tmp.getTaskCode(), tmp);
+        }
+        //设置部门、客户、供方
+        for (ProjectExcel tmp : list) {
+            if (deptMap.get(tmp.getDeptName()) == null) {
+                System.out.println(tmp.getDeptName());
+            } else {
+                Integer deptId = deptMap.get(tmp.getDeptName());
+                tmp.setDeptId(deptId);
             }
-            //
-            List<BudgetProjectt> l = new ArrayList<>();
-            Map<String, BudgetProjectt> m = new HashMap<>();
-            for (ProjectExcel tmp : list) {
-                SmallProject smallProject = null;
-                BigProject bigProject = null;
-                SmallProjectNo smallProjectNo = null;
-                if (tmp.getProjectType().equals("一般")) {
-                    smallProject = map1.get(tmp.getTaskCode());
-                } else if (tmp.getProjectType().equals("重大")) {
-                    bigProject = map2.get(tmp.getTaskCode());
-                } else if (tmp.getProjectType().equals("非")) {
-                    smallProjectNo = map3.get(tmp.getTaskCode());
+
+            Integer customerId = customerMap.get(tmp.getCustomerName());
+            tmp.setCustomerId(customerId);
+
+            Integer providerId = providerMap.get(tmp.getProviderName());
+            tmp.setProviderId(providerId);
+        }
+        //插入项目中
+        Set<String> set = new HashSet<>();
+        List<SmallProject> list1 = new ArrayList<>();
+        List<BigProject> list2 = new ArrayList<>();
+        List<SmallProjectNo> list3 = new ArrayList<>();
+
+        Map<String, SmallProject> map1 = new HashMap<>();
+        Map<String, BigProject> map2 = new HashMap<>();
+        Map<String, SmallProjectNo> map3 = new HashMap<>();
+
+        for (ProjectExcel tmp : list) {
+            set.add(tmp.getTaskCode());
+            if (tmp.getProjectType().equals("一般")) {
+                SmallProject p = new SmallProject();
+                p.setDeptId(tmp.getDeptId());
+                p.setDeptName(tmp.getDeptName());
+                p.setProjectType("一般项目");
+                p.setTaskCode(tmp.getTaskCode());
+                p.setName(tmp.getName());
+                if ("自营".equals(tmp.getProperty())) {
+                    p.setProperty("一类");
+                } else if ("半自营".equals(tmp.getProperty())) {
+                    p.setProperty("二类");
+                } else if ("合作".equals(tmp.getProperty())) {
+                    p.setProperty("三类");
                 }
-                BudgetProjectt b = new BudgetProjectt();
-                b.setHaveDisplay("是");
-                b.setVersion(0);
-                b.setProcessInstId(0);
-                b.setDeptId(tmp.getDeptId());
-                b.setDeptName(tmp.getDeptName());
-                if (tmp.getProjectType().equals("一般")) {
-                    b.setProjectId(smallProject.getId());
-                    b.setProjectType(smallProject.getProjectType());
-                    b.setName(smallProject.getName());
-                    b.setTaskCode(smallProject.getTaskCode());
-                    b.setProperty(smallProject.getProperty());
-                    b.setCustomerId(smallProject.getCustomerId());
-                    b.setCustomerName(smallProject.getCustomerName());
-                } else if (tmp.getProjectType().equals("重大")) {
-                    b.setProjectId(bigProject.getId());
-                    b.setProjectType(bigProject.getProjectType());
-                    b.setName(bigProject.getName());
-                    b.setTaskCode(bigProject.getTaskCode());
-                    b.setProperty(bigProject.getProperty());
-                    b.setCustomerId(bigProject.getCustomerId());
-                    b.setCustomerName(bigProject.getCustomerName());
-                } else if (tmp.getProjectType().equals("非")) {
-                    b.setProjectId(smallProjectNo.getId());
-                    b.setProjectType(smallProjectNo.getProjectType());
-                    b.setName(smallProjectNo.getName());
-                    b.setTaskCode(smallProjectNo.getTaskCode());
-                    b.setProperty(smallProjectNo.getProperty());
+                p.setCustomerName(tmp.getCustomerName());
+                p.setCustomerId(tmp.getCustomerId());
+                p.setProviderName(tmp.getProviderName());
+                p.setProviderId(tmp.getProviderId());
+
+                p.setHaveDisplay("是");
+                p.setVersion(0);
+                p.setProcessInstId(0);
+                list1.add(p);
+            } else if (tmp.getProjectType().equals("重大")) {
+                BigProject p = new BigProject();
+                p.setDeptId(tmp.getDeptId());
+                p.setDeptName(tmp.getDeptName());
+                p.setProjectType("重大项目");
+                p.setTaskCode(tmp.getTaskCode());
+                p.setName(tmp.getName());
+                if ("自营".equals(tmp.getProperty())) {
+                    p.setProperty("一类");
+                } else if ("半自营".equals(tmp.getProperty())) {
+                    p.setProperty("二类");
+                } else if ("合作".equals(tmp.getProperty())) {
+                    p.setProperty("三类");
+                }
+                p.setCustomerName(tmp.getCustomerName());
+                p.setCustomerId(tmp.getCustomerId());
+                p.setProviderName(tmp.getProviderName());
+                p.setProviderId(tmp.getProviderId());
+
+                p.setHaveDisplay("是");
+                p.setVersion(0);
+                p.setProcessInstId(0);
+                list2.add(p);
+            } else if (tmp.getProjectType().equals("非")) {
+                SmallProjectNo p = new SmallProjectNo();
+                p.setDeptId(tmp.getDeptId());
+                p.setDeptName(tmp.getDeptName());
+                p.setProjectType("一般项目非");
+                p.setTaskCode(tmp.getTaskCode());
+                p.setName(tmp.getName());
+                if ("自营".equals(tmp.getProperty())) {
+                    p.setProperty("一类");
+                } else if ("半自营".equals(tmp.getProperty())) {
+                    p.setProperty("二类");
+                } else if ("合作".equals(tmp.getProperty())) {
+                    p.setProperty("三类");
                 }
 
-                b.setContractCode(tmp.getContractCode());
-                b.setContractMoney(tmp.getContractMoney());
-                b.setProjectRate(tmp.getProjectRate());
-                if (ObjectUtil.isNotEmpty(tmp.getTotalCost()) && tmp.getTotalCost() > 0) {
-                    b.setTotalCost(tmp.getTotalCost());
-                }
-
-                m.put(tmp.getTaskCode(), b);
-                l.add(b);
+                list3.add(p);
             }
-            budgetProjecttService.saveBatch(l);
-            System.out.println(l.size());
+        }
 
-            List<BudgetOut> ll = new ArrayList<>();
-            for (ProjectExcel tmp : list) {
-                BudgetProjectt b = m.get(tmp.getTaskCode());
-                //a
-                if (ObjectUtil.isNotEmpty(tmp.getA1())) {
-                    BudgetOut out = new BudgetOut();
-                    out.setBudgetId(b.getId());
-                    out.setProjectId(b.getProjectId());
-                    out.setProjectType(b.getProjectType());
-                    out.setOutType("材料及设备费");
-                    out.setRate("13%");
-                    out.setMoney(tmp.getA1());
-                    ll.add(out);
-                }
-                if (ObjectUtil.isNotEmpty(tmp.getA2())) {
-                    BudgetOut out = new BudgetOut();
-                    out.setBudgetId(b.getId());
-                    out.setProjectId(b.getProjectId());
-                    out.setProjectType(b.getProjectType());
-                    out.setOutType("材料及设备费");
-                    out.setRate("3%");
-                    out.setMoney(tmp.getA2());
-                    ll.add(out);
-                }
-                if (ObjectUtil.isNotEmpty(tmp.getA3())) {
-                    BudgetOut out = new BudgetOut();
-                    out.setBudgetId(b.getId());
-                    out.setProjectId(b.getProjectId());
-                    out.setProjectType(b.getProjectType());
-                    out.setOutType("材料及设备费");
-                    out.setRate("1%");
-                    out.setMoney(tmp.getA3());
-                    ll.add(out);
-                }
-                if (ObjectUtil.isNotEmpty(tmp.getA4())) {
-                    BudgetOut out = new BudgetOut();
-                    out.setBudgetId(b.getId());
-                    out.setProjectId(b.getProjectId());
-                    out.setProjectType(b.getProjectType());
-                    out.setOutType("材料及设备费");
-                    out.setRate("0%");
-                    out.setMoney(tmp.getA4());
-                    ll.add(out);
-                }
-                //b
-                if (ObjectUtil.isNotEmpty(tmp.getB1())) {
-                    BudgetOut out = new BudgetOut();
-                    out.setBudgetId(b.getId());
-                    out.setProjectId(b.getProjectId());
-                    out.setProjectType(b.getProjectType());
-                    out.setOutType("技术服务费");
-                    out.setRate("6%");
-                    out.setMoney(tmp.getB1());
-                    ll.add(out);
-                }
-                if (ObjectUtil.isNotEmpty(tmp.getB2())) {
-                    BudgetOut out = new BudgetOut();
-                    out.setBudgetId(b.getId());
-                    out.setProjectId(b.getProjectId());
-                    out.setProjectType(b.getProjectType());
-                    out.setOutType("技术服务费");
-                    out.setRate("3%");
-                    out.setMoney(tmp.getB1());
-                    ll.add(out);
-                }
-                //c
-                if (ObjectUtil.isNotEmpty(tmp.getC1())) {
-                    BudgetOut out = new BudgetOut();
-                    out.setBudgetId(b.getId());
-                    out.setProjectId(b.getProjectId());
-                    out.setProjectType(b.getProjectType());
-                    out.setOutType("劳务费");
-                    out.setRate("3%");
-                    out.setMoney(tmp.getC1());
-                    ll.add(out);
-                }
-                if (ObjectUtil.isNotEmpty(tmp.getC2())) {
-                    BudgetOut out = new BudgetOut();
-                    out.setBudgetId(b.getId());
-                    out.setProjectId(b.getProjectId());
-                    out.setProjectType(b.getProjectType());
-                    out.setOutType("劳务费");
-                    out.setRate("1%");
-                    out.setMoney(tmp.getC2());
-                    ll.add(out);
-                }
-                if (ObjectUtil.isNotEmpty(tmp.getC3())) {
-                    BudgetOut out = new BudgetOut();
-                    out.setBudgetId(b.getId());
-                    out.setProjectId(b.getProjectId());
-                    out.setProjectType(b.getProjectType());
-                    out.setOutType("劳务费");
-                    out.setRate("0%");
-                    out.setMoney(tmp.getC3());
-                    ll.add(out);
-                }
-                //d
-                if (ObjectUtil.isNotEmpty(tmp.getD1())) {
-                    BudgetOut out = new BudgetOut();
-                    out.setBudgetId(b.getId());
-                    out.setProjectId(b.getProjectId());
-                    out.setProjectType(b.getProjectType());
-                    out.setOutType("工程款");
-                    out.setRate("9%");
-                    out.setMoney(tmp.getD1());
-                    ll.add(out);
-                }
-                if (ObjectUtil.isNotEmpty(tmp.getD2())) {
-                    BudgetOut out = new BudgetOut();
-                    out.setBudgetId(b.getId());
-                    out.setProjectId(b.getProjectId());
-                    out.setProjectType(b.getProjectType());
-                    out.setOutType("工程款");
-                    out.setRate("3%");
-                    out.setMoney(tmp.getD2());
-                    ll.add(out);
-                }
-                //e
-                if (ObjectUtil.isNotEmpty(tmp.getE())) {
-                    BudgetOut out = new BudgetOut();
-                    out.setBudgetId(b.getId());
-                    out.setProjectId(b.getProjectId());
-                    out.setProjectType(b.getProjectType());
-                    out.setOutType("税费");
-                    out.setMoney(tmp.getE());
-                    ll.add(out);
-                }
-                //f
-                if (ObjectUtil.isNotEmpty(tmp.getF())) {
-                    BudgetOut out = new BudgetOut();
-                    out.setBudgetId(b.getId());
-                    out.setProjectId(b.getProjectId());
-                    out.setProjectType(b.getProjectType());
-                    out.setOutType("交易服务费");
-                    out.setMoney(tmp.getF());
-                    ll.add(out);
-                }
-                //g
-                if (ObjectUtil.isNotEmpty(tmp.getG())) {
-                    BudgetOut out = new BudgetOut();
-                    out.setBudgetId(b.getId());
-                    out.setProjectId(b.getProjectId());
-                    out.setProjectType(b.getProjectType());
-                    out.setOutType("差旅费");
-                    out.setMoney(tmp.getG());
-                    ll.add(out);
-                }
-                //h
-                if (ObjectUtil.isNotEmpty(tmp.getH())) {
-                    BudgetOut out = new BudgetOut();
-                    out.setBudgetId(b.getId());
-                    out.setProjectId(b.getProjectId());
-                    out.setProjectType(b.getProjectType());
-                    out.setOutType("交通费");
-                    out.setMoney(tmp.getH());
-                    ll.add(out);
-                }
-                //j1-j9
-                Double sum = 0.0;
-                sum = ofNullable(tmp.getJ1()).orElse(0.0) +
-                        ofNullable(tmp.getJ2()).orElse(0.0) +
-                        ofNullable(tmp.getJ3()).orElse(0.0) +
-                        ofNullable(tmp.getJ4()).orElse(0.0) +
-                        ofNullable(tmp.getJ5()).orElse(0.0) +
-                        ofNullable(tmp.getJ6()).orElse(0.0) +
-                        ofNullable(tmp.getJ7()).orElse(0.0) +
-                        ofNullable(tmp.getJ8()).orElse(0.0) +
-                        ofNullable(tmp.getJ9()).orElse(0.0);
+        System.out.println(set.size());
+        System.out.println(list1.size() + list2.size() + list3.size());
+        //
+        smallProjectService.saveBatch(list1);
+        bigProjectService.saveBatch(list2);
+        smallProjectNoService.saveBatch(list3);
+
+        for (SmallProject tmp : list1) {
+            map1.put(tmp.getTaskCode(), tmp);
+        }
+        for (BigProject tmp : list2) {
+            map2.put(tmp.getTaskCode(), tmp);
+        }
+        for (SmallProjectNo tmp : list3) {
+            map3.put(tmp.getTaskCode(), tmp);
+        }
+        //
+        List<BudgetProjectt> l = new ArrayList<>();
+        Map<String, BudgetProjectt> m = new HashMap<>();
+        for (ProjectExcel tmp : list) {
+            SmallProject smallProject = null;
+            BigProject bigProject = null;
+            SmallProjectNo smallProjectNo = null;
+            if (tmp.getProjectType().equals("一般")) {
+                smallProject = map1.get(tmp.getTaskCode());
+            } else if (tmp.getProjectType().equals("重大")) {
+                bigProject = map2.get(tmp.getTaskCode());
+            } else if (tmp.getProjectType().equals("非")) {
+                smallProjectNo = map3.get(tmp.getTaskCode());
+            }
+            BudgetProjectt b = new BudgetProjectt();
+            b.setHaveDisplay("是");
+            b.setVersion(0);
+            b.setProcessInstId(0);
+            b.setDeptId(tmp.getDeptId());
+            b.setDeptName(tmp.getDeptName());
+            if (tmp.getProjectType().equals("一般")) {
+                b.setProjectId(smallProject.getId());
+                b.setProjectType(smallProject.getProjectType());
+                b.setName(smallProject.getName());
+                b.setTaskCode(smallProject.getTaskCode());
+                b.setProperty(smallProject.getProperty());
+                b.setCustomerId(smallProject.getCustomerId());
+                b.setCustomerName(smallProject.getCustomerName());
+            } else if (tmp.getProjectType().equals("重大")) {
+                b.setProjectId(bigProject.getId());
+                b.setProjectType(bigProject.getProjectType());
+                b.setName(bigProject.getName());
+                b.setTaskCode(bigProject.getTaskCode());
+                b.setProperty(bigProject.getProperty());
+                b.setCustomerId(bigProject.getCustomerId());
+                b.setCustomerName(bigProject.getCustomerName());
+            } else if (tmp.getProjectType().equals("非")) {
+                b.setProjectId(smallProjectNo.getId());
+                b.setProjectType(smallProjectNo.getProjectType());
+                b.setName(smallProjectNo.getName());
+                b.setTaskCode(smallProjectNo.getTaskCode());
+                b.setProperty(smallProjectNo.getProperty());
+            }
+
+            b.setContractCode(tmp.getContractCode());
+            b.setContractMoney(tmp.getContractMoney());
+            b.setProjectRate(tmp.getProjectRate());
+            if (ObjectUtil.isNotEmpty(tmp.getTotalCost()) && tmp.getTotalCost() > 0) {
+                b.setTotalCost(tmp.getTotalCost());
+            }
+
+            m.put(tmp.getTaskCode(), b);
+            l.add(b);
+        }
+        budgetProjecttService.saveBatch(l);
+        System.out.println(l.size());
+
+        List<BudgetOut> ll = new ArrayList<>();
+        for (ProjectExcel tmp : list) {
+            BudgetProjectt b = m.get(tmp.getTaskCode());
+            //a
+            if (ObjectUtil.isNotEmpty(tmp.getA1())) {
                 BudgetOut out = new BudgetOut();
                 out.setBudgetId(b.getId());
                 out.setProjectId(b.getProjectId());
                 out.setProjectType(b.getProjectType());
-                out.setOutType("其他");
-                out.setMoney(sum);
-                if (sum > 0) {
-                    ll.add(out);
-                    List<String> sb = new ArrayList<>();
-                    if (ObjectUtil.isNotEmpty(tmp.getJ1())) {
-                        sb.add("其他-招待费：" + tmp.getJ1());
-                    }
-                    if (ObjectUtil.isNotEmpty(tmp.getJ2())) {
-                        sb.add("其他-专家费用：" + tmp.getJ2());
-                    }
-                    if (ObjectUtil.isNotEmpty(tmp.getJ3())) {
-                        sb.add("其他-锁证费：" + tmp.getJ3());
-                    }
-                    if (ObjectUtil.isNotEmpty(tmp.getJ4())) {
-                        sb.add("其他-资金成本：" + tmp.getJ4());
-                    }
-                    if (ObjectUtil.isNotEmpty(tmp.getJ5())) {
-                        sb.add("其他-其他1：" + tmp.getJ5());
-                    }
-                    if (ObjectUtil.isNotEmpty(tmp.getJ6())) {
-                        sb.add("其他-其他2：" + tmp.getJ6());
-                    }
-                    if (ObjectUtil.isNotEmpty(tmp.getJ7())) {
-                        sb.add("其他-其他3：" + tmp.getJ7());
-                    }
-                    if (ObjectUtil.isNotEmpty(tmp.getJ8())) {
-                        sb.add("其他-其他4：" + tmp.getJ8());
-                    }
-                    if (ObjectUtil.isNotEmpty(tmp.getJ9())) {
-                        sb.add("其他-其他5：" + tmp.getJ9());
-                    }
-
-                    b.setRemark(Strings.join(sb, '，'));
-                }
+                out.setOutType("材料及设备费");
+                out.setRate("13%");
+                out.setMoney(tmp.getA1());
+                ll.add(out);
             }
+            if (ObjectUtil.isNotEmpty(tmp.getA2())) {
+                BudgetOut out = new BudgetOut();
+                out.setBudgetId(b.getId());
+                out.setProjectId(b.getProjectId());
+                out.setProjectType(b.getProjectType());
+                out.setOutType("材料及设备费");
+                out.setRate("3%");
+                out.setMoney(tmp.getA2());
+                ll.add(out);
+            }
+            if (ObjectUtil.isNotEmpty(tmp.getA3())) {
+                BudgetOut out = new BudgetOut();
+                out.setBudgetId(b.getId());
+                out.setProjectId(b.getProjectId());
+                out.setProjectType(b.getProjectType());
+                out.setOutType("材料及设备费");
+                out.setRate("1%");
+                out.setMoney(tmp.getA3());
+                ll.add(out);
+            }
+            if (ObjectUtil.isNotEmpty(tmp.getA4())) {
+                BudgetOut out = new BudgetOut();
+                out.setBudgetId(b.getId());
+                out.setProjectId(b.getProjectId());
+                out.setProjectType(b.getProjectType());
+                out.setOutType("材料及设备费");
+                out.setRate("0%");
+                out.setMoney(tmp.getA4());
+                ll.add(out);
+            }
+            //b
+            if (ObjectUtil.isNotEmpty(tmp.getB1())) {
+                BudgetOut out = new BudgetOut();
+                out.setBudgetId(b.getId());
+                out.setProjectId(b.getProjectId());
+                out.setProjectType(b.getProjectType());
+                out.setOutType("技术服务费");
+                out.setRate("6%");
+                out.setMoney(tmp.getB1());
+                ll.add(out);
+            }
+            if (ObjectUtil.isNotEmpty(tmp.getB2())) {
+                BudgetOut out = new BudgetOut();
+                out.setBudgetId(b.getId());
+                out.setProjectId(b.getProjectId());
+                out.setProjectType(b.getProjectType());
+                out.setOutType("技术服务费");
+                out.setRate("3%");
+                out.setMoney(tmp.getB1());
+                ll.add(out);
+            }
+            //c
+            if (ObjectUtil.isNotEmpty(tmp.getC1())) {
+                BudgetOut out = new BudgetOut();
+                out.setBudgetId(b.getId());
+                out.setProjectId(b.getProjectId());
+                out.setProjectType(b.getProjectType());
+                out.setOutType("劳务费");
+                out.setRate("3%");
+                out.setMoney(tmp.getC1());
+                ll.add(out);
+            }
+            if (ObjectUtil.isNotEmpty(tmp.getC2())) {
+                BudgetOut out = new BudgetOut();
+                out.setBudgetId(b.getId());
+                out.setProjectId(b.getProjectId());
+                out.setProjectType(b.getProjectType());
+                out.setOutType("劳务费");
+                out.setRate("1%");
+                out.setMoney(tmp.getC2());
+                ll.add(out);
+            }
+            if (ObjectUtil.isNotEmpty(tmp.getC3())) {
+                BudgetOut out = new BudgetOut();
+                out.setBudgetId(b.getId());
+                out.setProjectId(b.getProjectId());
+                out.setProjectType(b.getProjectType());
+                out.setOutType("劳务费");
+                out.setRate("0%");
+                out.setMoney(tmp.getC3());
+                ll.add(out);
+            }
+            //d
+            if (ObjectUtil.isNotEmpty(tmp.getD1())) {
+                BudgetOut out = new BudgetOut();
+                out.setBudgetId(b.getId());
+                out.setProjectId(b.getProjectId());
+                out.setProjectType(b.getProjectType());
+                out.setOutType("工程款");
+                out.setRate("9%");
+                out.setMoney(tmp.getD1());
+                ll.add(out);
+            }
+            if (ObjectUtil.isNotEmpty(tmp.getD2())) {
+                BudgetOut out = new BudgetOut();
+                out.setBudgetId(b.getId());
+                out.setProjectId(b.getProjectId());
+                out.setProjectType(b.getProjectType());
+                out.setOutType("工程款");
+                out.setRate("3%");
+                out.setMoney(tmp.getD2());
+                ll.add(out);
+            }
+            //e
+            if (ObjectUtil.isNotEmpty(tmp.getE())) {
+                BudgetOut out = new BudgetOut();
+                out.setBudgetId(b.getId());
+                out.setProjectId(b.getProjectId());
+                out.setProjectType(b.getProjectType());
+                out.setOutType("税费");
+                out.setMoney(tmp.getE());
+                ll.add(out);
+            }
+            //f
+            if (ObjectUtil.isNotEmpty(tmp.getF())) {
+                BudgetOut out = new BudgetOut();
+                out.setBudgetId(b.getId());
+                out.setProjectId(b.getProjectId());
+                out.setProjectType(b.getProjectType());
+                out.setOutType("交易服务费");
+                out.setMoney(tmp.getF());
+                ll.add(out);
+            }
+            //g
+            if (ObjectUtil.isNotEmpty(tmp.getG())) {
+                BudgetOut out = new BudgetOut();
+                out.setBudgetId(b.getId());
+                out.setProjectId(b.getProjectId());
+                out.setProjectType(b.getProjectType());
+                out.setOutType("差旅费");
+                out.setMoney(tmp.getG());
+                ll.add(out);
+            }
+            //h
+            if (ObjectUtil.isNotEmpty(tmp.getH())) {
+                BudgetOut out = new BudgetOut();
+                out.setBudgetId(b.getId());
+                out.setProjectId(b.getProjectId());
+                out.setProjectType(b.getProjectType());
+                out.setOutType("交通费");
+                out.setMoney(tmp.getH());
+                ll.add(out);
+            }
+            //j1-j9
+            Double sum = 0.0;
+            sum = ofNullable(tmp.getJ1()).orElse(0.0) +
+                    ofNullable(tmp.getJ2()).orElse(0.0) +
+                    ofNullable(tmp.getJ3()).orElse(0.0) +
+                    ofNullable(tmp.getJ4()).orElse(0.0) +
+                    ofNullable(tmp.getJ5()).orElse(0.0) +
+                    ofNullable(tmp.getJ6()).orElse(0.0) +
+                    ofNullable(tmp.getJ7()).orElse(0.0) +
+                    ofNullable(tmp.getJ8()).orElse(0.0) +
+                    ofNullable(tmp.getJ9()).orElse(0.0);
+            BudgetOut out = new BudgetOut();
+            out.setBudgetId(b.getId());
+            out.setProjectId(b.getProjectId());
+            out.setProjectType(b.getProjectType());
+            out.setOutType("其他");
+            out.setMoney(sum);
+            if (sum > 0) {
+                ll.add(out);
+                List<String> sb = new ArrayList<>();
+                if (ObjectUtil.isNotEmpty(tmp.getJ1())) {
+                    sb.add("其他-招待费：" + tmp.getJ1());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getJ2())) {
+                    sb.add("其他-专家费用：" + tmp.getJ2());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getJ3())) {
+                    sb.add("其他-锁证费：" + tmp.getJ3());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getJ4())) {
+                    sb.add("其他-资金成本：" + tmp.getJ4());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getJ5())) {
+                    sb.add("其他-其他1：" + tmp.getJ5());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getJ6())) {
+                    sb.add("其他-其他2：" + tmp.getJ6());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getJ7())) {
+                    sb.add("其他-其他3：" + tmp.getJ7());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getJ8())) {
+                    sb.add("其他-其他4：" + tmp.getJ8());
+                }
+                if (ObjectUtil.isNotEmpty(tmp.getJ9())) {
+                    sb.add("其他-其他5：" + tmp.getJ9());
+                }
 
-            budgetOutService.saveBatch(ll);
+                b.setRemark(Strings.join(sb, '，'));
+            }
+        }
 
-            budgetProjecttService.updateBatchById(l);
+        budgetOutService.saveBatch(ll);
 
-            List<BudgetInn> inList = new ArrayList<>();
+        budgetProjecttService.updateBatchById(l);
 
-            for (BudgetProjectt tmp : l) {
+        List<BudgetInn> inList = new ArrayList<>();
+
+        for (BudgetProjectt tmp : l) {
+            BudgetInn in = new BudgetInn();
+            in.setBudgetId(tmp.getId());
+            in.setProjectId(tmp.getProjectId());
+            in.setProjectType(tmp.getProjectType());
+            in.setInType("项目收入");
+            in.setMoney(tmp.getContractMoney());
+
+            inList.add(in);
+        }
+
+
+        budgetInnService.saveBatch(inList);
+
+        return true;
+    }
+
+
+    @GetMapping("project2")
+    public boolean project2() {
+        List<BudgetInn> inList = new ArrayList<>();
+        List<BudgetProjectt> list = budgetProjecttService.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getProcessInstId, 0).ne(BudgetProjectt::getDeptName, "节能环保事业部"));
+        for (BudgetProjectt tmp : list) {
+            if (ObjectUtil.isEmpty(tmp.getContractMoney())) {
+                System.out.println(tmp.getTaskCode());
+            } else {
                 BudgetInn in = new BudgetInn();
                 in.setBudgetId(tmp.getId());
                 in.setProjectId(tmp.getProjectId());
@@ -976,156 +1001,254 @@ public class InitDataController {
 
                 inList.add(in);
             }
-
-
-            budgetInnService.saveBatch(inList);
-
-            return true;
         }
-
-
-        @GetMapping("project2")
-        public boolean project2 () {
-            List<BudgetInn> inList = new ArrayList<>();
-            List<BudgetProjectt> list = budgetProjecttService.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getProcessInstId, 0).ne(BudgetProjectt::getDeptName, "节能环保事业部"));
-            for (BudgetProjectt tmp : list) {
-                if (ObjectUtil.isEmpty(tmp.getContractMoney())) {
-                    System.out.println(tmp.getTaskCode());
-                } else {
-                    BudgetInn in = new BudgetInn();
-                    in.setBudgetId(tmp.getId());
-                    in.setProjectId(tmp.getProjectId());
-                    in.setProjectType(tmp.getProjectType());
-                    in.setInType("项目收入");
-                    in.setMoney(tmp.getContractMoney());
-
-                    inList.add(in);
-                }
-            }
-            budgetInnService.saveBatch(inList);
-            return true;
-        }
-
-        @GetMapping("project3")
-        public boolean project3 () {
-            List<BudgetProjectt> list = budgetProjecttService.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getProcessInstId, 0));
-            for (BudgetProjectt tmp : list) {
-                List<BudgetOut> list1 = budgetOutService.list(new LambdaQueryWrapper<BudgetOut>().eq(BudgetOut::getBudgetId, tmp.getId()));
-                if (ObjectUtil.isNotEmpty(list1)) {
-                    Double sum = 0.0d;
-                    for (BudgetOut out : list1) {
-                        sum += ofNullable(out.getMoney()).orElse(0.0);
-                    }
-//                System.out.println(tmp.getTaskCode() + "," + sum + "," + tmp.getTotalCost());
-                    if (!sum.equals(tmp.getTotalCost())) {
-                        System.out.println(tmp.getId() + "," + tmp.getTaskCode() + "," + sum + "," + tmp.getTotalCost());
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        @GetMapping("process")
-        public boolean process () {
-            List<ProcessInst> instList1 = new ArrayList<>();
-            List<ProcessInst> instList2 = new ArrayList<>();
-            List<ProcessInst> instList3 = new ArrayList<>();
-
-            List<SmallProject> list1 = smallProjectService.list(new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getProcessInstId, 0));
-            List<BigProject> list2 = bigProjectService.list(new LambdaQueryWrapper<BigProject>().eq(BigProject::getProcessInstId, 0));
-            List<BudgetProjectt> list3 = budgetProjecttService.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getProcessInstId, 0));
-
-            for (SmallProject tmp : list1) {
-                ProcessInst p = new ProcessInst();
-                p.setProcessDesignId(70);
-                p.setProcessName("一般项目立项");
-                p.setBusinessName(tmp.getName());
-                p.setBusinessId(tmp.getId());
-                p.setBusinessHaveDisplay("是");
-                p.setBusinessVersion(0);
-                p.setProcessStatus("完成");
-                p.setDeptId(tmp.getDeptId());
-                p.setDeptName(tmp.getDeptName());
-                p.setPath("smallProjectPath");
-
-                processInstService.save(p);
-                tmp.setProcessInstId(p.getId());
-            }
-            smallProjectService.updateBatchById(list1);
-
-
-            for (BigProject tmp : list2) {
-                ProcessInst p = new ProcessInst();
-                p.setProcessDesignId(69);
-                p.setProcessName("重大项目评估");
-                p.setBusinessName(tmp.getName());
-                p.setBusinessId(tmp.getId());
-                p.setBusinessHaveDisplay("是");
-                p.setBusinessVersion(0);
-                p.setProcessStatus("完成");
-                p.setDeptId(tmp.getDeptId());
-                p.setDeptName(tmp.getDeptName());
-                p.setPath("bigProjectPath");
-
-                processInstService.save(p);
-                tmp.setProcessInstId(p.getId());
-            }
-            bigProjectService.updateBatchById(list2);
-
-            for (BudgetProjectt tmp : list3) {
-                ProcessInst p = new ProcessInst();
-                p.setBusinessName(tmp.getName());
-                p.setBusinessId(tmp.getId());
-                p.setBusinessHaveDisplay("是");
-                p.setBusinessVersion(0);
-                p.setProcessStatus("完成");
-                p.setDeptId(tmp.getDeptId());
-                p.setDeptName(tmp.getDeptName());
-                if (tmp.getProjectType().equals("重大项目")) {
-                    p.setProcessDesignId(48);
-                    p.setProcessName("重大项目预算");
-                } else {
-                    p.setProcessDesignId(47);
-                    p.setProcessName("一般项目预算");
-                }
-                p.setPath("budgetProjecttPath");
-
-                processInstService.save(p);
-                tmp.setProcessInstId(p.getId());
-            }
-            budgetProjecttService.updateBatchById(list3);
-
-
-            return true;
-        }
-
-
-        @GetMapping("user")
-        public boolean user () throws Exception {
-            InputStream inputStream = new FileInputStream("g:/人员名单.xls");
-            //
-            ExcelReader excelReader = EasyExcel.read(inputStream).build();
-            //
-            ExcelListener<UserExcel> listener = new ExcelListener<>();
-            //获取sheet对象
-            ReadSheet sheet0 = EasyExcel.readSheet(0).head(UserExcel.class).registerReadListener(listener).build();
-            //读取数据
-            excelReader.read(sheet0);
-            //获取数据
-            List<UserExcel> list = listener.getData();
-
-            List<String> ll = new ArrayList<>();
-            Set<String> ss = new LinkedHashSet<>();
-            for (UserExcel tmp : list) {
-//            System.out.println(PinyinUtil.getPinyin(tmp.getName()).replaceAll("\\s+", ""));
-                ss.add(tmp.getDeptName().trim());
-            }
-
-            for (String s : ss) {
-                System.out.println(s);
-            }
-            return true;
-        }
-
+        budgetInnService.saveBatch(inList);
+        return true;
     }
+
+    @GetMapping("project3")
+    public boolean project3() {
+        List<BudgetProjectt> list = budgetProjecttService.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getProcessInstId, 0));
+        for (BudgetProjectt tmp : list) {
+            List<BudgetOut> list1 = budgetOutService.list(new LambdaQueryWrapper<BudgetOut>().eq(BudgetOut::getBudgetId, tmp.getId()));
+            if (ObjectUtil.isNotEmpty(list1)) {
+                Double sum = 0.0d;
+                for (BudgetOut out : list1) {
+                    sum += ofNullable(out.getMoney()).orElse(0.0);
+                }
+//                System.out.println(tmp.getTaskCode() + "," + sum + "," + tmp.getTotalCost());
+                if (!sum.equals(tmp.getTotalCost())) {
+                    System.out.println(tmp.getId() + "," + tmp.getTaskCode() + "," + sum + "," + tmp.getTotalCost());
+                }
+            }
+        }
+
+        return true;
+    }
+
+    @GetMapping("process")
+    public boolean process() {
+        List<ProcessInst> instList1 = new ArrayList<>();
+        List<ProcessInst> instList2 = new ArrayList<>();
+        List<ProcessInst> instList3 = new ArrayList<>();
+
+        List<SmallProject> list1 = smallProjectService.list(new LambdaQueryWrapper<SmallProject>().eq(SmallProject::getProcessInstId, 0));
+        List<BigProject> list2 = bigProjectService.list(new LambdaQueryWrapper<BigProject>().eq(BigProject::getProcessInstId, 0));
+        List<BudgetProjectt> list3 = budgetProjecttService.list(new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getProcessInstId, 0));
+
+        for (SmallProject tmp : list1) {
+            ProcessInst p = new ProcessInst();
+            p.setProcessDesignId(70);
+            p.setProcessName("一般项目立项");
+            p.setBusinessName(tmp.getName());
+            p.setBusinessId(tmp.getId());
+            p.setBusinessHaveDisplay("是");
+            p.setBusinessVersion(0);
+            p.setProcessStatus("完成");
+            p.setDeptId(tmp.getDeptId());
+            p.setDeptName(tmp.getDeptName());
+            p.setPath("smallProjectPath");
+
+            processInstService.save(p);
+            tmp.setProcessInstId(p.getId());
+        }
+        smallProjectService.updateBatchById(list1);
+
+
+        for (BigProject tmp : list2) {
+            ProcessInst p = new ProcessInst();
+            p.setProcessDesignId(69);
+            p.setProcessName("重大项目评估");
+            p.setBusinessName(tmp.getName());
+            p.setBusinessId(tmp.getId());
+            p.setBusinessHaveDisplay("是");
+            p.setBusinessVersion(0);
+            p.setProcessStatus("完成");
+            p.setDeptId(tmp.getDeptId());
+            p.setDeptName(tmp.getDeptName());
+            p.setPath("bigProjectPath");
+
+            processInstService.save(p);
+            tmp.setProcessInstId(p.getId());
+        }
+        bigProjectService.updateBatchById(list2);
+
+        for (BudgetProjectt tmp : list3) {
+            ProcessInst p = new ProcessInst();
+            p.setBusinessName(tmp.getName());
+            p.setBusinessId(tmp.getId());
+            p.setBusinessHaveDisplay("是");
+            p.setBusinessVersion(0);
+            p.setProcessStatus("完成");
+            p.setDeptId(tmp.getDeptId());
+            p.setDeptName(tmp.getDeptName());
+            if (tmp.getProjectType().equals("重大项目")) {
+                p.setProcessDesignId(48);
+                p.setProcessName("重大项目预算");
+            } else {
+                p.setProcessDesignId(47);
+                p.setProcessName("一般项目预算");
+            }
+            p.setPath("budgetProjecttPath");
+
+            processInstService.save(p);
+            tmp.setProcessInstId(p.getId());
+        }
+        budgetProjecttService.updateBatchById(list3);
+
+
+        return true;
+    }
+
+
+    @GetMapping("user")
+    public boolean user() throws Exception {
+        InputStream inputStream = new FileInputStream("g:/人员名单.xls");
+        //
+        ExcelReader excelReader = EasyExcel.read(inputStream).build();
+        //
+        ExcelListener<UserExcel> listener = new ExcelListener<>();
+        //获取sheet对象
+        ReadSheet sheet0 = EasyExcel.readSheet(0).head(UserExcel.class).registerReadListener(listener).build();
+        //读取数据
+        excelReader.read(sheet0);
+        //获取数据
+        List<UserExcel> list = listener.getData();
+
+        List<String> ll = new ArrayList<>();
+        Set<String> ss = new LinkedHashSet<>();
+        for (UserExcel tmp : list) {
+//            System.out.println(PinyinUtil.getPinyin(tmp.getName()).replaceAll("\\s+", ""));
+            ss.add(tmp.getDeptName().trim());
+        }
+
+        for (String s : ss) {
+            System.out.println(s);
+        }
+        return true;
+    }
+
+    @GetMapping("budget")
+    public boolean budget() throws Exception {
+        InputStream inputStream = new FileInputStream("d:/aa.xls");
+        //
+        ExcelReader excelReader = EasyExcel.read(inputStream).build();
+        //
+        ExcelListener<BudgetExcel> listener = new ExcelListener<>();
+        //获取sheet对象
+        ReadSheet sheet0 = EasyExcel.readSheet(0).head(BudgetExcel.class).registerReadListener(listener).build();
+        //读取数据
+        excelReader.read(sheet0);
+        //获取数据
+        List<BudgetExcel> list = listener.getData();
+
+        List<BudgetProjectt> budgetList = new ArrayList<>();
+        List<BudgetInn> innList = new ArrayList<>();
+        List<BudgetOut> outList = new ArrayList<>();
+
+        Map<String, BudgetExcel> map = new HashMap<>();
+
+        for (BudgetExcel tmp : list) {
+            BudgetProjectt b = new BudgetProjectt();
+            b.setTaskCode(tmp.getTaskCode());
+            b.setName(tmp.getName());
+            b.setProjectRate(tmp.getProjectRate());
+            b.setTotalCost(tmp.getTotalMoney());
+            b.setDeptId(24);
+            b.setDeptName("节能环保事业部");
+            b.setHaveDisplay("是");
+            b.setVersion(0);
+            b.setLoginName("刘闯");
+            b.setDisplayName("刘闯");
+            b.setProjectType("一般项目");
+
+            budgetList.add(b);
+
+            map.put(tmp.getTaskCode(), tmp);
+        }
+        budgetProjecttService.saveBatch(budgetList);
+
+        for (BudgetProjectt tmp : budgetList) {
+            BudgetExcel b = map.get(tmp.getTaskCode());
+
+            BudgetInn in1 = new BudgetInn();
+            in1.setBudgetId(tmp.getId());
+            in1.setInType("技术服务费");
+            in1.setRate(b.getRate1());
+            in1.setMoney(b.getMoney1());
+            innList.add(in1);
+
+            BudgetOut o2 = new BudgetOut();
+            o2.setBudgetId(tmp.getId());
+            o2.setOutType("采购费");
+            o2.setRate(b.getRate2());
+            o2.setMoney(b.getMoney2());
+            outList.add(o2);
+
+            BudgetOut o3 = new BudgetOut();
+            o3.setBudgetId(tmp.getId());
+            o3.setOutType("技术服务费");
+            o3.setRate(b.getRate3());
+            o3.setMoney(b.getMoney3());
+            outList.add(o3);
+
+            BudgetOut o4 = new BudgetOut();
+            o4.setBudgetId(tmp.getId());
+            o4.setOutType("税费");
+            o4.setMoney(b.getMoney4());
+            outList.add(o4);
+
+            BudgetOut o5 = new BudgetOut();
+            o5.setBudgetId(tmp.getId());
+            o5.setOutType("招待费");
+            o5.setMoney(b.getMoney5());
+            outList.add(o5);
+
+            BudgetOut o6 = new BudgetOut();
+            o6.setBudgetId(tmp.getId());
+            o6.setOutType("差旅费");
+            o6.setMoney(b.getMoney6());
+            outList.add(o6);
+
+            BudgetOut o7 = new BudgetOut();
+            o7.setBudgetId(tmp.getId());
+            o7.setOutType("交通费");
+            o7.setMoney(b.getMoney7());
+            outList.add(o7);
+
+            BudgetOut o8 = new BudgetOut();
+            o8.setBudgetId(tmp.getId());
+            o8.setOutType("评审费");
+            o8.setMoney(b.getMoney8());
+            outList.add(o8);
+
+            BudgetOut o9 = new BudgetOut();
+            o9.setBudgetId(tmp.getId());
+            o9.setOutType("其他");
+            o9.setMoney(b.getMoney9());
+            o9.setRemark("（印刷、快递、车辆等）");
+            outList.add(o9);
+
+            ProcessInst p = new ProcessInst();
+            p.setBusinessName(tmp.getName());
+            p.setBusinessId(tmp.getId());
+            p.setBusinessHaveDisplay("是");
+            p.setBusinessVersion(0);
+            p.setProcessStatus("完成");
+            p.setDeptId(tmp.getDeptId());
+            p.setDeptName(tmp.getDeptName());
+            p.setProcessDesignId(47);
+            p.setProcessName("一般项目预算");
+            p.setPath("budgetProjecttPath");
+            processInstService.save(p);
+            tmp.setProcessInstId(p.getId());
+            budgetProjecttService.updateById(tmp);
+        }
+
+        budgetInnService.saveBatch(innList);
+        budgetOutService.saveBatch(outList);
+
+        return true;
+    }
+
+}

@@ -52,6 +52,7 @@ public class BudgetDialogController {
         Object name = paramMap.get("name");
         Object taskCode = paramMap.get("taskCode");
         Object wbs = paramMap.get("wbs");
+        Object deptName = paramMap.get("deptName");
 
         LambdaQueryWrapper<BudgetProjectt> wrapper = new LambdaQueryWrapper<BudgetProjectt>().eq(BudgetProjectt::getHaveDisplay, "是");
         if (!user.getDeptName().equals("综合计划部")) {
@@ -65,6 +66,9 @@ public class BudgetDialogController {
         }
         if (ObjectUtil.isNotEmpty(wbs)) {
             wrapper.like(BudgetProjectt::getWbs, wbs);
+        }
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper.like(BudgetProjectt::getDeptName, deptName);
         }
         List<BudgetProjectt> list = budgetProjecttService.list(wrapper);
         if (ObjectUtil.isNotEmpty(list)) {
@@ -98,6 +102,7 @@ public class BudgetDialogController {
         Object name = paramMap.get("name");
         Object taskCode = paramMap.get("taskCode");
         Object wbs = paramMap.get("wbs");
+        Object deptName = paramMap.get("deptName");
 
         LambdaQueryWrapper<InContract> wrapper = new LambdaQueryWrapper<>();
         if (!user.getDeptName().equals("综合计划部")) {
@@ -111,6 +116,9 @@ public class BudgetDialogController {
         }
         if (ObjectUtil.isNotEmpty(wbs)) {
             wrapper.like(InContract::getWbs, wbs);
+        }
+        if (ObjectUtil.isNotEmpty(deptName)) {
+            wrapper.like(InContract::getDeptName, deptName);
         }
         List<InContract> list = inContractService.list(wrapper);
         if (ObjectUtil.isNotEmpty(list)) {
@@ -137,7 +145,7 @@ public class BudgetDialogController {
                 //
                 List<BudgetProjecttOutVO> dataList = new ArrayList<>();
                 LambdaQueryWrapper<BudgetOut> wrapper2 = new LambdaQueryWrapper<BudgetOut>().in(BudgetOut::getBudgetId, idList);
-                wrapper2.in(BudgetOut::getOutType, "材料及设备费", "劳务费", "技术服务费", "工程款");
+                wrapper2.in(BudgetOut::getOutType, "采购费", "劳务费", "技术服务费","维修款", "工程款");
                 List<BudgetOut> list2 = budgetOutService.list(wrapper2);
                 for (BudgetOut out : list2) {
                     BudgetProjectt b = map1.get(out.getBudgetId());
