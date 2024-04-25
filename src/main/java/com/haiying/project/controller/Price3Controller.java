@@ -75,6 +75,9 @@ public class Price3Controller {
             wrapper.like(Price3::getInContractCode, inContractCode);
         }
 
+        if (!(user.getDeptName().equals("综合计划部") || user.getDeptName().equals("财务部"))) {
+            wrapper.eq(Price3::getDeptId, user.getDeptId());
+        }
 
         page = price3Service.page(new Page<>(current, pageSize), wrapper);
         List<Price3> recordList = page.getRecords();

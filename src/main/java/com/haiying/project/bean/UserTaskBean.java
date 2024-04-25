@@ -57,6 +57,8 @@ public class UserTaskBean {
     Price2Service price2Service;
     @Autowired
     Price3Service price3Service;
+    @Autowired
+    Price4Service price4Service;
 
     public Set<String> getLoginNameList(ProcessDesignTask processDesignTask, Integer businessId, String actProcessInstanceId) {
         Set<String> loginNameSet = new TreeSet<>();
@@ -82,7 +84,7 @@ public class UserTaskBean {
                         LambdaQueryWrapper<SysUser> l = new LambdaQueryWrapper<SysUser>().eq(SysUser::getPosition, "部门正职领导");
                         if (loginUser.getDeptName().equals("动力运营事业部")) {
                             l.eq(SysUser::getDeptId2, loginUser.getDeptId2());
-                        }else{
+                        } else {
                             l.eq(SysUser::getDeptId, loginUser.getDeptId());
                         }
                         List<SysUser> leaderList = sysUserService.list(l);
@@ -233,6 +235,21 @@ public class UserTaskBean {
                 String projectLevel = price3.getProjectLevel();
                 if (!"非密".equals(projectLevel)) {
                     loginNameSet.add("王媛媛");
+                }
+            } else if (path.equals("price4Path")) {
+                Price4 price4 = price4Service.getById(businessId);
+                if (processDesignTask.getTaskName().equals("上传招标附件")) {
+                    loginNameSet.add(price4.getLoginName());
+                } else {
+                    String userNamee = price4.getUserNamee();
+                    loginNameSet.add(userNamee);
+                    //
+                    loginNameSet.add("孙欢");
+                    //项目密级
+                    String projectLevel = price4.getProjectLevel();
+                    if (!"非密".equals(projectLevel)) {
+                        loginNameSet.add("王媛媛");
+                    }
                 }
             } else if (path.equals("projectOutPath")) {
                 //项目收支的支出信息
