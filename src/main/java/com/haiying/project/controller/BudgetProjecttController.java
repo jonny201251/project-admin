@@ -124,9 +124,8 @@ public class BudgetProjecttController {
     }
 
     @GetMapping("get")
-    public BudgetProjectt get(Integer id, String type) {
+    public BudgetProjectt get(Integer id) {
         BudgetProjectt budgetProjectt = budgetProjecttService.getById(id);
-
         List<BudgetProtect> protectList = budgetProtectService.list(new LambdaQueryWrapper<BudgetProtect>().eq(BudgetProtect::getBudgetId, id));
         budgetProjectt.setProtectList(protectList);
 
